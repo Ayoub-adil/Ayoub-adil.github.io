@@ -73,7 +73,7 @@ def main():
     # fade the shoulders out towards the bottom of the crop
     ys = np.linspace(0, 1, h)[:, None]
     fade = np.clip((1.0 - ys) / 0.35, 0, 1) ** 1.5
-    prob = alpha * (0.45 + 1.6 * detail) * fade
+    prob = alpha * (0.18 + 2.6 * detail) * fade
     prob[alpha < 0.35] = 0
     prob /= prob.sum()
 
@@ -92,8 +92,12 @@ def main():
     z = (dn[py, px] - 0.5) * head_w * DEPTH_RATIO
     z += rng.normal(0, 0.006, N)
 
+    # contrast curve so hair, eyes, beard and the shirt stripes read dark,
+    # then depth shading: what is closer to the camera is brighter
     lum = gray[py, px]
-    bright = np.clip(0.3 + 0.75 * lum, 0, 1)
+    tone = np.clip((lum - 0.18) / 0.72, 0, 1) ** 1.6
+    shade = 0.45 + 0.55 * np.clip(dn[py, px], 0, 1)
+    bright = np.clip(0.04 + 0.96 * tone * shade, 0, 1)
 
     q = np.empty(N, dtype=[("x", "<i2"), ("y", "<i2"), ("z", "<i2"), ("b", "u1"), ("p", "u1")])
     q["x"] = np.round(x * 4096).astype(np.int16)

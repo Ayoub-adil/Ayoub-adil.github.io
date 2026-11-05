@@ -72,7 +72,7 @@ function CV() {
               </div>
             ))}
 
-            <H>Selected industrial projects · R&D Vision</H>
+            <H>Selected industrial projects</H>
             {featured.map((p) => (
               <div key={p.id} className="mb-2 break-inside-avoid">
                 <div className="flex justify-between gap-3 text-[8.9pt]">

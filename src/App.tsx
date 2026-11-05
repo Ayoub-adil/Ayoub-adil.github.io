@@ -4,7 +4,6 @@ import Hero from './components/Hero'
 import Sequence from './components/Sequence'
 import Work from './components/Work'
 import Architecture from './components/Architecture'
-import CadSection from './components/CadSection'
 import About from './components/About'
 import Experience from './components/Experience'
 import Education from './components/Education'
@@ -30,7 +29,6 @@ export default function App() {
   const reduced = useMedia('(prefers-reduced-motion: reduce)')
   const mobile = useMedia(MOBILE_QUERY)
   const [webgl] = useState(hasWebGL)
-  const [stageActive, setStageActive] = useState(true)
   field.reduced = reduced
 
   useEffect(() => startSmoothScroll(reduced), [reduced])
@@ -58,14 +56,9 @@ export default function App() {
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-
-    // pause the background renderer while the CAD viewer has the GPU
-    const io = new IntersectionObserver(([e]) => setStageActive(!e.isIntersecting), { rootMargin: '-30% 0px -30% 0px' })
-    io.observe(document.getElementById('cad')!)
     return () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('scroll', onScroll)
-      io.disconnect()
     }
   }, [])
 
@@ -74,7 +67,7 @@ export default function App() {
       <div className="fixed inset-0 z-0" aria-hidden>
         {webgl ? (
           <Suspense fallback={<Backdrop />}>
-            <Stage active={stageActive} mobile={mobile} />
+            <Stage active mobile={mobile} />
           </Suspense>
         ) : (
           <Backdrop />
@@ -89,7 +82,6 @@ export default function App() {
         <Education />
         <Work />
         <Architecture />
-        <CadSection webgl={webgl} />
         <Skills />
         <Contact />
       </main>

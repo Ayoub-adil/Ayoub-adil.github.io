@@ -7,7 +7,7 @@ export default function Skills() {
     <section id="skills" className="relative py-[clamp(6rem,14vh,10rem)]">
       <div className="container-x">
         <SectionHead
-          n="07"
+          n="06"
           eyebrow="Skills"
           title={['My toolbox,', 'from shaders to sensors.']}
           lede="Languages and frameworks I use, the 3D tools I learned in my master’s, and the hardware I integrate at work."
@@ -56,7 +56,7 @@ export default function Skills() {
             <li className="rounded-xl border border-line p-6">
               <p className="font-medium">This site</p>
               <p className="mt-2 text-paper/70">
-                Built with Claude Code: React, three.js shaders, and a build123d → glTF exporter that keeps the B-rep topology.
+                Built with Claude Code: React, three.js and custom GLSL shaders. The point cloud of my head is reconstructed from a photo with a depth-estimation model.
               </p>
             </li>
           </ul>

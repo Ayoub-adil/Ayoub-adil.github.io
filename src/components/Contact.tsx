@@ -43,7 +43,7 @@ export default function Contact() {
               ['Experience', '#experience'],
               ['Education', '#education'],
               ['Projects', '#work'],
-              ['CAD viewer', '/lab/cad-viewer/'],
+              ['Skills', '#skills'],
             ]}
           />
           <FooterCol

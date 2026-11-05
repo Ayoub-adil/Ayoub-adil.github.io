@@ -8,8 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "cad": "node cad/run.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.3.0",

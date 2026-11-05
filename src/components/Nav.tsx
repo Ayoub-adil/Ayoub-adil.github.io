@@ -6,7 +6,7 @@ const links = [
   { href: '#experience', label: 'Experience' },
   { href: '#education', label: 'Education' },
   { href: '#work', label: 'Projects' },
-  { href: '#cad', label: 'Lab' },
+  { href: '#skills', label: 'Skills' },
 ]
 
 export default function Nav() {

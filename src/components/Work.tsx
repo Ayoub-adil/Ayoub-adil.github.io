@@ -1,6 +1,24 @@
 import { academic, featured, more, products, type Project } from '../content/content'
 import { ProjectVisual } from './visuals/Visuals'
-import { SectionHead, StatusPill, T } from './ui'
+import { useEffect, useRef, useState } from 'react'
+import { Reveal, SectionHead, StatusPill, T } from './ui'
+
+/** Image, or a looping video that only plays while on screen (poster = image). */
+function Media({ image, video, alt }: { image: string; video?: string; alt: string }) {
+  const ref = useRef<HTMLVideoElement>(null)
+  const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause()), { threshold: 0.25 })
+    io.observe(v)
+    return () => io.disconnect()
+  }, [])
+  const cls = 'aspect-[16/10] w-full object-cover opacity-90 transition duration-700 group-hover:scale-[1.03] group-hover:opacity-100'
+  if (video && !reduced)
+    return <video ref={ref} className={cls} src={video} poster={image} muted loop playsInline preload="none" aria-label={alt} />
+  return <img src={image} alt={alt} loading="lazy" decoding="async" width={960} height={600} className={cls} />
+}
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -8,7 +26,7 @@ function Card({ p, n }: { p: Project; n: number }) {
   return (
     <article
       id={`p-${p.id}`}
-      className="group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-paper/25"
+      className="group flex w-full scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-paper/25"
     >
       <div className="relative aspect-[16/10] border-b border-line bg-ink">
         {p.visual && <ProjectVisual kind={p.visual} />}
@@ -24,7 +42,7 @@ function Card({ p, n }: { p: Project; n: number }) {
         <p className="label !normal-case !tracking-normal !text-[0.82rem]">{p.client}</p>
         <p className="leading-relaxed text-paper/75">{p.summary}</p>
         <div className="rounded-lg border border-signal/25 bg-signal/[0.04] p-4">
-          <p className="label mb-2 !text-[0.62rem] !text-signal">My role{p.role ? ` · ${p.role}` : ''}</p>
+          <p className="label mb-2 !text-[0.62rem] !text-signal">My role</p>
           <ul className="space-y-1.5 text-[0.92rem] text-paper/90">
             {p.did.map((d) => (
               <li key={d} className="flex gap-3">
@@ -63,13 +81,15 @@ export default function Work() {
           n="04"
           eyebrow="Projects"
           title={['What I’ve built,', '3D first.']}
-          lede="Industrial work at R&D Vision, projects from my master’s, and my own products. Clients are anonymised; industrial visuals are synthetic."
+          lede="Industrial systems, projects from my master’s, and my own products. Clients are anonymised; industrial visuals are synthetic."
         />
 
-        <SubHead label="Industrial · R&D Vision" note="2024 – today" />
+        <SubHead label="Industrial" note="2024 – today" />
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {featured.map((p, i) => (
-            <Card key={p.id} p={p} n={i + 1} />
+            <Reveal key={p.id} delay={(i % 3) * 140} className="flex">
+              <Card p={p} n={i + 1} />
+            </Reveal>
           ))}
         </div>
 
@@ -79,10 +99,7 @@ export default function Work() {
               <span className="font-mono text-xs text-signal md:col-span-1">{pad(featured.length + i + 1)}</span>
               <div className="md:col-span-4">
                 <h4 className="text-lg font-medium tracking-tight">{p.title}</h4>
-                <p className="label mt-1 !normal-case !tracking-normal !text-[0.8rem]">
-                  {p.client}
-                  {p.role && <> · {p.role}</>}
-                </p>
+                <p className="label mt-1 !normal-case !tracking-normal !text-[0.8rem]">{p.client}</p>
               </div>
               <p className="text-[0.95rem] leading-relaxed text-paper/70 md:col-span-5">{p.summary}</p>
               <div className="flex flex-wrap items-start gap-2 md:col-span-2 md:justify-end">
@@ -96,21 +113,15 @@ export default function Work() {
         <SubHead label="Academic & personal" note="Rendering, virtual reality, full-stack" />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {academic.map((a, i) => (
-            <article
+            <Reveal
+              as="article"
               key={a.id}
               id={`p-${a.id}`}
-              className={`group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm`}
+              delay={(i % 3) * 140}
+              className="group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm"
             >
               <div className="relative overflow-hidden border-b border-line">
-                <img
-                  src={a.image}
-                  alt={a.title}
-                  loading="lazy"
-                  decoding="async"
-                  width={960}
-                  height={600}
-                  className="aspect-[16/10] w-full object-cover opacity-85 transition duration-700 group-hover:scale-[1.03] group-hover:opacity-100"
-                />
+                <Media image={a.image} video={a.video} alt={a.title} />
                 <span className="absolute left-4 top-4 rounded-[3px] bg-ink/80 px-1.5 py-0.5 font-mono text-xs text-signal">{pad(i + 1)}</span>
               </div>
               <div className="flex flex-1 flex-col gap-3 p-6">
@@ -133,7 +144,7 @@ export default function Work() {
                   ))}
                 </div>
               </div>
-            </article>
+            </Reveal>
           ))}
         </div>
 

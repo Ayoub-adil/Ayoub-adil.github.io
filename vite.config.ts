@@ -13,7 +13,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        cadViewer: resolve(__dirname, 'lab/cad-viewer/index.html'),
         cv: resolve(__dirname, 'cv/index.html'),
       },
     },

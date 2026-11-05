@@ -388,7 +388,7 @@ function interfaceScreens(N: number) {
 }
 
 // ---------------------------------------------------------------- part
-// Same proportions as cad/part.py, scaled 1 mm = 0.05 units and centred on y.
+// A flanged mechanical part (procedural), centred on y.
 function part(N: number) {
   const out = new Float32Array(N * 4)
   const w = new Writer(out)

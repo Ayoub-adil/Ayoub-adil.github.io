@@ -1,17 +1,17 @@
 # Ayoub ADIL — portfolio v2
 
-3D portfolio for a 3D software engineering profile: a scroll-driven point-cloud story (sensor → geometry → detection → interface → part) and a CAD viewer fed by a real B-rep model.
+Personal portfolio: who I am, my education, my experience and my projects, with a scroll-driven point-cloud story. The hero is a point cloud of my head reconstructed from a portrait photo.
 
-Content rules, project facts and art direction live in [CLAUDE.md](CLAUDE.md).
+Content rules and facts live in [CLAUDE.md](CLAUDE.md).
 
 ## Stack
 
 | | |
 |---|---|
 | App | Vite 8, React 19, TypeScript, Tailwind 4 |
-| 3D | three.js, @react-three/fiber, drei, postprocessing; custom GLSL for the particle morph |
+| 3D | three.js, @react-three/fiber, postprocessing; custom GLSL for the particle morph |
 | Scroll | GSAP ScrollTrigger + Lenis |
-| CAD | Python, build123d (OpenCascade) → custom glTF exporter |
+| Head point cloud | Python: rembg (BiRefNet portrait matte) + Depth Anything V2 (transformers) |
 
 ## Run
 
@@ -21,27 +21,27 @@ npm run dev        # http://localhost:5173
 npm run build      # type-check + build to dist/
 ```
 
-Pages: `/` (site), `/lab/cad-viewer/` (full-screen viewer), `/cv/` (printable CV, A4).
+Pages: `/` (site), `/cv/` (printable CV, A4).
 
-## CAD model
+## Head point cloud
 
 ```bash
-python -m venv cad/.venv
-cad/.venv/Scripts/pip install build123d     # bin/pip on macOS / Linux
-npm run cad
+python -m venv tools/.venv
+tools/.venv/Scripts/pip install torch --index-url https://download.pytorch.org/whl/cpu
+tools/.venv/Scripts/pip install transformers "rembg[cpu]" pillow numpy
+tools/.venv/Scripts/python tools/head_cloud.py [photo.jpg] [--debug]
 ```
 
-`cad/part.py` defines the part. `cad/build_part.py` writes `public/models/flanged-hub.glb` (one node per B-rep face and edge, ids in node extras) and `src/lab/flanged-hub.json` (type, area, radius, normal, length from OpenCascade).
+Writes `public/models/head.bin` (85k points: int16 xyz, uint8 brightness). `--debug` writes the matte, depth and front / 3/4 / side renders to `tools/debug/`.
 
 ## Layout
 
 ```
 src/content/content.ts   single source of truth for the site and the CV (TODOs render visibly)
-src/three/               point-cloud stage: shapes.ts (procedural sets), PointField.tsx (shader), Stage.tsx (camera rig, bloom)
+src/three/               point-cloud stage: shapes.ts (procedural sets), PointField.tsx (shader, head loader), Stage.tsx (camera rig, bloom)
 src/components/          page sections
-src/lab/                 CAD viewer, lab page entry
 src/cv/                  printable CV entry
-cad/                     build123d part + exporter
+tools/head_cloud.py      photo -> head point cloud
 ```
 
-All 3D scenes and diagrams are synthetic. Client names are withheld.
+Industrial visuals are synthetic. Client names are withheld.

@@ -12,15 +12,15 @@ export const profile = {
   company: 'R&D Vision',
   companyNote: 'industrial machine vision',
   location: 'Paris area, France',
-  email: TODO('personal email address'),
+  email: 'ayoub.adil0406@gmail.com',
   linkedin: 'https://www.linkedin.com/in/ayoub-adil/',
   github: 'https://github.com/Ayoub-adil',
-  // "Fluent" for French, English, Arabic comes from the v1 site's own text; German level unknown
+  // "Fluent" for French, English, Arabic comes from the v1 site's own text
   languages: [
     { name: 'French', level: 'Fluent' },
     { name: 'English', level: 'Fluent' },
     { name: 'Arabic', level: 'Fluent' },
-    { name: 'German', level: TODO('level') },
+    { name: 'German', level: 'Learning (just started)' },
   ],
 }
 
@@ -29,12 +29,12 @@ export const hero = {
   name: 'Ayoub ADIL',
   title: ['3D & computer-vision', 'software engineer.'],
   lede:
-    'I hold a master’s in Image & 3D from the University of Strasbourg. Since 2024 I build 3D and machine-vision software at R&D Vision: LiDAR and depth cameras, point clouds, and the operator interfaces that run in production.',
+    'I hold a master’s in Image & 3D from the University of Strasbourg. Since 2024 I build 3D and machine-vision software for industrial systems: LiDAR and depth cameras, point clouds, and the operator interfaces that run in production.',
   facts: [
     ['Education', 'Master, Image & 3D · Strasbourg'],
-    ['Now', 'Software Engineer · R&D Vision'],
+    ['Now', 'Software Engineer, industrial vision'],
     ['Based in', 'Paris area, France'],
-    ['Languages', 'FR · EN · AR · DE'],
+    ['Languages', 'FR · EN · AR'],
   ] as [string, string][],
 }
 
@@ -103,7 +103,6 @@ export const projects: Project[] = [
     client: 'Transport-sector manufacturer',
     status: 'Proof of concept',
     year: '2026',
-    role: 'Sole developer',
     summary:
       'Reads a LiDAR stream, builds a point cloud and detects people and objects entering the high-voltage charging zone of a bus. Small objects are detected without being confused with noise such as rain. The system alerts the driver, then cuts the power.',
     did: ['Operator interface', 'Point-cloud processing', 'LiDAR integration', 'Calibration'],
@@ -117,7 +116,6 @@ export const projects: Project[] = [
     client: 'Food-industry group',
     status: 'In production',
     year: '2024',
-    role: 'Pair',
     summary: 'A time-of-flight camera inside an oven analyses the dough in 3D to track its volume and height.',
     did: ['Operator interface', 'ToF camera integration', '3D viewer', 'Depth-image display'],
     stack: ['C++'],
@@ -127,10 +125,9 @@ export const projects: Project[] = [
     id: 'slam-tunnels',
     tag: '3D',
     title: '3D reconstruction of rail and metro tunnels from images',
-    client: 'R&D Vision · master’s internship',
+    client: 'Master’s final internship',
     status: 'Proof of concept',
     year: '03/2024 – 08/2024',
-    role: 'Solo',
     summary:
       'Visual SLAM (ORB-SLAM, PLVS) applied to the company’s real rail data: tunnels, trains, metro. Point clouds, stereo calibration, reconstruction and visualisation.',
     did: ['Literature review', 'Implementation', 'Processing and analysis of results', 'Application to real data'],
@@ -144,7 +141,6 @@ export const projects: Project[] = [
     client: 'Cross-border rail tunnel operator',
     status: 'In progress',
     year: '2026',
-    role: 'Software developer in the project team: services and applications',
     summary:
       'An inspection system embedded in a truck that is carried by train through the tunnel. About fifteen services: acquisition on 24 cameras, control of 100+ lights, sensors, storage and the applications used to review the runs.',
     did: ['Acquisition and synchronisation services', 'Operator tablet app', 'Multi-screen review app', 'History comparison app'],
@@ -158,7 +154,6 @@ export const projects: Project[] = [
     client: 'National rail operator',
     status: 'In production',
     year: '2025',
-    role: 'Pair · I built the complete application',
     summary:
       'A three-screen application: route preparation and command, detection of the switches to operate, train-passage detection by zone, recording and history, and a replay mode to replay what happened on the switch tables. 3 cameras and lights per table, 2 tables per signal box.',
     did: ['Complete application', 'Replay mode', 'Recording and history'],
@@ -202,7 +197,6 @@ export const projects: Project[] = [
     client: 'Luxury fashion house',
     status: 'Delivered',
     year: '2025 – 2026',
-    role: 'Team of 4 developers · I built the interface',
     summary:
       'Inspection table: fabric placement detection (no hands), image capture, registration, shape detection, then defect detection by a trained model. I built the interface, including the dataset-creation tools used to train the model.',
     did: ['Operator interface', 'Dataset-creation tools'],
@@ -215,7 +209,6 @@ export const projects: Project[] = [
     client: 'Urban transit operator',
     status: 'In production',
     year: '2024',
-    role: 'Pair',
     summary: 'Took over a colleague’s code and finalised the application that detects niches in metro tunnels.',
     did: ['Takeover and finalisation'],
     stack: ['WPF'],
@@ -234,6 +227,7 @@ export interface Academic {
   summary: string
   stack: string[]
   image: string
+  video?: string
   links?: [string, string][]
 }
 
@@ -246,6 +240,7 @@ export const academic: Academic[] = [
     summary: 'GPU path tracer studying Monte Carlo sampling in scenes with reflection, shadows and transparency.',
     stack: ['C++', 'OpenGL', 'Shaders'],
     image: '/img/projects/path-tracing.webp',
+    video: '/img/projects/path-tracing.mp4',
   },
   {
     id: 'vr-protocols',
@@ -264,6 +259,7 @@ export const academic: Academic[] = [
     summary: 'A development framework in Unreal Engine 5 mapping gestures and postures to the manipulation of 3D objects.',
     stack: ['Unreal Engine 5', 'VR'],
     image: '/img/projects/vr-interaction.webp',
+    video: '/img/projects/vr-interaction.mp4',
   },
   {
     id: 'metahuman',
@@ -366,10 +362,9 @@ export const products = [
 export const howIBuild = {
   eyebrow: 'How I build',
   title: ['Engineering,', 'with AI in the loop.'],
-  lede: 'I build with LLMs and use Claude Code every day.',
+  lede: 'AI is part of my daily workflow, for my own projects and at work.',
   items: [
-    { title: TODO('a concrete thing you built with an LLM'), body: TODO('what it does, for whom, result') },
-    { title: TODO('how Claude Code fits your daily workflow'), body: TODO('concrete example from your work') },
+    { title: 'Claude Code, every day', body: 'I work with Claude Code every day, for my personal projects as well as at work.' },
   ],
 }
 
@@ -396,8 +391,7 @@ export const experience: Job[] = [
       { from: '03/2024', to: '08/2024', title: 'R&D Intern', note: 'Master’s final internship: 3D reconstruction from images' },
     ],
     summary:
-      'Team of three developers reporting to the project manager. I build acquisition services, 3D and vision processing and operator applications, install them on site and support them.',
-    projects: ['lidar-barrier', 'tunnel-platform', 'track-inspection', 'train-passage', 'signal-box', 'fabric', 'dough-tof', 'metro-niches', 'slam-tunnels'],
+      'I build acquisition services, 3D and vision processing and operator applications, then install them on site and support them. I have worked solo, in pairs and in larger teams, and I am at ease in all three.',
   },
   {
     org: 'ICube lab (IGG team) · University of Strasbourg',
@@ -480,7 +474,7 @@ export const certifications = ['Kaggle: Pandas', 'Kaggle: Data Visualization', '
 
 export const skills: Record<string, string[]> = {
   languages: ['C++', 'C#', 'Python', 'TypeScript', 'JavaScript'],
-  '3D & graphics': ['OpenGL / shaders', 'three.js', 'build123d', 'Unity', 'Unreal Engine 5', 'Blender'],
+  '3D & graphics': ['OpenGL / shaders', 'three.js', 'Unity', 'Unreal Engine 5', 'Blender'],
   'vision & data': ['OpenCV', 'Point clouds', 'Visual SLAM', 'Stereo calibration'],
   frameworks: ['.NET / WPF', 'React', 'Node.js'],
   tools: ['Git', 'Docker', 'Linux'],
@@ -488,6 +482,6 @@ export const skills: Record<string, string[]> = {
 }
 
 export const marquee = [
-  'C++', 'C#', 'Python', '.NET / WPF', 'OpenCV', 'three.js', 'build123d', 'React', 'TypeScript',
+  'C++', 'C#', 'Python', '.NET / WPF', 'OpenCV', 'three.js', 'Unreal Engine 5', 'Unity', 'React', 'TypeScript',
   'LiDAR', 'Time-of-flight', 'Line-scan', 'Thermal', 'Point clouds', 'Visual SLAM', 'Docker', 'Linux',
 ]

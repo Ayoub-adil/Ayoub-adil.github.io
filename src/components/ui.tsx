@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ElementType, type ReactNode } from 'react'
 import { isTodo } from '../content/content'
 
 /** Renders a value, or a visible TODO marker when the content is missing. */
@@ -73,5 +73,48 @@ export function StatusPill({ status }: { status: string }) {
       <span className={`h-1.5 w-1.5 rounded-full ${live ? 'bg-signal shadow-[0_0_8px_var(--color-signal)]' : 'bg-mute/60'}`} />
       {status}
     </span>
+  )
+}
+
+/** Fades and lifts its content in when it enters the viewport, once. */
+export function Reveal({
+  as: Tag = 'div',
+  delay = 0,
+  className = '',
+  children,
+  ...rest
+}: {
+  as?: ElementType
+  delay?: number
+  className?: string
+  children: ReactNode
+  id?: string
+}) {
+  const ref = useRef<HTMLElement>(null)
+  const [shown, setShown] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setShown(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '0px 0px -12% 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  return (
+    <Tag
+      ref={ref}
+      {...rest}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(.2,.7,.1,1)] ${shown ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} ${className}`}
+    >
+      {children}
+    </Tag>
   )
 }
