@@ -13,13 +13,21 @@ export default function Sequence() {
   useEffect(() => {
     const st = ScrollTrigger.create({
       trigger: ref.current,
-      start: 'top top',
+      // starts one screen early so the dust gathers straight into the tunnel
+      start: 'top bottom',
       end: 'bottom bottom',
       onUpdate(self) {
-        const { morph, step } = progressToMorph(self.progress, steps.length)
-        field.morph = field.reduced ? Math.round(morph) : morph
+        const h = ref.current!.offsetHeight
+        const vh = window.innerHeight
+        const p = (self.progress * h - vh) / (h - vh)
+        const { morph, step } = progressToMorph(Math.max(p, 0), steps.length)
+        // stage 0 is the head (hero); the sequence covers stages 1..5
+        field.morph = 1 + (field.reduced ? Math.round(morph) : morph)
         setActive(step)
-        if (bar.current) bar.current.style.transform = `scaleY(${self.progress})`
+        if (bar.current) bar.current.style.transform = `scaleY(${Math.max(p, 0)})`
+      },
+      onLeaveBack() {
+        field.morph = 0
       },
     })
     return () => st.kill()

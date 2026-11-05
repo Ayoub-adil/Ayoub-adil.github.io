@@ -10,6 +10,7 @@ type Key = { pos: [number, number, number]; target: [number, number, number] }
 
 // One camera pose per stage; the rig blends between them with the morph value.
 const KEYS: Key[] = [
+  { pos: [-0.75, 0.1, 8.4], target: [-0.75, 0.05, 0] },
   { pos: [1.15, 0.25, 8.6], target: [0, 0.15, -2] },
   { pos: [8.2, 4.6, 8.4], target: [0, -0.2, -3] },
   { pos: [6.8, 4.4, 8.8], target: [-0.6, -0.3, 0] },

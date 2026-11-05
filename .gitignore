@@ -37,3 +37,7 @@ desktop.ini
 # CAD toolchain
 cad/.venv
 __pycache__
+
+# Photo -> point cloud toolchain
+tools/.venv
+tools/debug
