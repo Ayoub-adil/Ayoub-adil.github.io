@@ -1,0 +1,52 @@
+{
+  "homepage": "https://ayoub-adil.github.io/",
+  "name": "3d-portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "Sanidhya Kr. Verma",
+  "description": "React JS Modern 3D Portfolio using Three.js",
+  "keywords": [
+    "reactjs",
+    "react",
+    "porfolio-app",
+    "three-js",
+    "modern-ui/ux",
+    "js",
+    "javascript",
+    "html",
+    "css",
+    "tailwindcss"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.105.2",
+    "@react-three/fiber": "^8.13.4",
+    "framer-motion": "^10.12.18",
+    "leva": "^0.9.35",
+    "maath": "^0.7.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-parallax-tilt": "^1.7.175",
+    "react-router-dom": "^6.14.2",
+    "react-vertical-timeline-component": "^3.6.0",
+    "three": "^0.154.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.6",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.14",
+    "gh-pages": "^6.1.0",
+    "postcss": "^8.4.25",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.4"
+  }
+}
