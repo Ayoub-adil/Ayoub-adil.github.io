@@ -28,8 +28,8 @@ export default function CadSection({ webgl }: { webgl: boolean }) {
     <section id="cad" className="relative py-[clamp(6rem,14vh,10rem)]">
       <div className="container-x">
         <SectionHead
-          n="03"
-          eyebrow="Lab · CAD viewer"
+          n="06"
+          eyebrow="Lab · a CAD viewer I built"
           title={['B-rep in,', 'pickable faces out.']}
           lede="A flanged hub modelled in Python with build123d, exported with its topology intact and inspected in three.js. Hover and click: every value comes from OpenCascade, not from the triangles."
         />

@@ -64,7 +64,7 @@ export default function Architecture() {
   return (
     <section id="architecture" className="relative py-[clamp(6rem,14vh,10rem)]">
       <div className="container-x">
-        <SectionHead n="02" eyebrow={architecture.eyebrow} title={architecture.title} lede={architecture.lede} />
+        <SectionHead n="05" eyebrow={architecture.eyebrow} title={architecture.title} lede={architecture.lede} />
 
         <div className="mt-16 rounded-xl border border-line bg-ink-2/60 p-5 backdrop-blur-sm md:p-8">
           <div ref={wrap} className="relative grid gap-8 lg:grid-cols-4 lg:gap-14">

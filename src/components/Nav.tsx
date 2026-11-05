@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { Arrow } from './ui'
 
 const links = [
-  { href: '#work', label: 'Work' },
-  { href: '#architecture', label: 'Architecture' },
-  { href: '#cad', label: 'CAD viewer' },
   { href: '#about', label: 'About' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#education', label: 'Education' },
+  { href: '#work', label: 'Projects' },
+  { href: '#cad', label: 'Lab' },
 ]
 
 export default function Nav() {

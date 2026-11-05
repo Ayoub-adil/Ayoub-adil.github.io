@@ -33,16 +33,17 @@ export default function Contact() {
               <span className="font-mono text-[0.78rem] font-semibold uppercase tracking-[0.22em]">Ayoub Adil</span>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-mute">
-              3D and computer-vision software, from raw sensor data to the interface people use.
+              Software engineer, 3D & computer vision. Master’s in Image & 3D, University of Strasbourg.
             </p>
           </div>
           <FooterCol
             title="Site"
             links={[
-              ['Work', '#work'],
-              ['Architecture', '#architecture'],
-              ['CAD viewer', '/lab/cad-viewer/'],
               ['About', '#about'],
+              ['Experience', '#experience'],
+              ['Education', '#education'],
+              ['Projects', '#work'],
+              ['CAD viewer', '/lab/cad-viewer/'],
             ]}
           />
           <FooterCol
@@ -55,7 +56,7 @@ export default function Contact() {
           />
           <div className="md:col-span-3">
             <p className="label mb-4">Note</p>
-            <p className="text-sm leading-relaxed text-mute">Client names are withheld. All 3D scenes and diagrams are synthetic.</p>
+            <p className="text-sm leading-relaxed text-mute">Client names are withheld. Industrial 3D scenes and diagrams are synthetic.</p>
           </div>
         </div>
         <div className="container-x flex flex-wrap justify-between gap-2 border-t border-line py-6">

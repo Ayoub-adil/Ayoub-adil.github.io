@@ -21,7 +21,7 @@ body {
   color: #c24a22;
   border-bottom: 1px solid rgb(10 13 18 / 0.12);
   padding-bottom: 3px;
-  margin-bottom: 8px;
+  margin: 10px 0 6px;
 }
 
 @page {

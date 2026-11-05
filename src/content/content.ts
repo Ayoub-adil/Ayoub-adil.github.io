@@ -15,20 +15,27 @@ export const profile = {
   email: TODO('personal email address'),
   linkedin: 'https://www.linkedin.com/in/ayoub-adil/',
   github: 'https://github.com/Ayoub-adil',
+  // "Fluent" for French, English, Arabic comes from the v1 site's own text; German level unknown
   languages: [
-    { name: 'French', level: TODO('level') },
-    { name: 'English', level: TODO('level') },
+    { name: 'French', level: 'Fluent' },
+    { name: 'English', level: 'Fluent' },
+    { name: 'Arabic', level: 'Fluent' },
     { name: 'German', level: TODO('level') },
   ],
 }
 
 export const hero = {
-  eyebrow: 'Software Engineer · 3D & Computer Vision',
-  title: ['From raw sensors', 'to shipped software.'],
-  // index of the words rendered in italic serif, per line
-  accent: 'shipped software.',
+  eyebrow: 'Portfolio · Paris area',
+  name: 'Ayoub ADIL',
+  title: ['3D & computer-vision', 'software engineer.'],
   lede:
-    'I build 3D and computer-vision software for industrial systems: LiDAR and depth cameras, point clouds, and the operator interfaces that run in production.',
+    'I hold a master’s in Image & 3D from the University of Strasbourg. Since 2024 I build 3D and machine-vision software at R&D Vision: LiDAR and depth cameras, point clouds, and the operator interfaces that run in production.',
+  facts: [
+    ['Education', 'Master, Image & 3D · Strasbourg'],
+    ['Now', 'Software Engineer · R&D Vision'],
+    ['Based in', 'Paris area, France'],
+    ['Languages', 'FR · EN · AR · DE'],
+  ] as [string, string][],
 }
 
 export type StepId = 'capture' | 'reconstruct' | 'detect' | 'interface' | 'ship'
@@ -36,35 +43,35 @@ export type StepId = 'capture' | 'reconstruct' | 'detect' | 'interface' | 'ship'
 export const steps: { id: StepId; verb: string; object: string; body: string; ref: string }[] = [
   {
     id: 'capture',
-    verb: 'Capture',
+    verb: 'I capture',
     object: 'the scene.',
     body: 'LiDAR, time-of-flight, line-scan, area-scan and thermal cameras. I integrate the sensor, calibrate it and get clean data out of it.',
     ref: 'LiDAR safety barrier · Track inspection',
   },
   {
     id: 'reconstruct',
-    verb: 'Reconstruct',
+    verb: 'I reconstruct',
     object: 'the geometry.',
     body: 'Point clouds, stereo calibration, visual SLAM. My master’s internship applied ORB-SLAM and PLVS to real rail and metro tunnel data.',
     ref: '3D tunnel reconstruction',
   },
   {
     id: 'detect',
-    verb: 'Detect',
+    verb: 'I detect',
     object: 'what matters.',
     body: 'A person or a small object entering a high-voltage charging zone, told apart from noise such as rain, before the power is cut.',
     ref: 'LiDAR safety barrier',
   },
   {
     id: 'interface',
-    verb: 'Build',
+    verb: 'I build',
     object: 'the interface.',
     body: 'Multi-screen operator applications, replay modes, 3D viewers and depth-image displays. The part people actually use.',
     ref: 'Signal-box assistant · Dough monitoring',
   },
   {
     id: 'ship',
-    verb: 'Ship',
+    verb: 'I ship',
     object: 'to production.',
     body: 'Installed on trains, running in an industrial oven, used in signal boxes. Then supported and maintained.',
     ref: 'Track inspection · Dough monitoring · Signal-box assistant',
@@ -218,12 +225,77 @@ export const projects: Project[] = [
 export const featured = projects.filter((p) => p.visual)
 export const more = projects.filter((p) => !p.visual)
 
+// From the v1 site (archive-v1). Images are my own academic work.
+export interface Academic {
+  id: string
+  title: string
+  context: string
+  year: string
+  summary: string
+  stack: string[]
+  image: string
+  links?: [string, string][]
+}
+
+export const academic: Academic[] = [
+  {
+    id: 'path-tracing',
+    title: 'Monte Carlo path tracing',
+    context: 'Master course project · University of Strasbourg',
+    year: '12/2023',
+    summary: 'GPU path tracer studying Monte Carlo sampling in scenes with reflection, shadows and transparency.',
+    stack: ['C++', 'OpenGL', 'Shaders'],
+    image: '/img/projects/path-tracing.webp',
+  },
+  {
+    id: 'vr-protocols',
+    title: 'Experimental protocols in virtual reality',
+    context: 'Master project · IGG-ICube',
+    year: '09/2023 – 01/2024',
+    summary: 'Design and development of virtual environments for psychological research, and integration of VR into therapeutic applications.',
+    stack: ['Unity', 'VR'],
+    image: '/img/projects/vr-protocols.webp',
+  },
+  {
+    id: 'vr-interaction',
+    title: 'Interaction with objects in virtual reality',
+    context: 'Research project · IGG-ICube',
+    year: '01/2023 – 06/2023',
+    summary: 'A development framework in Unreal Engine 5 mapping gestures and postures to the manipulation of 3D objects.',
+    stack: ['Unreal Engine 5', 'VR'],
+    image: '/img/projects/vr-interaction.webp',
+  },
+  {
+    id: 'metahuman',
+    title: 'MetaHuman character',
+    context: 'Personal project',
+    year: '2023',
+    summary: 'Creating a MetaHuman character and integrating it into a virtual environment.',
+    stack: ['Unreal Engine 5', 'Blender'],
+    image: '/img/projects/metahuman.webp',
+  },
+  {
+    id: 'smart-home',
+    title: 'Smart home',
+    context: 'Internship · FST Mohammedia',
+    year: '04/2020 – 06/2020',
+    summary: 'Web app, Android app, console and API for the remote management of smart homes.',
+    stack: ['Node.js', 'Python', 'TypeScript'],
+    image: '/img/projects/smart-home.webp',
+    links: [
+      ['Web repo', 'https://github.com/Ayoub-adil/SmartHomeWeb'],
+      ['Mobile repo', 'https://github.com/Ayoub-adil/SmartHomeMobile'],
+    ],
+  },
+]
+
+
 // Generic, anonymised view of the tunnel inspection platform.
 export const architecture = {
-  eyebrow: 'Architecture',
+  eyebrow: 'Case study · Tunnel inspection platform',
   title: ['One truck,', 'about fifteen services.'],
   lede:
-    'The tunnel inspection platform is my clearest example of owning a large system: everything from synchronised acquisition to the applications inspectors use afterwards. Generic, anonymised view.',
+    'My clearest example of working on a large system: I developed the services and applications of this inspection platform, from synchronised acquisition to the tools inspectors use afterwards. Generic, anonymised view.',
   layers: [
     {
       id: 'hw',
@@ -301,31 +373,116 @@ export const howIBuild = {
   ],
 }
 
-export const experience = [
-  { from: '09/2025', to: 'Present', title: 'Software Engineer', org: 'R&D Vision', note: 'Permanent · more software-focused projects, more autonomy' },
-  { from: '09/2024', to: '09/2025', title: 'Application Engineer', org: 'R&D Vision', note: 'Permanent' },
-  { from: '03/2024', to: '08/2024', title: 'R&D Intern: 3D reconstruction from images', org: 'R&D Vision', note: 'Master’s final internship' },
+// Entries before R&D Vision, and education dates, come from the v1 site (archive-v1 branch).
+export interface Job {
+  org: string
+  place: string
+  from: string
+  to: string
+  roles: { from: string; to: string; title: string; note?: string }[]
+  summary: string
+  projects?: string[] // project ids, industrial or academic
+}
+
+export const experience: Job[] = [
+  {
+    org: 'R&D Vision',
+    place: 'Saint-Maur-des-Fossés · industrial machine vision',
+    from: '03/2024',
+    to: 'Present',
+    roles: [
+      { from: '09/2025', to: 'Present', title: 'Software Engineer', note: 'More software-focused projects, more autonomy' },
+      { from: '09/2024', to: '09/2025', title: 'Application Engineer' },
+      { from: '03/2024', to: '08/2024', title: 'R&D Intern', note: 'Master’s final internship: 3D reconstruction from images' },
+    ],
+    summary:
+      'Team of three developers reporting to the project manager. I build acquisition services, 3D and vision processing and operator applications, install them on site and support them.',
+    projects: ['lidar-barrier', 'tunnel-platform', 'track-inspection', 'train-passage', 'signal-box', 'fabric', 'dough-tof', 'metro-niches', 'slam-tunnels'],
+  },
+  {
+    org: 'ICube lab (IGG team) · University of Strasbourg',
+    place: 'Strasbourg',
+    from: '01/2023',
+    to: '12/2023',
+    roles: [
+      { from: '09/2023', to: '12/2023', title: 'Master project', note: 'Experimental protocols in virtual reality' },
+      { from: '01/2023', to: '06/2023', title: 'Research project', note: 'Interaction with objects in virtual reality' },
+    ],
+    summary: 'Virtual-reality research projects with the ICube laboratory during my master’s.',
+    projects: ['vr-protocols', 'vr-interaction'],
+  },
+  {
+    org: 'FST Mohammedia · Hassan II University',
+    place: 'Mohammedia, Morocco',
+    from: '04/2020',
+    to: '06/2020',
+    roles: [{ from: '04/2020', to: '06/2020', title: 'Intern', note: 'Smart home IoT' }],
+    summary: 'Web, Android, console and API for the remote management of smart homes.',
+    projects: ['smart-home'],
+  },
 ]
 
 export const education = [
-  { title: 'Master, Image & 3D', org: 'University of Strasbourg', years: TODO('years') },
-  { title: TODO('bachelor’s (L3) title'), org: 'Clermont-Ferrand', years: TODO('year') },
-  { title: TODO('studies in Morocco before 2020'), org: 'Morocco', years: TODO('years') },
+  {
+    title: 'Master, Image & 3D',
+    org: 'UFR Math-Info · University of Strasbourg',
+    place: 'Strasbourg, France',
+    years: '2021 – 2024',
+    body: 'Computer-graphics track (I3D): geometric modelling, virtual reality, rendering and image processing. Projects with the ICube research lab.',
+  },
+  {
+    title: 'Bachelor, Computer Science',
+    org: 'INP-ISIMA · Clermont Auvergne University',
+    place: 'Clermont-Ferrand, France',
+    years: '2020 – 2021',
+    body: 'Third year of the bachelor’s: algorithms, networks, databases.',
+  },
+  {
+    title: 'Bachelor of Science & Technology: Computer Science, Networks & Multimedia',
+    org: 'FST Mohammedia · Hassan II University',
+    place: 'Mohammedia, Morocco',
+    years: '2019 – 2020',
+    body: 'Software development, networks and multimedia.',
+  },
+  {
+    title: 'DEUG: Mathematics, Computer Science & Physics',
+    org: 'FST Mohammedia · Hassan II University',
+    place: 'Mohammedia, Morocco',
+    years: '2017 – 2019',
+    body: 'Two-year general university diploma (MIP).',
+  },
+  {
+    title: 'Baccalaureate, Mathematical Sciences',
+    org: 'Lycée Ben Msik',
+    place: 'Casablanca, Morocco',
+    years: '2016 – 2017',
+    body: '',
+  },
 ]
 
+// Quoted on the v1 site, from a recommendation letter.
+export const recommendation = {
+  quote: 'His grades… granted him the first position in a class of 37 students.',
+  author: 'Abdellah ADIB, Professor, Hassan II University',
+}
+
 export const about = {
-  eyebrow: 'About',
-  title: ['Paris area,', 'close to the hardware.'],
+  eyebrow: 'About me',
+  title: ['Casablanca, Strasbourg,', 'now Paris.'],
   body: [
-    'I’m a software engineer at R&D Vision, an industrial machine-vision company near Paris, in a team of three developers reporting to the project manager.',
-    'I joined in 2024 as an R&D intern on 3D reconstruction from images, became Application Engineer, and since September 2025 I work as Software Engineer on more software-focused projects with more autonomy.',
-    'Before that: a master’s in Image & 3D at the University of Strasbourg, after a bachelor’s year in Clermont-Ferrand and studies in Morocco.',
+    'I’m Ayoub, a software engineer specialised in 3D and computer vision. I grew up in Casablanca, studied computer science in Mohammedia and Clermont-Ferrand, then did a master’s in Image & 3D at the University of Strasbourg, where I worked on virtual reality with the ICube lab and on rendering.',
+    'In 2024 I joined R&D Vision, near Paris, as an R&D intern on 3D reconstruction from images. I stayed as Application Engineer, and since September 2025 I work as Software Engineer: LiDAR and depth cameras, synchronised multi-camera acquisition, and the operator applications that run in production.',
+    'What I enjoy most is the full path: from a raw sensor, to a geometry I can trust, to an interface someone uses every day.',
   ],
 }
 
-export const skills = {
-  languages: ['C++', 'C#', 'Python', 'TypeScript'],
-  frameworks: ['.NET / WPF', 'OpenCV', 'React', 'three.js', 'build123d'],
+export const certifications = ['Kaggle: Pandas', 'Kaggle: Data Visualization', 'Kaggle: Data Cleaning', 'Human Coders: GitHub Copilot']
+
+export const skills: Record<string, string[]> = {
+  languages: ['C++', 'C#', 'Python', 'TypeScript', 'JavaScript'],
+  '3D & graphics': ['OpenGL / shaders', 'three.js', 'build123d', 'Unity', 'Unreal Engine 5', 'Blender'],
+  'vision & data': ['OpenCV', 'Point clouds', 'Visual SLAM', 'Stereo calibration'],
+  frameworks: ['.NET / WPF', 'React', 'Node.js'],
   tools: ['Git', 'Docker', 'Linux'],
   hardware: ['Line-scan cameras', 'Area-scan cameras', 'ToF cameras', 'Thermal cameras', 'LiDAR', 'NI DAQ', 'Modbus / JBus', 'RFID / GPS'],
 }

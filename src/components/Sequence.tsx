@@ -29,14 +29,14 @@ export default function Sequence() {
     <section
       id="process"
       ref={ref}
-      aria-label="Process: from sensor to production"
+      aria-label="What I do: from sensor to production"
       style={{ height: `${steps.length * 100 + 40}vh` }}
       className="relative"
     >
       <div className="sticky top-0 flex h-svh items-center">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/45 to-transparent md:via-ink/30 md:to-60%" />
         <div className="container-x relative">
-          <p className="eyebrow mb-8">From sensor to production</p>
+          <p className="eyebrow mb-8">What I do · from sensor to production</p>
           <div className="relative min-h-[22rem] max-w-xl md:min-h-[24rem]">
             {steps.map((s, i) => (
               <article

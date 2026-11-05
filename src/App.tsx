@@ -5,8 +5,10 @@ import Sequence from './components/Sequence'
 import Work from './components/Work'
 import Architecture from './components/Architecture'
 import CadSection from './components/CadSection'
-import Products from './components/Products'
 import About from './components/About'
+import Experience from './components/Experience'
+import Education from './components/Education'
+import Skills from './components/Skills'
 import Contact from './components/Contact'
 import { field, hasWebGL, MOBILE_QUERY } from './three/store'
 import { startSmoothScroll } from './lib/scroll'
@@ -40,12 +42,19 @@ export default function App() {
     }
     window.addEventListener('pointermove', onMove, { passive: true })
 
-    // dim the point field once the reader reaches the content sections
-    const work = document.getElementById('work')!
+    // The point field is the subject in the hero and the "What I do" sequence;
+    // everywhere else it dissolves into dust behind the content.
+    const hero = document.getElementById('top')!
+    const seq = document.getElementById('process')!
+    const clamp = (v: number) => Math.min(Math.max(v, 0), 1)
     const onScroll = () => {
-      const top = work.getBoundingClientRect().top
       const vh = window.innerHeight
-      field.dim = Math.min(Math.max((0.85 * vh - top) / (0.6 * vh), 0), 1)
+      const h = hero.getBoundingClientRect()
+      const s = seq.getBoundingClientRect()
+      const afterHero = clamp((0.75 * vh - h.bottom) / (0.5 * vh))
+      const beforeSeq = clamp((s.top - 0.15 * vh) / (0.5 * vh))
+      const afterSeq = clamp((0.85 * vh - s.bottom) / (0.6 * vh))
+      field.dim = Math.max(afterSeq, Math.min(afterHero, beforeSeq))
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -74,12 +83,14 @@ export default function App() {
       <Nav />
       <main id="main" className="relative z-10">
         <Hero />
+        <About />
         <Sequence />
+        <Experience />
+        <Education />
         <Work />
         <Architecture />
         <CadSection webgl={webgl} />
-        <Products />
-        <About />
+        <Skills />
         <Contact />
       </main>
     </>

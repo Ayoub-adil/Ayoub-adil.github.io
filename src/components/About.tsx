@@ -1,4 +1,4 @@
-import { about, education, experience, marquee, profile } from '../content/content'
+import { about, profile, recommendation } from '../content/content'
 import { T, Title } from './ui'
 
 export default function About() {
@@ -16,7 +16,7 @@ export default function About() {
                 height={1500}
                 loading="lazy"
                 decoding="async"
-                className="aspect-[4/5] w-full object-cover grayscale-[15%]"
+                className="aspect-[4/5] w-full object-cover brightness-[.93]"
               />
             </picture>
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
@@ -27,71 +27,61 @@ export default function About() {
           </div>
         </figure>
 
-        <div className="lg:col-span-7">
+        <div className="flex flex-col lg:col-span-7">
           <p className="eyebrow mb-5">
-            <span className="mr-3 text-mute">05</span>
+            <span className="mr-3 text-mute">01</span>
             {about.eyebrow}
           </p>
           <Title lines={about.title} className="text-[clamp(2.4rem,5.2vw,4.4rem)]" />
-          <div className="mt-8 space-y-4 text-[1.05rem] leading-relaxed text-paper/80">
+          <div className="mt-8 space-y-4 text-[1.06rem] leading-relaxed text-paper/80">
             {about.body.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
           </div>
 
-          <div className="mt-12 grid gap-10 sm:grid-cols-2">
+          <blockquote className="mt-10 border-l-2 border-signal pl-5">
+            <p className="accent text-[1.6rem] leading-snug text-paper/95">“{recommendation.quote}”</p>
+            <footer className="label mt-3 !normal-case !tracking-normal !text-[0.8rem]">{recommendation.author}</footer>
+          </blockquote>
+
+          <div className="mt-auto grid gap-6 pt-10 sm:grid-cols-2">
             <div>
-              <p className="label mb-4">Experience</p>
-              <ol className="space-y-4 border-l border-line pl-5">
-                {experience.map((x) => (
-                  <li key={x.from} className="relative">
-                    <span className="absolute -left-[1.42rem] top-2 h-1.5 w-1.5 rounded-full bg-signal" />
-                    <p className="font-mono text-[0.72rem] text-mute">
-                      {x.from} – {x.to}
-                    </p>
-                    <p className="mt-0.5 font-medium">{x.title}</p>
-                    <p className="text-sm text-mute">{x.org}</p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-            <div>
-              <p className="label mb-4">Education</p>
-              <ol className="space-y-4 border-l border-line pl-5">
-                {education.map((x, i) => (
-                  <li key={i}>
-                    <p className="font-mono text-[0.72rem] text-mute">
-                      <T>{x.years}</T>
-                    </p>
-                    <p className="mt-0.5 font-medium">
-                      <T>{x.title}</T>
-                    </p>
-                    <p className="text-sm text-mute">{x.org}</p>
-                  </li>
-                ))}
-              </ol>
-              <p className="label mb-3 mt-8">Languages</p>
-              <ul className="space-y-1 text-sm">
+              <p className="label mb-3">Languages</p>
+              <ul className="space-y-1.5 text-sm">
                 {profile.languages.map((l) => (
-                  <li key={l.name} className="flex justify-between gap-4">
+                  <li key={l.name} className="flex justify-between gap-4 border-b border-line pb-1.5">
                     <span>{l.name}</span>
-                    <T>{l.level}</T>
+                    <span className="text-mute">
+                      <T>{l.level}</T>
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
+            <div>
+              <p className="label mb-3">Find me</p>
+              <ul className="space-y-1.5 text-sm">
+                <li className="flex justify-between gap-4 border-b border-line pb-1.5">
+                  <span>LinkedIn</span>
+                  <a className="text-mute hover:text-signal" href={profile.linkedin} target="_blank" rel="noreferrer">
+                    in/ayoub-adil ↗
+                  </a>
+                </li>
+                <li className="flex justify-between gap-4 border-b border-line pb-1.5">
+                  <span>GitHub</span>
+                  <a className="text-mute hover:text-signal" href={profile.github} target="_blank" rel="noreferrer">
+                    Ayoub-adil ↗
+                  </a>
+                </li>
+                <li className="flex justify-between gap-4 border-b border-line pb-1.5">
+                  <span>CV</span>
+                  <a className="text-mute hover:text-signal" href="/cv/">
+                    Web / PDF ↗
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div className="mt-24 overflow-hidden border-y border-line py-5" aria-label="Technologies">
-        <div className="animate-marquee flex w-max gap-12 whitespace-nowrap">
-          {[...marquee, ...marquee].map((m, i) => (
-            <span key={i} className="flex items-center gap-12 font-mono text-sm uppercase tracking-[0.16em] text-mute" aria-hidden={i >= marquee.length}>
-              {m}
-              <span className="h-1 w-1 rounded-full bg-signal" />
-            </span>
-          ))}
         </div>
       </div>
     </section>

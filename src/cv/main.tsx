@@ -5,11 +5,14 @@ import '@fontsource-variable/jetbrains-mono'
 import '@fontsource/instrument-serif/400-italic.css'
 import '../styles.css'
 import './cv.css'
-import { education, experience, isTodo, profile, projects, skills } from '../content/content'
+import { academic, certifications, education, experience, featured, hero, isTodo, profile, skills } from '../content/content'
 import { T } from '../components/ui'
 
 // Same data as the site. Print to PDF from the browser (A4, no margins).
-const cvProjects = projects.filter((p) => p.visual)
+
+function H({ children }: { children: string }) {
+  return <h2 className="cv-h">{children}</h2>
+}
 
 function CV() {
   return (
@@ -24,14 +27,15 @@ function CV() {
       </div>
 
       <article className="sheet">
-        <header className="flex items-end justify-between border-b border-[#0a0d12]/15 pb-5">
-          <div>
-            <h1 className="text-[30pt] font-medium leading-none tracking-tight">{profile.name}</h1>
-            <p className="mt-2 text-[12.5pt]">
-              {profile.role} · <span className="accent text-[14pt]">{profile.focus}</span>
+        <header className="flex items-center gap-5 border-b border-[#0a0d12]/15 pb-4">
+          <img src="/img/ayoub-600.webp" alt="" className="h-[22mm] w-[22mm] rounded-full object-cover object-[50%_20%]" />
+          <div className="flex-1">
+            <h1 className="text-[26pt] font-medium leading-none tracking-tight">{profile.name}</h1>
+            <p className="mt-1.5 text-[12pt]">
+              {hero.title[0]} <span className="accent text-[13.5pt] text-[#c24a22]">{hero.title[1]}</span>
             </p>
           </div>
-          <ul className="text-right font-mono text-[8pt] leading-relaxed">
+          <ul className="text-right font-mono text-[7.6pt] leading-relaxed">
             <li>{profile.location}</li>
             <li>{isTodo(profile.email) ? <T>{profile.email}</T> : profile.email}</li>
             <li>{profile.linkedin.replace('https://www.', '')}</li>
@@ -39,79 +43,91 @@ function CV() {
           </ul>
         </header>
 
-        <p className="mt-5 text-[9.5pt] leading-relaxed">
-          Software engineer building 3D and computer-vision software for industrial systems: LiDAR and depth cameras, point clouds, synchronised acquisition and
-          the operator interfaces that run in production.
-        </p>
+        <p className="mt-3.5 text-[9pt] leading-relaxed">{hero.lede}</p>
 
-        <div className="mt-6 grid grid-cols-[1fr_15rem] gap-8">
+        <div className="mt-4 grid grid-cols-[1fr_58mm] gap-7">
           <div>
-            <h2 className="cv-h">Experience</h2>
-            {experience.map((x) => (
-              <div key={x.from} className="mb-2.5">
-                <div className="flex justify-between text-[9.5pt]">
-                  <b className="font-semibold">
-                    {x.title} · {x.org}
-                  </b>
-                  <span className="font-mono text-[7.5pt] text-[#5b6470]">
-                    {x.from} – {x.to}
+            <H>Experience</H>
+            {experience.map((j) => (
+              <div key={j.org} className="mb-2.5 break-inside-avoid">
+                <div className="flex justify-between gap-3 text-[9.2pt]">
+                  <b className="font-semibold">{j.org}</b>
+                  <span className="shrink-0 font-mono text-[7.2pt] text-[#5b6470]">
+                    {j.from} – {j.to}
                   </span>
                 </div>
-                <p className="text-[8.5pt] text-[#5b6470]">{x.note}</p>
+                <ul className="mt-0.5 text-[8.3pt]">
+                  {j.roles.map((r) => (
+                    <li key={r.title + r.from} className="flex justify-between gap-3">
+                      <span>
+                        {r.title}
+                        {r.note && <span className="text-[#5b6470]"> · {r.note}</span>}
+                      </span>
+                      <span className="shrink-0 font-mono text-[7pt] text-[#5b6470]">
+                        {r.from} – {r.to}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
 
-            <h2 className="cv-h mt-5">Selected projects</h2>
-            {cvProjects.map((p) => (
-              <div key={p.id} className="mb-3 break-inside-avoid">
-                <div className="flex justify-between gap-3 text-[9.5pt]">
+            <H>Selected industrial projects · R&D Vision</H>
+            {featured.map((p) => (
+              <div key={p.id} className="mb-2 break-inside-avoid">
+                <div className="flex justify-between gap-3 text-[8.9pt]">
                   <b className="font-semibold">{p.title}</b>
-                  <span className="shrink-0 font-mono text-[7.5pt] text-[#5b6470]">
+                  <span className="shrink-0 font-mono text-[7pt] text-[#5b6470]">
                     {p.status} · {p.year}
                   </span>
                 </div>
-                <p className="text-[8.3pt] italic text-[#5b6470]">
-                  {p.client}
-                  {p.role && ` · ${p.role}`}
+                <p className="text-[8pt] leading-snug">
+                  <span className="italic text-[#5b6470]">{p.client}.</span> {p.did.join(', ')}.{' '}
+                  <span className="font-mono text-[6.9pt] text-[#5b6470]">{p.stack.join(' · ')}</span>
                 </p>
-                <p className="mt-0.5 text-[8.6pt] leading-snug">{p.summary}</p>
-                <p className="mt-0.5 font-mono text-[7.3pt] text-[#5b6470]">{p.stack.join(' · ')}</p>
               </div>
+            ))}
+
+            <H>Academic & personal projects</H>
+            {academic.map((a) => (
+              <p key={a.id} className="mb-1 text-[8pt] leading-snug">
+                <b className="font-semibold">{a.title}</b> <span className="text-[#5b6470]">· {a.context} · {a.year}</span>{' '}
+                <span className="font-mono text-[6.9pt] text-[#5b6470]">{a.stack.join(' · ')}</span>
+              </p>
             ))}
           </div>
 
           <aside>
-            <h2 className="cv-h">Skills</h2>
+            <H>Education</H>
+            {education.map((e) => (
+              <div key={e.title} className="mb-2 text-[8.2pt] leading-snug">
+                <p className="font-mono text-[7pt] text-[#c24a22]">{e.years}</p>
+                <p className="font-semibold">{e.title}</p>
+                <p className="text-[#5b6470]">{e.org}</p>
+              </div>
+            ))}
+
+            <H>Skills</H>
             {Object.entries(skills).map(([k, v]) => (
-              <div key={k} className="mb-3">
-                <p className="font-mono text-[7pt] uppercase tracking-wider text-[#c24a22]">{k}</p>
-                <p className="text-[8.6pt] leading-snug">{v.join(', ')}</p>
+              <div key={k} className="mb-1.5">
+                <p className="font-mono text-[6.6pt] uppercase tracking-wider text-[#c24a22]">{k}</p>
+                <p className="text-[8pt] leading-snug">{v.join(', ')}</p>
               </div>
             ))}
 
-            <h2 className="cv-h mt-5">Education</h2>
-            {education.map((e, i) => (
-              <div key={i} className="mb-2.5 text-[8.6pt]">
-                <p className="font-semibold">
-                  <T>{e.title}</T>
-                </p>
-                <p className="text-[#5b6470]">
-                  {e.org} · <T>{e.years}</T>
-                </p>
-              </div>
-            ))}
-
-            <h2 className="cv-h mt-5">Languages</h2>
+            <H>Languages</H>
             {profile.languages.map((l) => (
-              <p key={l.name} className="flex justify-between text-[8.6pt]">
+              <p key={l.name} className="flex justify-between text-[8.2pt]">
                 {l.name} <T>{l.level}</T>
               </p>
             ))}
 
-            <h2 className="cv-h mt-5">Lab</h2>
-            <p className="text-[8.6pt] leading-snug">
-              CAD viewer: build123d part exported with B-rep topology, face / edge picking in three.js. Online on the portfolio.
-            </p>
+            <H>Certifications</H>
+            {certifications.map((c) => (
+              <p key={c} className="text-[8pt]">
+                {c}
+              </p>
+            ))}
           </aside>
         </div>
       </article>
