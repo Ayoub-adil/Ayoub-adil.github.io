@@ -1,0 +1,46 @@
+html,
+body {
+  background: #d9d6d0;
+  color: #0a0d12;
+}
+
+.sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 2rem auto;
+  padding: 14mm 15mm;
+  background: #fbfaf7;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.18);
+}
+
+.cv-h {
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c24a22;
+  border-bottom: 1px solid rgb(10 13 18 / 0.12);
+  padding-bottom: 3px;
+  margin-bottom: 8px;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+  .no-print {
+    display: none;
+  }
+  .sheet {
+    margin: 0;
+    box-shadow: none;
+    width: auto;
+    min-height: auto;
+  }
+}

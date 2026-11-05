@@ -33,3 +33,7 @@ dist-ssr
 nul
 desktop.ini
 .claude/settings.local.json
+
+# CAD toolchain
+cad/.venv
+__pycache__

@@ -1,0 +1,710 @@
+{
+ "name": "Flanged hub",
+ "units": "mm",
+ "source": "cad/part.py",
+ "build123d": "0.13.0",
+ "volume": 66188.68,
+ "area": 17871.58,
+ "bbox": [
+  80.0,
+  35.0,
+  80.0
+ ],
+ "faceCount": 19,
+ "edgeCount": 44,
+ "faces": [
+  {
+   "id": 0,
+   "type": "PLANE",
+   "area": 2734.756,
+   "center": [
+    0.0,
+    10.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0,
+    -0.0
+   ]
+  },
+  {
+   "id": 1,
+   "type": "CONE",
+   "area": 350.988,
+   "center": [
+    -39.5,
+    9.5,
+    -0.0
+   ]
+  },
+  {
+   "id": 2,
+   "type": "CYLINDER",
+   "area": 282.743,
+   "center": [
+    -17.25,
+    5.0,
+    29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 3,
+   "type": "CYLINDER",
+   "area": 282.743,
+   "center": [
+    17.25,
+    5.0,
+    29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 4,
+   "type": "TORUS",
+   "area": 624.454,
+   "center": [
+    -20.8787,
+    10.8787,
+    -0.0
+   ]
+  },
+  {
+   "id": 5,
+   "type": "CYLINDER",
+   "area": 282.743,
+   "center": [
+    34.5,
+    5.0,
+    -0.0
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 6,
+   "type": "CYLINDER",
+   "area": 282.743,
+   "center": [
+    -34.5,
+    5.0,
+    -0.0
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 7,
+   "type": "CYLINDER",
+   "area": 282.743,
+   "center": [
+    -17.25,
+    5.0,
+    -29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 8,
+   "type": "CYLINDER",
+   "area": 282.743,
+   "center": [
+    17.25,
+    5.0,
+    -29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 9,
+   "type": "CYLINDER",
+   "area": 2010.619,
+   "center": [
+    -40.0,
+    5.0,
+    -0.0
+   ],
+   "radius": 40.0
+  },
+  {
+   "id": 10,
+   "type": "PLANE",
+   "area": 4064.787,
+   "center": [
+    -0.0493,
+    0.0,
+    0.0
+   ],
+   "normal": [
+    -0.0,
+    -1.0,
+    0.0
+   ]
+  },
+  {
+   "id": 11,
+   "type": "CYLINDER",
+   "area": 2638.938,
+   "center": [
+    -20.0,
+    23.5,
+    -0.0
+   ],
+   "radius": 20.0
+  },
+  {
+   "id": 12,
+   "type": "CONE",
+   "area": 350.988,
+   "center": [
+    -39.5,
+    0.5,
+    -0.0
+   ]
+  },
+  {
+   "id": 13,
+   "type": "PLANE",
+   "area": 114.121,
+   "center": [
+    11.1697,
+    17.5,
+    3.0
+   ],
+   "normal": [
+    -0.0,
+    0.0,
+    -1.0
+   ]
+  },
+  {
+   "id": 14,
+   "type": "CYLINDER",
+   "area": 1985.83,
+   "center": [
+    -10.0,
+    17.5,
+    0.0
+   ]
+  },
+  {
+   "id": 15,
+   "type": "PLANE",
+   "area": 210.0,
+   "center": [
+    12.8,
+    17.5,
+    -0.0
+   ],
+   "normal": [
+    -1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "id": 16,
+   "type": "PLANE",
+   "area": 114.121,
+   "center": [
+    11.1697,
+    17.5,
+    -3.0
+   ],
+   "normal": [
+    0.0,
+    -0.0,
+    1.0
+   ]
+  },
+  {
+   "id": 17,
+   "type": "CONE",
+   "area": 173.272,
+   "center": [
+    -19.5,
+    34.5,
+    -0.0
+   ]
+  },
+  {
+   "id": 18,
+   "type": "PLANE",
+   "area": 802.243,
+   "center": [
+    -0.2499,
+    35.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0,
+    -0.0
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "id": 0,
+   "type": "CIRCLE",
+   "length": 245.044,
+   "center": [
+    -39.0,
+    10.0,
+    -0.0
+   ],
+   "radius": 39.0
+  },
+  {
+   "id": 1,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    -17.25,
+    10.0,
+    29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 2,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    17.25,
+    10.0,
+    29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 3,
+   "type": "CIRCLE",
+   "length": 144.513,
+   "center": [
+    -23.0,
+    10.0,
+    -0.0
+   ],
+   "radius": 23.0
+  },
+  {
+   "id": 4,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    34.5,
+    10.0,
+    -0.0
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 5,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    -34.5,
+    10.0,
+    -0.0
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 6,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    -17.25,
+    10.0,
+    -29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 7,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    17.25,
+    10.0,
+    -29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 8,
+   "type": "LINE",
+   "length": 1.414,
+   "center": [
+    39.5,
+    9.5,
+    -0.0
+   ]
+  },
+  {
+   "id": 9,
+   "type": "CIRCLE",
+   "length": 251.327,
+   "center": [
+    -40.0,
+    9.0,
+    -0.0
+   ],
+   "radius": 40.0
+  },
+  {
+   "id": 10,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    -17.25,
+    0.0,
+    29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 11,
+   "type": "LINE",
+   "length": 10.0,
+   "center": [
+    -12.75,
+    5.0,
+    22.0836
+   ]
+  },
+  {
+   "id": 12,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    17.25,
+    0.0,
+    29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 13,
+   "type": "LINE",
+   "length": 10.0,
+   "center": [
+    12.75,
+    5.0,
+    22.0836
+   ]
+  },
+  {
+   "id": 14,
+   "type": "CIRCLE",
+   "length": 4.712,
+   "center": [
+    20.8787,
+    10.8787,
+    -0.0
+   ],
+   "radius": 3.0
+  },
+  {
+   "id": 15,
+   "type": "CIRCLE",
+   "length": 125.664,
+   "center": [
+    -20.0,
+    13.0,
+    -0.0
+   ],
+   "radius": 20.0
+  },
+  {
+   "id": 16,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    34.5,
+    0.0,
+    -0.0
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 17,
+   "type": "LINE",
+   "length": 10.0,
+   "center": [
+    25.5,
+    5.0,
+    0.0
+   ]
+  },
+  {
+   "id": 18,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    -34.5,
+    0.0,
+    -0.0
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 19,
+   "type": "LINE",
+   "length": 10.0,
+   "center": [
+    -25.5,
+    5.0,
+    -0.0
+   ]
+  },
+  {
+   "id": 20,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    -17.25,
+    0.0,
+    -29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 21,
+   "type": "LINE",
+   "length": 10.0,
+   "center": [
+    -12.75,
+    5.0,
+    -22.0836
+   ]
+  },
+  {
+   "id": 22,
+   "type": "CIRCLE",
+   "length": 28.274,
+   "center": [
+    17.25,
+    0.0,
+    -29.8779
+   ],
+   "radius": 4.5
+  },
+  {
+   "id": 23,
+   "type": "LINE",
+   "length": 10.0,
+   "center": [
+    12.75,
+    5.0,
+    -22.0836
+   ]
+  },
+  {
+   "id": 24,
+   "type": "LINE",
+   "length": 8.0,
+   "center": [
+    40.0,
+    5.0,
+    0.0
+   ]
+  },
+  {
+   "id": 25,
+   "type": "CIRCLE",
+   "length": 251.327,
+   "center": [
+    -40.0,
+    1.0,
+    -0.0
+   ],
+   "radius": 40.0
+  },
+  {
+   "id": 26,
+   "type": "CIRCLE",
+   "length": 245.044,
+   "center": [
+    -39.0,
+    0.0,
+    -0.0
+   ],
+   "radius": 39.0
+  },
+  {
+   "id": 27,
+   "type": "LINE",
+   "length": 3.261,
+   "center": [
+    11.1697,
+    0.0,
+    3.0
+   ]
+  },
+  {
+   "id": 28,
+   "type": "CIRCLE",
+   "length": 56.738,
+   "center": [
+    -10.0,
+    0.0,
+    -0.0
+   ],
+   "radius": 10.0
+  },
+  {
+   "id": 29,
+   "type": "LINE",
+   "length": 6.0,
+   "center": [
+    12.8,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "id": 30,
+   "type": "LINE",
+   "length": 3.261,
+   "center": [
+    11.1697,
+    0.0,
+    -3.0
+   ]
+  },
+  {
+   "id": 31,
+   "type": "LINE",
+   "length": 21.0,
+   "center": [
+    20.0,
+    23.5,
+    0.0
+   ]
+  },
+  {
+   "id": 32,
+   "type": "CIRCLE",
+   "length": 125.664,
+   "center": [
+    -20.0,
+    34.0,
+    -0.0
+   ],
+   "radius": 20.0
+  },
+  {
+   "id": 33,
+   "type": "LINE",
+   "length": 1.414,
+   "center": [
+    39.5,
+    0.5,
+    -0.0
+   ]
+  },
+  {
+   "id": 34,
+   "type": "LINE",
+   "length": 35.0,
+   "center": [
+    12.8,
+    17.5,
+    3.0
+   ]
+  },
+  {
+   "id": 35,
+   "type": "LINE",
+   "length": 3.261,
+   "center": [
+    11.1697,
+    35.0,
+    3.0
+   ]
+  },
+  {
+   "id": 36,
+   "type": "LINE",
+   "length": 35.0,
+   "center": [
+    9.5394,
+    17.5,
+    3.0
+   ]
+  },
+  {
+   "id": 37,
+   "type": "CIRCLE",
+   "length": 56.738,
+   "center": [
+    -10.0,
+    35.0,
+    0.0
+   ],
+   "radius": 10.0
+  },
+  {
+   "id": 38,
+   "type": "LINE",
+   "length": 35.0,
+   "center": [
+    9.5394,
+    17.5,
+    -3.0
+   ]
+  },
+  {
+   "id": 39,
+   "type": "LINE",
+   "length": 6.0,
+   "center": [
+    12.8,
+    35.0,
+    -0.0
+   ]
+  },
+  {
+   "id": 40,
+   "type": "LINE",
+   "length": 35.0,
+   "center": [
+    12.8,
+    17.5,
+    -3.0
+   ]
+  },
+  {
+   "id": 41,
+   "type": "LINE",
+   "length": 3.261,
+   "center": [
+    11.1697,
+    35.0,
+    -3.0
+   ]
+  },
+  {
+   "id": 42,
+   "type": "LINE",
+   "length": 1.414,
+   "center": [
+    19.5,
+    34.5,
+    -0.0
+   ]
+  },
+  {
+   "id": 43,
+   "type": "CIRCLE",
+   "length": 119.381,
+   "center": [
+    -19.0,
+    35.0,
+    -0.0
+   ],
+   "radius": 19.0
+  }
+ ]
+}
