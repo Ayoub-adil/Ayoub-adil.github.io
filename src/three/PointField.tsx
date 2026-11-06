@@ -193,7 +193,7 @@ export default function PointField({ count }: { count: number }) {
       uOpacity: { value: 1 },
       uDim: { value: 0 },
       uBase: { value: new THREE.Color('#e6eaf0') },
-      uAccent: { value: new THREE.Color('#ff6a3d') },
+      uAccent: { value: new THREE.Color('#fab529') },
     }),
     [],
   )

@@ -2,7 +2,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Visual } from '../../content/content'
 
-const S = '#FF6A3D'
+const S = '#FAB529'
 const P = '#ECE8E1'
 const M = '#5b6470'
 

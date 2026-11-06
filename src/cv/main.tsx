@@ -32,7 +32,7 @@ function CV() {
           <div className="flex-1">
             <h1 className="text-[26pt] font-medium leading-none tracking-tight">{profile.name}</h1>
             <p className="mt-1.5 text-[12pt]">
-              {hero.title[0]} <span className="accent text-[13.5pt] text-[#c24a22]">{hero.title[1]}</span>
+              {hero.title[0]} <span className="accent text-[13.5pt] text-[#a8740a]">{hero.title[1]}</span>
             </p>
           </div>
           <ul className="text-right font-mono text-[7.6pt] leading-relaxed">
@@ -101,7 +101,7 @@ function CV() {
             <H>Education</H>
             {education.map((e) => (
               <div key={e.title} className="mb-2 text-[8.2pt] leading-snug">
-                <p className="font-mono text-[7pt] text-[#c24a22]">{e.years}</p>
+                <p className="font-mono text-[7pt] text-[#a8740a]">{e.years}</p>
                 <p className="font-semibold">{e.title}</p>
                 <p className="text-[#5b6470]">{e.org}</p>
               </div>
@@ -110,7 +110,7 @@ function CV() {
             <H>Skills</H>
             {Object.entries(skills).map(([k, v]) => (
               <div key={k} className="mb-1.5">
-                <p className="font-mono text-[6.6pt] uppercase tracking-wider text-[#c24a22]">{k}</p>
+                <p className="font-mono text-[6.6pt] uppercase tracking-wider text-[#a8740a]">{k}</p>
                 <p className="text-[8pt] leading-snug">{v.join(', ')}</p>
               </div>
             ))}

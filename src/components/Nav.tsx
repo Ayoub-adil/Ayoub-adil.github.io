@@ -84,7 +84,7 @@ export default function Nav() {
 export function Mark({ className = 'h-6 w-6' }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <g fill="#FF6A3D">
+      <g fill="#FAB529">
         <circle cx="9" cy="22" r="1.7" />
         <circle cx="13" cy="16" r="1.7" />
         <circle cx="16" cy="10" r="1.7" />

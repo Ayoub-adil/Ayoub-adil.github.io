@@ -76,7 +76,7 @@ export default function Architecture() {
                     key={p.key}
                     d={p.d}
                     fill="none"
-                    stroke={on ? '#FF6A3D' : '#2a3340'}
+                    stroke={on ? '#FAB529' : '#2a3340'}
                     strokeWidth={on ? 1.6 : 1}
                     className="transition-[stroke] duration-300"
                   />

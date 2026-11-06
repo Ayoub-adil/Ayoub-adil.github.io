@@ -96,7 +96,7 @@ function Backdrop() {
       className="h-full w-full"
       style={{
         background:
-          'radial-gradient(60% 50% at 70% 45%, rgba(255,106,61,.10), transparent 70%), radial-gradient(circle at 1px 1px, rgba(236,232,225,.13) 1px, transparent 0) 0 0/22px 22px, #0a0d12',
+          'radial-gradient(60% 50% at 70% 45%, rgba(250,181,41,.10), transparent 70%), radial-gradient(circle at 1px 1px, rgba(236,232,225,.13) 1px, transparent 0) 0 0/22px 22px, #0a0d12',
       }}
     />
   )
