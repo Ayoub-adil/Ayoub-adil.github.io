@@ -6,6 +6,7 @@ import { resolve } from 'node:path'
 export default defineConfig({
   base: '/',
   plugins: [react(), tailwindcss()],
+  server: { open: true },
   build: {
     outDir: 'dist',
     // three.js + r3f are lazy-loaded in their own chunk
