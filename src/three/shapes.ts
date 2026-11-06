@@ -156,8 +156,10 @@ function detect(N: number) {
   const BUS = { x0: -4.6, x1: 1.2, z0: -0.85, z1: 0.85, y0: G + 0.32, y1: G + 2.15 }
   const FRONT_LINE = 2.5 // x of the barrier line ahead of the bus
   const SIDE_LINE = 2.0 // z of the barrier line along the right side
-  const lidarFront: [number, number, number] = [BUS.x1 + 0.05, G + 0.55, 0]
-  const lidarSide: [number, number, number] = [-1.7, G + 2.0, BUS.z1 + 0.05]
+  // both LiDARs are mounted at the same height, at the top of the bus
+  const LIDAR_Y = G + 2.0
+  const lidarFront: [number, number, number] = [BUS.x1 + 0.12, LIDAR_Y, 0]
+  const lidarSide: [number, number, number] = [-1.7, LIDAR_Y, BUS.z1 + 0.05]
   const person = { x: -0.6, z: 2.45 }
 
   const lerp3 = (a: number[], b: number[], t: number, wt: number) =>
