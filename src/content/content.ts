@@ -219,6 +219,8 @@ export const featured = projects.filter((p) => p.visual)
 export const more = projects.filter((p) => !p.visual)
 
 // From the v1 site (archive-v1). Images are my own academic work.
+export type Media = { type: 'image' | 'video'; src: string; poster?: string; alt: string }
+
 export interface Academic {
   id: string
   title: string
@@ -226,8 +228,8 @@ export interface Academic {
   year: string
   summary: string
   stack: string[]
-  image: string
-  video?: string
+  // shown one after the other in the card; first item is the cover
+  media: Media[]
   links?: [string, string][]
 }
 
@@ -239,8 +241,10 @@ export const academic: Academic[] = [
     year: '12/2023',
     summary: 'GPU path tracer studying Monte Carlo sampling in scenes with reflection, shadows and transparency.',
     stack: ['C++', 'OpenGL', 'Shaders'],
-    image: '/img/projects/path-tracing.webp',
-    video: '/img/projects/path-tracing.mp4',
+    media: [
+      { type: 'video', src: '/img/projects/path-tracing.mp4', poster: '/img/projects/path-tracing.webp', alt: 'Path tracer converging on a scene with columns and spheres' },
+      { type: 'image', src: '/img/projects/path-tracing.webp', alt: 'Path tracer side by side with its settings panel' },
+    ],
   },
   {
     id: 'vr-protocols',
@@ -249,7 +253,7 @@ export const academic: Academic[] = [
     year: '09/2023 – 01/2024',
     summary: 'Design and development of virtual environments for psychological research, and integration of VR into therapeutic applications.',
     stack: ['Unity', 'VR'],
-    image: '/img/projects/vr-protocols.webp',
+    media: [{ type: 'image', src: '/img/projects/vr-protocols.webp', alt: 'Virtual environments built for psychological research' }],
   },
   {
     id: 'vr-interaction',
@@ -258,8 +262,10 @@ export const academic: Academic[] = [
     year: '01/2023 – 06/2023',
     summary: 'A development framework in Unreal Engine 5 mapping gestures and postures to the manipulation of 3D objects.',
     stack: ['Unreal Engine 5', 'VR'],
-    image: '/img/projects/vr-interaction.webp',
-    video: '/img/projects/vr-interaction.mp4',
+    media: [
+      { type: 'video', src: '/img/projects/vr-interaction.mp4', poster: '/img/projects/vr-interaction-poster.jpg', alt: 'Me in a motion-capture suit driving a 3D avatar in real time' },
+      { type: 'image', src: '/img/projects/vr-interaction.webp', alt: 'Motion-capture gloves used in the project' },
+    ],
   },
   {
     id: 'metahuman',
@@ -268,7 +274,7 @@ export const academic: Academic[] = [
     year: '2023',
     summary: 'Creating a MetaHuman character and integrating it into a virtual environment.',
     stack: ['Unreal Engine 5', 'Blender'],
-    image: '/img/projects/metahuman.webp',
+    media: [{ type: 'image', src: '/img/projects/metahuman.webp', alt: 'MetaHuman character rendered in Unreal Engine 5' }],
   },
   {
     id: 'smart-home',
@@ -277,7 +283,7 @@ export const academic: Academic[] = [
     year: '04/2020 – 06/2020',
     summary: 'Web app, Android app, console and API for the remote management of smart homes.',
     stack: ['Node.js', 'Python', 'TypeScript'],
-    image: '/img/projects/smart-home.webp',
+    media: [{ type: 'image', src: '/img/projects/smart-home.webp', alt: 'Smart home app landing screen' }],
     links: [
       ['Web repo', 'https://github.com/Ayoub-adil/SmartHomeWeb'],
       ['Mobile repo', 'https://github.com/Ayoub-adil/SmartHomeMobile'],

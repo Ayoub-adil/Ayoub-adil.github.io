@@ -1,23 +1,122 @@
-import { academic, featured, more, products, type Project } from '../content/content'
+import { academic, featured, more, products, type Media as MediaItem, type Project } from '../content/content'
 import { ProjectVisual } from './visuals/Visuals'
 import { useEffect, useRef, useState } from 'react'
 import { Reveal, SectionHead, StatusPill, T } from './ui'
 
-/** Image, or a looping video that only plays while on screen (poster = image). */
-function Media({ image, video, alt }: { image: string; video?: string; alt: string }) {
-  const ref = useRef<HTMLVideoElement>(null)
+/**
+ * Media shown one after the other: videos play to the end, images stay 4.5 s.
+ * Plays only while on screen; manual dots / arrows; no autoplay with reduced motion.
+ */
+function MediaCarousel({ items, title }: { items: MediaItem[]; title: string }) {
+  const box = useRef<HTMLDivElement>(null)
+  const vids = useRef<(HTMLVideoElement | null)[]>([])
+  const [i, setI] = useState(0)
+  const [inView, setInView] = useState(false)
+  const [hover, setHover] = useState(false)
   const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const many = items.length > 1
+  const next = () => setI((k) => (k + 1) % items.length)
+  const prev = () => setI((k) => (k - 1 + items.length) % items.length)
+
   useEffect(() => {
-    const v = ref.current
-    if (!v) return
-    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause()), { threshold: 0.25 })
-    io.observe(v)
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.25 })
+    if (box.current) io.observe(box.current)
     return () => io.disconnect()
   }, [])
-  const cls = 'aspect-[16/10] w-full object-cover opacity-90 transition duration-700 group-hover:scale-[1.03] group-hover:opacity-100'
-  if (video && !reduced)
-    return <video ref={ref} className={cls} src={video} poster={image} muted loop playsInline preload="none" aria-label={alt} />
-  return <img src={image} alt={alt} loading="lazy" decoding="async" width={960} height={600} className={cls} />
+
+  // play the active video, pause the others
+  useEffect(() => {
+    vids.current.forEach((v, k) => {
+      if (!v) return
+      if (k === i && inView && !reduced) {
+        v.currentTime = 0
+        v.play().catch(() => {})
+      } else v.pause()
+    })
+  }, [i, inView, reduced])
+
+  // images advance on a timer
+  useEffect(() => {
+    if (!many || reduced || !inView || hover || items[i].type === 'video') return
+    const t = setTimeout(next, 4500)
+    return () => clearTimeout(t)
+  }, [i, inView, hover, many, reduced, items])
+
+  const cls = 'absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-700 group-hover:scale-[1.03]'
+  return (
+    <div
+      ref={box}
+      className="relative aspect-[16/10] overflow-hidden bg-ink"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      role={many ? 'region' : undefined}
+      aria-roledescription={many ? 'carousel' : undefined}
+      aria-label={many ? `${title}: media` : undefined}
+    >
+      {items.map((m, k) => {
+        const on = k === i
+        const style = `${cls} ${on ? 'opacity-100' : 'opacity-0'}`
+        return m.type === 'video' && !reduced ? (
+          <video
+            key={m.src}
+            ref={(el) => {
+              vids.current[k] = el
+            }}
+            className={style}
+            src={m.src}
+            poster={m.poster}
+            muted
+            playsInline
+            loop={!many}
+            preload={k === 0 ? 'metadata' : 'none'}
+            onEnded={() => many && on && next()}
+            aria-label={m.alt}
+            aria-hidden={!on}
+          />
+        ) : (
+          <img
+            key={m.src}
+            src={m.type === 'video' ? (m.poster ?? m.src) : m.src}
+            alt={on ? m.alt : ''}
+            aria-hidden={!on}
+            loading="lazy"
+            decoding="async"
+            className={style}
+          />
+        )
+      })}
+
+      {many && (
+        <>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink/70 to-transparent" />
+          <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+            {items.map((m, k) => (
+              <button
+                key={m.src}
+                onClick={() => setI(k)}
+                aria-label={`Show ${m.type} ${k + 1} of ${items.length}`}
+                aria-current={k === i}
+                className={`h-1.5 rounded-full transition-all duration-300 ${k === i ? 'w-6 bg-signal' : 'w-1.5 bg-paper/50 hover:bg-paper'}`}
+              />
+            ))}
+          </div>
+          {[
+            ['‹', prev, 'left-2', 'Previous'],
+            ['›', next, 'right-2', 'Next'],
+          ].map(([ch, fn, pos, label]) => (
+            <button
+              key={label as string}
+              onClick={fn as () => void}
+              aria-label={`${label} media`}
+              className={`absolute top-1/2 ${pos} grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-ink/70 text-lg text-paper opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100 focus-visible:opacity-100`}
+            >
+              {ch as string}
+            </button>
+          ))}
+        </>
+      )}
+    </div>
+  )
 }
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -121,7 +220,7 @@ export default function Work() {
               className="group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm"
             >
               <div className="relative overflow-hidden border-b border-line">
-                <Media image={a.image} video={a.video} alt={a.title} />
+                <MediaCarousel items={a.media} title={a.title} />
                 <span className="absolute left-4 top-4 rounded-[3px] bg-ink/80 px-1.5 py-0.5 font-mono text-xs text-signal">{pad(i + 1)}</span>
               </div>
               <div className="flex flex-1 flex-col gap-3 p-6">
