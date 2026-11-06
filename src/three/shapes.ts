@@ -672,6 +672,10 @@ function deploy(N: number) {
   return out
 }
 
+// Individual scenes, also used to render the project-card videos.
+export const SCENES = { truck: tunnelTruck, mesh: tunnelMesh, detect, ui: interfaceScreens, deploy }
+export type SceneId = keyof typeof SCENES
+
 export function buildShapes(N: number): Float32Array[] {
   return [tunnelTruck(N), tunnelMesh(N), detect(N), interfaceScreens(N), deploy(N)]
 }

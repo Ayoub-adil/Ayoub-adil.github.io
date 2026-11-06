@@ -119,6 +119,22 @@ function MediaCarousel({ items, title }: { items: MediaItem[]; title: string }) 
   )
 }
 
+/** Looping 3D render of a card, playing only while on screen. */
+function LoopVideo({ name, label }: { name: string; label: string }) {
+  const ref = useRef<HTMLVideoElement>(null)
+  const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  useEffect(() => {
+    const v = ref.current
+    if (!v || reduced) return
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause()), { threshold: 0.2 })
+    io.observe(v)
+    return () => io.disconnect()
+  }, [reduced])
+  const poster = `/img/cards/${name}.jpg`
+  if (reduced) return <img src={poster} alt={label} className="h-full w-full object-cover" loading="lazy" />
+  return <video ref={ref} className="h-full w-full object-cover" src={`/img/cards/${name}.mp4`} poster={poster} muted loop playsInline preload="none" aria-label={label} />
+}
+
 const pad = (n: number) => String(n).padStart(2, '0')
 
 function Card({ p, n }: { p: Project; n: number }) {
@@ -128,7 +144,7 @@ function Card({ p, n }: { p: Project; n: number }) {
       className="group flex w-full scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-paper/25"
     >
       <div className="relative aspect-[16/10] border-b border-line bg-ink">
-        {p.visual && <ProjectVisual kind={p.visual} />}
+        {p.cardVideo ? <LoopVideo name={p.cardVideo} label={p.title} /> : p.visual && <ProjectVisual kind={p.visual} />}
         <span className="absolute left-4 top-4 font-mono text-xs text-signal">{pad(n)}</span>
         <span className="label absolute right-4 top-4 !text-[0.62rem]">{p.tag}</span>
       </div>

@@ -92,6 +92,8 @@ export interface Project {
   did: string[]
   stack: string[]
   visual?: Visual
+  // looping 3D render for the card (tools/render_cards.mjs); falls back to `visual`
+  cardVideo?: string
   tag: '3D' | 'Systems'
 }
 
@@ -108,6 +110,7 @@ export const projects: Project[] = [
     did: ['Operator interface', 'Point-cloud processing', 'LiDAR integration', 'Calibration'],
     stack: ['Python', 'C++', 'C#', 'WPF / .NET'],
     visual: 'lidar',
+    cardVideo: 'lidar',
   },
   {
     id: 'dough-tof',
