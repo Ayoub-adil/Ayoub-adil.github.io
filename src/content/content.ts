@@ -79,7 +79,6 @@ export const steps: { id: StepId; verb: string; object: string; body: string; re
 ]
 
 export type Status = 'In production' | 'Delivered' | 'In progress' | 'Proof of concept'
-export type Visual = 'lidar' | 'tof' | 'slam' | 'tunnel' | 'signalbox' | 'track' | 'niche'
 
 export interface Project {
   id: string
@@ -91,8 +90,7 @@ export interface Project {
   summary: string
   did: string[]
   stack: string[]
-  visual?: Visual
-  // looping 3D render for the card (tools/render_cards.mjs); falls back to `visual`
+  // looping 3D render for the card: public/img/cards/<cardVideo>.mp4 (tools/render_cards.mjs)
   cardVideo?: string
   tag: '3D' | 'Systems'
 }
@@ -109,7 +107,6 @@ export const projects: Project[] = [
       'A bus charges from underneath while parked, and nobody may approach it. One LiDAR on the front scans a full line ahead of the bus, another on the right side scans along its edge. My software detects any person or object crossing those lines, even a cane, without false alarms from rain, snow, or the bus shaking or tilting. The system alerts the driver, then cuts the power.',
     did: ['Operator interface', 'Point-cloud processing', 'LiDAR integration', 'Calibration'],
     stack: ['Python', 'C++', 'C#', 'WPF / .NET'],
-    visual: 'lidar',
     cardVideo: 'lidar',
   },
   {
@@ -123,7 +120,7 @@ export const projects: Project[] = [
       'A time-of-flight camera at the top of a tall rectangular oven films the inside. It produces depth images and a point cloud, used to compute the height and the volume of the dough over time while it bakes.',
     did: ['Operator interface', 'ToF camera integration', '3D viewer', 'Depth-image display'],
     stack: ['C++'],
-    visual: 'tof',
+    cardVideo: 'tof',
   },
   {
     id: 'slam-tunnels',
@@ -133,10 +130,10 @@ export const projects: Project[] = [
     status: 'Proof of concept',
     year: '03/2024 – 08/2024',
     summary:
-      'Visual SLAM (ORB-SLAM, PLVS) applied to the company’s real rail data: tunnels, trains, metro. Point clouds, stereo calibration, reconstruction and visualisation.',
+      'Visual SLAM (ORB-SLAM, PLVS) applied to real rail data: tunnels, trains, metro. Point clouds, stereo calibration, reconstruction and visualisation.',
     did: ['Literature review', 'Implementation', 'Processing and analysis of results', 'Application to real data'],
     stack: ['C++', 'Docker', 'Ubuntu'],
-    visual: 'slam',
+    cardVideo: 'slam',
   },
   {
     id: 'tunnel-platform',
@@ -149,7 +146,7 @@ export const projects: Project[] = [
       'An inspection truck carried by train through the tunnel, to inspect the equipment installed on the tunnel walls and roof so it can be maintained. Several processing stations run on board. 22 cameras at the rear each film their own zone of the tunnel, 2 side cameras read the positioning signs, and more than 100 lights each light their own section. Thermal cameras, RFID + GPS, batteries and a fire panel complete it. Thirteen services and applications run the acquisition, then the upload, archiving, multi-screen inspection and history comparison.',
     did: ['Acquisition and synchronisation services', 'Operator tablet app', 'Multi-screen review app', 'History comparison app'],
     stack: ['.NET', 'WPF', 'C#', 'C++', 'Modbus / JBus'],
-    visual: 'tunnel',
+    cardVideo: 'tunnel',
   },
   {
     id: 'signal-box',
@@ -162,7 +159,7 @@ export const projects: Project[] = [
       'A three-screen application: route preparation and command, detection of the switches to operate, train-passage detection by zone, recording and history, and a replay mode to replay what happened on the switch tables. 3 cameras and lights per table, 2 tables per signal box.',
     did: ['Complete application', 'Replay mode', 'Recording and history'],
     stack: ['.NET', 'WPF', 'C#', 'C++'],
-    visual: 'signalbox',
+    cardVideo: 'signalbox',
   },
   {
     id: 'track-inspection',
@@ -180,7 +177,7 @@ export const projects: Project[] = [
       'Support and maintenance',
     ],
     stack: ['.NET', 'WPF', 'C#'],
-    visual: 'track',
+    cardVideo: 'track',
   },
   {
     id: 'train-passage',
@@ -217,12 +214,12 @@ export const projects: Project[] = [
       'Niches are small refuges at ground level in metro tunnel walls, about the size of two people, where technicians step aside when a train passes. I took over a colleague’s code and finalised the application that detects them.',
     did: ['Takeover and finalisation'],
     stack: ['WPF'],
-    visual: 'niche',
+    cardVideo: 'niche',
   },
 ]
 
-export const featured = projects.filter((p) => p.visual)
-export const more = projects.filter((p) => !p.visual)
+export const featured = projects.filter((p) => p.cardVideo)
+export const more = projects.filter((p) => !p.cardVideo)
 
 // From the v1 site (archive-v1). Images are my own academic work.
 export type Media = { type: 'image' | 'video'; src: string; poster?: string; alt: string }

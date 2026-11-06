@@ -10,7 +10,6 @@ import '../styles.css'
 import Stage from '../three/Stage'
 import { field } from '../three/store'
 import { featured, steps } from '../content/content'
-import { ProjectVisual } from '../components/visuals/Visuals'
 
 const STAGES = [{ n: '00', label: 'Head (hero)' }, ...steps.map((s, i) => ({ n: String(i + 1).padStart(2, '0'), label: `${s.verb} ${s.object}` }))]
 
@@ -76,11 +75,11 @@ function Clouds() {
       </aside>
 
       <section id="cards" className="relative z-10 mt-[100svh] bg-ink p-8">
-        <p className="label mb-6">Card visuals (SVG) · dev only</p>
+        <p className="label mb-6">Card videos (3D meshes) · dev only · live scenes at /dev/mesh/?id=…</p>
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {featured.map((p, i) => (
             <figure key={p.id} className="overflow-hidden rounded-lg border border-line">
-              <div className="aspect-[16/10] bg-ink">{p.visual && <ProjectVisual kind={p.visual} />}</div>
+              <video className="aspect-[16/10] w-full bg-ink object-cover" src={`/img/cards/${p.cardVideo}.mp4`} autoPlay muted loop playsInline />
               <figcaption className="border-t border-line p-3 text-sm">
                 <span className="mr-2 font-mono text-xs text-signal">B{i + 1}</span>
                 {p.title}

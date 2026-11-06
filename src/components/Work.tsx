@@ -1,5 +1,4 @@
 import { academic, featured, more, products, type Media as MediaItem, type Project } from '../content/content'
-import { ProjectVisual } from './visuals/Visuals'
 import { useEffect, useRef, useState } from 'react'
 import { Reveal, SectionHead, StatusPill, T } from './ui'
 
@@ -144,7 +143,7 @@ function Card({ p, n }: { p: Project; n: number }) {
       className="group flex w-full scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-paper/25"
     >
       <div className="relative aspect-[16/10] border-b border-line bg-ink">
-        {p.cardVideo ? <LoopVideo name={p.cardVideo} label={p.title} /> : p.visual && <ProjectVisual kind={p.visual} />}
+        {p.cardVideo && <LoopVideo name={p.cardVideo} label={p.title} />}
         <span className="absolute left-4 top-4 font-mono text-xs text-signal">{pad(n)}</span>
         <span className="label absolute right-4 top-4 !text-[0.62rem]">{p.tag}</span>
       </div>
