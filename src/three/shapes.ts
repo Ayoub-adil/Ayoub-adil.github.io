@@ -64,45 +64,144 @@ function profile(s: number): [number, number] {
   return [T.R * Math.cos(a), T.CY + T.R * Math.sin(a)]
 }
 
-function tunnelScan(N: number) {
+/** Point on the profile pushed inwards (towards the tunnel axis) by `d`. */
+function inside(s: number, d: number): [number, number] {
+  const [x, y] = profile(s)
+  if (y <= T.FLOOR + 1e-6) return [x, y + d]
+  const nx = -x
+  const ny = T.CY - y
+  const l = Math.hypot(nx, ny) || 1
+  return [x + (nx / l) * d, y + (ny / l) * d]
+}
+
+// Step 01: the inspection truck, carried on a flat wagon through the tunnel.
+// 22 rear cameras each aim at one piece of equipment on the walls or roof,
+// 2 side cameras read a positioning sign. Equipment repeats along the tunnel.
+function tunnelTruck(N: number) {
   const out = new Float32Array(N * 4)
   const w = new Writer(out)
   const r = mulberry32(11)
-  const spacing = 0.2
+  const F = T.FLOOR
+  const spacing = 0.22
   const rings = Math.floor((T.Z1 - T.Z0) / spacing)
+  const TRUCK = { x0: -0.78, x1: 0.78, y0: F + 0.62, y1: F + 2.25, z0: -4.6, z1: 0 }
+  // equipment positions around the vault (profile parameter s), and along z
+  const S_EQ = Array.from({ length: 11 }, (_, i) => 0.36 + (i / 10) * 0.6)
+  const Z_EQ = Array.from({ length: 9 }, (_, i) => T.Z1 - 0.9 - i * 1.9)
+  // the 22 inspected items: two rows just behind the truck
+  const targets = Array.from({ length: 22 }, (_, i) => ({ s: S_EQ[i % 11], z: i < 11 ? 1.4 : 3.0 }))
+  const cams = targets.map((_, i) => {
+    const t = (i % 11) / 10
+    const row = i < 11 ? 0 : 1
+    // along the upper sides and top of the rear face
+    if (t < 0.25) return [TRUCK.x1 - 0.02, TRUCK.y0 + 0.9 + t * 2.4 - row * 0.12, TRUCK.z1 + 0.02]
+    if (t > 0.75) return [TRUCK.x0 + 0.02, TRUCK.y0 + 0.9 + (1 - t) * 2.4 - row * 0.12, TRUCK.z1 + 0.02]
+    return [TRUCK.x1 - ((t - 0.25) / 0.5) * (TRUCK.x1 - TRUCK.x0), TRUCK.y1 - 0.06 - row * 0.12, TRUCK.z1 + 0.02]
+  })
+  const sign = { s: 0.33, z: -2.4 }
+  const box = (cx: number, cy: number, cz: number, h: number, wt: number) => {
+    const f = Math.floor(r() * 3)
+    const a = (r() - 0.5) * 2 * h
+    const b = (r() - 0.5) * 2 * h
+    const c = r() < 0.5 ? -h : h
+    if (f === 0) w.push(cx + c, cy + a, cz + b, wt)
+    else if (f === 1) w.push(cx + a, cy + c, cz + b, wt)
+    else w.push(cx + a, cy + b, cz + c, wt)
+  }
+
   fill(w, r, [
     [
-      0.74,
+      0.36,
       () => {
+        // tunnel lining
         const k = Math.floor(r() * rings)
         const [x, y] = profile(r())
-        const n = gauss(r) * 0.025
-        w.push(x * (1 + n * 0.3), y + n, T.Z0 + k * spacing + gauss(r) * 0.012)
+        w.push(x, y, T.Z0 + k * spacing + gauss(r) * 0.01)
+      },
+    ],
+    [
+      0.03,
+      () => {
+        const side = r() < 0.5 ? -1 : 1
+        w.push(side * 0.72, F + 0.16, T.Z0 + r() * (T.Z1 - T.Z0), 0.04)
+      },
+    ],
+    [
+      0.1,
+      () => {
+        // equipment on the walls and roof, repeated along the tunnel
+        const s = S_EQ[Math.floor(r() * S_EQ.length)]
+        const z = Z_EQ[Math.floor(r() * Z_EQ.length)]
+        const [x, y] = inside(s, 0.12)
+        box(x, y, z, 0.075, 0.08)
+      },
+    ],
+    [
+      0.045,
+      () => {
+        // the 22 items being inspected, in gold
+        const t = targets[Math.floor(r() * targets.length)]
+        const [x, y] = inside(t.s, 0.1)
+        box(x, y, t.z, 0.075, 0.75)
       },
     ],
     [
       0.035,
       () => {
-        const side = r() < 0.5 ? -1 : 1
-        w.push(side * 0.72 + gauss(r) * 0.03, T.FLOOR + 0.16 + gauss(r) * 0.01, T.Z0 + r() * (T.Z1 - T.Z0), 0.2)
+        // camera rays from the truck rear to their item
+        const i = Math.floor(r() * 22)
+        const c = cams[i]
+        const [tx, ty] = inside(targets[i].s, 0.12)
+        const t = Math.pow(r(), 0.8)
+        w.push(c[0] + (tx - c[0]) * t, c[1] + (ty - c[1]) * t, c[2] + (targets[i].z - c[2]) * t, 0.18)
+      },
+    ],
+    [0.02, () => {
+      const c = cams[Math.floor(r() * 22)]
+      w.push(c[0] + gauss(r) * 0.025, c[1] + gauss(r) * 0.025, c[2] + 0.01, 1)
+    }],
+    [
+      0.17,
+      () => {
+        // truck body, the rear face a little brighter
+        const { x0, x1, y0, y1, z0, z1 } = TRUCK
+        const f = r()
+        if (f < 0.3) w.push(x0 + r() * (x1 - x0), y0 + r() * (y1 - y0), z1, 0.06)
+        else if (f < 0.6) w.push(r() < 0.5 ? x0 : x1, y0 + r() * (y1 - y0), z0 + r() * (z1 - z0), 0.02)
+        else if (f < 0.85) w.push(x0 + r() * (x1 - x0), y1, z0 + r() * (z1 - z0), 0.02)
+        else {
+          // lights along the rear edges
+          const t = r()
+          w.push(x0 + t * (x1 - x0), y0 + 0.1, z1 + 0.01, 0.5)
+        }
       },
     ],
     [
-      0.05,
+      0.06,
       () => {
-        // sleepers
-        const k = Math.floor(r() * ((T.Z1 - T.Z0) / 0.6))
-        w.push((r() * 2 - 1) * 1.15, T.FLOOR + 0.05, T.Z0 + k * 0.6 + gauss(r) * 0.06, 0.1)
+        // flat wagon carrying the truck, with its wheels
+        const f = r()
+        if (f < 0.6) w.push((r() * 2 - 1) * 0.95, F + 0.5, -5.2 + r() * 5.8, 0.04)
+        else {
+          const wz = [-4.6, -3.8, -0.6, 0.2][Math.floor(r() * 4)]
+          const a = r() * Math.PI * 2
+          w.push(r() < 0.5 ? -0.72 : 0.72, F + 0.3 + Math.sin(a) * 0.17, wz + Math.cos(a) * 0.17, 0.08)
+        }
       },
     ],
     [
-      0.02,
+      0.04,
       () => {
-        // cable trays along the walls and the overhead line
-        const which = r()
-        const z = T.Z0 + r() * (T.Z1 - T.Z0)
-        if (which < 0.33) w.push(0 + gauss(r) * 0.02, T.CY + T.R - 0.35, z, 0.1)
-        else w.push((which < 0.66 ? -1 : 1) * 2.05 + gauss(r) * 0.03, 0.9 + gauss(r) * 0.05, z, 0.05)
+        // two side cameras reading a positioning sign on the wall
+        const [sx, sy] = inside(sign.s, 0.05)
+        const f = r()
+        if (f < 0.45) w.push(sx + (r() - 0.5) * 0.06, sy + (r() - 0.5) * 0.4, sign.z + (r() - 0.5) * 0.7, 0.8)
+        else {
+          const cz = r() < 0.5 ? -1.6 : -2.0
+          const c = [TRUCK.x1 + 0.02, TRUCK.y0 + 0.75, cz]
+          const t = r()
+          w.push(c[0] + (sx - c[0]) * t, c[1] + (sy - c[1]) * t, c[2] + (sign.z - c[2]) * t, t < 0.06 ? 1 : 0.28)
+        }
       },
     ],
   ])
@@ -510,7 +609,12 @@ function deploy(N: number) {
         else if (f < 0.75) at(0, -1.0 + r() * 2.0, 0.95 + r() * 0.15, -0.385, 0.25) // window band
         else if (f < 0.85) circle(0, r() < 0.5 ? -0.7 : 0.7, 0.22, r() < 0.5 ? -0.39 : 0.39, 0.16, 0.1)
         else if (f < 0.93) at(0, -1.6 + r() * 3.2, 0.03, r() < 0.5 ? -0.3 : 0.3, 0.15) // rails
-        else at(0, -0.4 + Math.floor(r() * 3) * 0.4 + (r() - 0.5) * 0.08, 0.3, (r() - 0.5) * 0.4, 1) // cameras
+        else if (r() < 0.8) {
+          // 6 line-scan cameras at the same level, 3 per rail (top, inner, outer)
+          const rail = r() < 0.5 ? -0.3 : 0.3
+          const d = rail + (Math.floor(r() * 3) - 1) * 0.11
+          at(0, (r() - 0.5) * 0.06, 0.3, d + (r() - 0.5) * 0.04, 1)
+        } else at(0, 1.12 + r() * 0.05, 0.85 + (r() - 0.5) * 0.08, (r() - 0.5) * 0.08, 1) // front area-scan camera
       },
     ],
     [
@@ -548,14 +652,20 @@ function deploy(N: number) {
     [
       0.13,
       () => {
-        // site 3: metro tunnel section with a niche in the wall
-        const t = r() * Math.PI
-        const rad = 0.85
-        const u = Math.cos(t) * rad
-        const v = Math.sin(t) * rad + 0.25
-        const d = (r() - 0.5) * 1.5
-        const niche = Math.abs(d) < 0.2 && t < 0.9 && t > 0.4
-        at(3, u, v, d, niche ? 1 : 0.04)
+        // site 3: metro tunnel section with a refuge niche at ground level
+        if (r() < 0.8) {
+          const t = r() * Math.PI
+          const rad = 1.15
+          at(3, Math.cos(t) * rad, Math.sin(t) * rad * 1.05, (r() - 0.5) * 1.6, 0.04)
+        } else {
+          // recess in the right-hand wall, from the floor up, about two people wide
+          const f = Math.floor(r() * 3)
+          const v = r() * 0.55
+          const d = (r() - 0.5) * 0.5
+          if (f === 0) at(3, 1.15 + 0.22, v, d, 1)
+          else if (f === 1) at(3, 1.15 + r() * 0.22, 0.55, d, 1)
+          else at(3, 1.15 + r() * 0.22, v, r() < 0.5 ? -0.25 : 0.25, 1)
+        }
       },
     ],
   ])
@@ -563,7 +673,7 @@ function deploy(N: number) {
 }
 
 export function buildShapes(N: number): Float32Array[] {
-  return [tunnelScan(N), tunnelMesh(N), detect(N), interfaceScreens(N), deploy(N)]
+  return [tunnelTruck(N), tunnelMesh(N), detect(N), interfaceScreens(N), deploy(N)]
 }
 
 export const TUNNEL_Z = { min: T.Z0, max: T.Z1 }

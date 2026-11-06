@@ -80,45 +80,6 @@ function Lidar() {
   )
 }
 
-/** ToF depth: a heightmap of bars rising like dough. */
-function Tof() {
-  const cols = 22
-  const rows = 9
-  const cells = []
-  for (let j = 0; j < rows; j++)
-    for (let i = 0; i < cols; i++) {
-      const cx = i - cols / 2
-      const cy = (j - rows / 2) * 2
-      const h = Math.exp(-(cx * cx + cy * cy) / 40)
-      cells.push({ i, j, h })
-    }
-  return (
-    <Frame label="Depth map of dough rising, coloured by height">
-      <g transform="translate(36 40) skewX(-28)">
-        {cells.map(({ i, j, h }) => (
-          <rect
-            key={`${i}-${j}`}
-            x={i * 11 + j * 3}
-            y={j * 11}
-            width="8"
-            height="8"
-            fill={h > 0.55 ? S : P}
-            fillOpacity={0.12 + h * 0.75}
-            style={{ transformBox: 'fill-box', transformOrigin: 'center', ...anim('pulse-o', 3.2, h * 1.2) }}
-          />
-        ))}
-      </g>
-      <g fontFamily="monospace" fontSize="8">
-        <text x="20" y="182" fill={M}>VOLUME</text>
-        <text x="64" y="182" fill={P}>↑</text>
-        <text x="120" y="182" fill={M}>HEIGHT</text>
-        <text x="160" y="182" fill={P}>↑</text>
-        <text x="236" y="182" fill={S}>ToF · 3D</text>
-      </g>
-    </Frame>
-  )
-}
-
 /** Visual SLAM: camera trajectory with keyframes and landmarks. */
 function Slam() {
   const r = rng(9)
@@ -142,36 +103,6 @@ function Slam() {
         </g>
       ))}
       <text x="20" y="186" fill={M} fontSize="8" fontFamily="monospace">ORB-SLAM · PLVS · KEYFRAMES</text>
-    </Frame>
-  )
-}
-
-/** Tunnel cross-section with a ring of cameras firing in sequence. */
-function Tunnel() {
-  const cams = Array.from({ length: 24 }, (_, i) => {
-    const a = Math.PI * (0.05 + (0.9 * i) / 23)
-    return [160 - Math.cos(a) * 62, 132 - Math.sin(a) * 62, a]
-  })
-  return (
-    <Frame label="Tunnel cross-section with a ring of 24 cameras firing in sequence">
-      <path d="M58 170 L58 132 A102 102 0 0 1 262 132 L262 170" fill="none" stroke={M} strokeWidth="1.2" />
-      <rect x="112" y="118" width="96" height="44" rx="4" fill="none" stroke={P} strokeOpacity=".5" />
-      <text x="138" y="145" fill={P} fontSize="8" fontFamily="monospace" opacity=".7">TRUCK</text>
-      {cams.map(([x, y, a], i) => (
-        <g key={i}>
-          <line
-            x1={x}
-            y1={y}
-            x2={160 - Math.cos(a as number) * 98}
-            y2={132 - Math.sin(a as number) * 98}
-            stroke={S}
-            strokeWidth="1"
-            style={anim('pulse-o', 2.4, (i / 24) * 2.4)}
-          />
-          <circle cx={x} cy={y} r="2.2" fill={S} />
-        </g>
-      ))}
-      <text x="20" y="190" fill={M} fontSize="8" fontFamily="monospace">24 CAMERAS · 100+ LIGHTS · SYNC</text>
     </Frame>
   )
 }
@@ -215,29 +146,187 @@ function SignalBox() {
   )
 }
 
-/** Rails seen from above, three line-scan cameras per rail. */
-function Track() {
-  const lines = [70, 80, 90, 120, 130, 140]
+/** ToF in an oven: tall oven, camera at the top filming the dough; depth image
+ *  and height / volume curves over the bake. */
+function Tof() {
+  const cells = []
+  for (let j = 0; j < 6; j++)
+    for (let i = 0; i < 8; i++) {
+      const cx = i - 3.5
+      const cy = j - 2.5
+      cells.push({ i, j, h: Math.exp(-(cx * cx + cy * cy * 1.6) / 7) })
+    }
   return (
-    <Frame label="Two rails seen from above, scanned by three line-scan cameras each">
-      {Array.from({ length: 16 }, (_, i) => (
-        <rect key={i} x={12 + i * 20} y="52" width="8" height="106" fill={M} opacity=".25" />
+    <Frame label="A ToF camera at the top of a tall oven films the dough; depth image and height and volume curves over time">
+      {/* oven, taller than wide */}
+      <rect x="34" y="18" width="92" height="166" rx="4" fill="#0a0d12" stroke={P} strokeOpacity=".6" />
+      <line x1="34" y1="150" x2="126" y2="150" stroke={M} />
+      <text x="40" y="178" fill={M} fontSize="6.5" fontFamily="monospace">OVEN</text>
+      {/* camera and its field of view */}
+      <rect x="72" y="20" width="16" height="9" rx="1.5" fill={S} />
+      <path d="M80 29 L42 148 L118 148 Z" fill="url(#glow)" opacity=".35" />
+      {[52, 66, 80, 94, 108].map((x, k) => (
+        <line key={x} x1="80" y1="30" x2={x} y2={136 - Math.abs(k - 2) * 4} stroke={S} strokeOpacity=".45" strokeDasharray="2 3" />
       ))}
-      <rect x="0" y="76" width="320" height="8" fill={P} opacity=".85" />
-      <rect x="0" y="126" width="320" height="8" fill={P} opacity=".85" />
-      {lines.map((y, i) => (
-        <g key={i}>
-          <line x1="60" y1={y - 4} x2="60" y2={y + 4} stroke={S} strokeWidth="2" />
-          <rect x="64" y={y - 0.6} width="250" height="1.2" fill={S} opacity=".55" style={anim('pulse-o', 1.6, i * 0.12)} />
+      {/* dough rising */}
+      <g style={{ transformBox: 'fill-box', transformOrigin: 'bottom', ...anim('rise', 5) }}>
+        <path d="M50 150 Q58 126 80 124 Q102 126 110 150 Z" fill={P} fillOpacity=".85" />
+      </g>
+      <text x="92" y="27" fill={S} fontSize="6.5" fontFamily="monospace">ToF</text>
+
+      {/* depth image */}
+      <text x="150" y="26" fill={M} fontSize="6.5" fontFamily="monospace">DEPTH IMAGE · POINT CLOUD</text>
+      {cells.map(({ i, j, h }) => (
+        <rect key={`${i}-${j}`} x={150 + i * 11} y={32 + j * 9} width="10" height="8" fill={h > 0.5 ? S : P} fillOpacity={0.1 + h * 0.8} />
+      ))}
+
+      {/* height and volume over time */}
+      <line x1="150" y1="178" x2="300" y2="178" stroke={M} />
+      <line x1="150" y1="104" x2="150" y2="178" stroke={M} />
+      <path d="M150 170 C190 168 210 130 300 118" fill="none" stroke={S} strokeWidth="1.6" strokeDasharray="200" strokeDashoffset="200" style={anim('dash', 5, 0, 'linear')} />
+      <path d="M150 174 C195 172 220 150 300 140" fill="none" stroke={P} strokeOpacity=".7" strokeWidth="1.2" strokeDasharray="200" strokeDashoffset="200" style={anim('dash', 5, 0, 'linear')} />
+      <text x="262" y="112" fill={S} fontSize="6.5" fontFamily="monospace">HEIGHT</text>
+      <text x="262" y="136" fill={P} fontSize="6.5" fontFamily="monospace" opacity=".8">VOLUME</text>
+      <text x="270" y="190" fill={M} fontSize="6.5" fontFamily="monospace">TIME →</text>
+    </Frame>
+  )
+}
+
+/** Tunnel inspection truck seen from behind: 22 rear cameras each aimed at a
+ *  zone of equipment on the walls or roof, 2 side cameras on a positioning sign,
+ *  lights flashing on the same trigger. */
+function Tunnel() {
+  const zones = Array.from({ length: 22 }, (_, i) => {
+    const a = Math.PI * (0.04 + (0.92 * i) / 21)
+    return { a, x: 160 - Math.cos(a) * 112, y: 150 - Math.sin(a) * 112 }
+  })
+  const cams = zones.map((_, i) => {
+    const t = i / 21
+    // along the top and the upper sides of the truck's rear face
+    if (t < 0.2) return { x: 124, y: 140 - t * 160 }
+    if (t > 0.8) return { x: 196, y: 140 - (1 - t) * 160 }
+    return { x: 124 + ((t - 0.2) / 0.6) * 72, y: 108 }
+  })
+  return (
+    <Frame label="Inspection truck seen from behind in a tunnel: 22 rear cameras aimed at equipment on the walls and roof, 2 side cameras on a positioning sign, lights on a shared trigger">
+      <path d="M40 186 L40 150 A120 120 0 0 1 280 150 L280 186" fill="none" stroke={M} strokeWidth="1.2" />
+      {/* equipment on walls and roof */}
+      {zones.map((z, i) => (
+        <rect
+          key={i}
+          x={z.x - 5}
+          y={z.y - 4}
+          width="10"
+          height="8"
+          rx="1"
+          fill="#0a0d12"
+          stroke={S}
+          strokeOpacity=".9"
+          style={anim('pulse-o', 2.2, (i / 22) * 2.2)}
+        />
+      ))}
+      {zones.map((z, i) => (
+        <line key={i} x1={cams[i].x} y1={cams[i].y} x2={z.x} y2={z.y} stroke={S} strokeOpacity=".5" strokeWidth=".8" style={anim('pulse-o', 2.2, (i / 22) * 2.2)} />
+      ))}
+      {/* truck rear */}
+      <rect x="122" y="106" width="76" height="70" rx="3" fill="#0a0d12" stroke={P} strokeOpacity=".75" />
+      {cams.map((c, i) => (
+        <circle key={i} cx={c.x} cy={c.y} r="1.8" fill={S} />
+      ))}
+      {/* lights flashing together on the trigger */}
+      {[130, 142, 154, 166, 178, 190].map((x) => (
+        <rect key={x} x={x - 3} y="168" width="6" height="2.5" fill={P} style={anim('pulse-o', 1.1)} />
+      ))}
+      {/* side cameras on a positioning sign */}
+      <rect x="44" y="152" width="22" height="13" fill="#0a0d12" stroke={P} />
+      <text x="48" y="161" fill={P} fontSize="6" fontFamily="monospace">KP</text>
+      <line x1="122" y1="150" x2="66" y2="157" stroke={P} strokeOpacity=".6" strokeDasharray="2 2" />
+      <line x1="122" y1="160" x2="66" y2="160" stroke={P} strokeOpacity=".6" strokeDasharray="2 2" />
+      <text x="138" y="146" fill={P} fontSize="7" fontFamily="monospace" opacity=".7">TRUCK</text>
+      <text x="200" y="196" fill={M} fontSize="6.5" fontFamily="monospace">22 + 2 CAMERAS · 100+ LIGHTS</text>
+    </Frame>
+  )
+}
+
+/** Track inspection, front cross-section: 3 line-scan cameras per rail at the same
+ *  level (top, inner, outer), one line per millimetre; images replayed per rail. */
+function Track() {
+  const rails = [70, 190]
+  const cams = (rx: number) => [
+    { x: rx, y: 52, label: 'TOP' },
+    { x: rx + (rx < 130 ? 34 : -34), y: 52, label: 'IN' },
+    { x: rx + (rx < 130 ? -34 : 34), y: 52, label: 'OUT' },
+  ]
+  return (
+    <Frame label="Front cross-section of a wagon: three line-scan cameras per rail at the same level for the top, inner and outer views, plus a front camera; one image line per millimetre">
+      {/* wagon floor and front camera */}
+      <rect x="20" y="36" width="230" height="8" fill="#0a0d12" stroke={P} strokeOpacity=".6" />
+      <text x="24" y="31" fill={M} fontSize="6.5" fontFamily="monospace">WAGON</text>
+      <rect x="226" y="20" width="14" height="10" rx="1.5" fill="none" stroke={P} />
+      <text x="190" y="18" fill={P} fontSize="6" fontFamily="monospace" opacity=".8">FRONT CAM · ENV</text>
+      {/* sleeper and rails */}
+      <rect x="24" y="150" width="222" height="8" fill={M} opacity=".35" />
+      {rails.map((rx) => (
+        <path key={rx} d={`M${rx - 8} 128 h16 v4 h-5 v12 h9 v6 h-24 v-6 h9 v-12 h-5 Z`} fill={P} fillOpacity=".85" />
+      ))}
+      {rails.map((rx) =>
+        cams(rx).map((c) => (
+          <g key={`${rx}-${c.label}`}>
+            <rect x={c.x - 4} y={c.y - 4} width="8" height="8" fill={S} />
+            <line
+              x1={c.x}
+              y1={c.y + 4}
+              x2={c.label === 'TOP' ? rx : rx + (c.x < rx ? -8 : 8)}
+              y2={c.label === 'TOP' ? 128 : 136}
+              stroke={S}
+              strokeOpacity=".7"
+              style={anim('pulse-o', 0.6)}
+            />
+            <text x={c.x - 7} y={c.y - 7} fill={S} fontSize="5.5" fontFamily="monospace">
+              {c.label}
+            </text>
+          </g>
+        )),
+      )}
+      {/* encoder pulse and line-by-line images */}
+      <text x="258" y="44" fill={M} fontSize="6" fontFamily="monospace">1 LINE / MM</text>
+      {[0, 1, 2, 3, 4, 5].map((k) => (
+        <g key={k}>
+          <rect x="262" y={56 + k * 21} width="44" height="16" fill={k % 3 === 0 ? P : M} fillOpacity={k % 3 === 0 ? 0.25 : 0.2} stroke={P} strokeOpacity=".3" />
+          <rect x="262" y={56 + k * 21} width="3" height="16" fill={S} style={{ ...anim('scan-x', 2.4, k * 0.1, 'linear') }} />
         </g>
       ))}
-      <rect x="40" y="56" width="40" height="98" fill="none" stroke={S} strokeDasharray="3 3" />
-      <path d="M40 30 L20 14 M40 30 L60 14" stroke={P} strokeOpacity=".6" />
-      <circle cx="40" cy="30" r="3" fill={P} />
-      <g fontFamily="monospace" fontSize="8" fill={M}>
-        <text x="72" y="30">6 LINE-SCAN · 1 AREA-SCAN · 3 CONFIGS</text>
-        <text x="40" y="186">INNER · CENTRE · OUTER</text>
-      </g>
+      <text x="24" y="186" fill={M} fontSize="6.5" fontFamily="monospace">6 LINE-SCAN · SAME LEVEL · REPLAY PER RAIL</text>
+    </Frame>
+  )
+}
+
+/** Metro tunnel, side view: niches at ground level in the wall, refuges for
+ *  technicians when a train passes; each niche detected along the run. */
+function Niche() {
+  const niches = [46, 158, 270]
+  return (
+    <Frame label="Side view of a metro tunnel wall with ground-level niches where technicians shelter from trains; each niche is detected">
+      {/* wall and floor */}
+      <line x1="10" y1="40" x2="310" y2="40" stroke={M} />
+      <line x1="10" y1="162" x2="310" y2="162" stroke={P} strokeOpacity=".6" />
+      <text x="14" y="34" fill={M} fontSize="6.5" fontFamily="monospace">TUNNEL WALL</text>
+      {niches.map((x, i) => (
+        <g key={x}>
+          {/* recess at ground level, about two people wide */}
+          <rect x={x - 22} y="112" width="44" height="50" fill="#06080b" stroke={P} strokeOpacity=".7" />
+          <rect x={x - 27} y="107" width="54" height="58" fill="none" stroke={S} strokeWidth="1.2" style={anim('pulse-o', 3, i)} />
+          <text x={x - 24} y="102" fill={S} fontSize="6" fontFamily="monospace" style={anim('pulse-o', 3, i)}>
+            NICHE
+          </text>
+        </g>
+      ))}
+      {/* technician sheltering in the middle niche */}
+      <circle cx="152" cy="126" r="4" fill={P} />
+      <rect x="148.5" y="131" width="7" height="16" rx="2" fill={P} />
+      <rect x="149" y="146" width="2.5" height="14" fill={P} />
+      <rect x="152.5" y="146" width="2.5" height="14" fill={P} />
+      <text x="14" y="186" fill={M} fontSize="6.5" fontFamily="monospace">REFUGE NICHES · GROUND LEVEL · DETECTED ALONG THE RUN</text>
     </Frame>
   )
 }
@@ -256,5 +345,7 @@ export function ProjectVisual({ kind }: { kind: Visual }) {
       return <SignalBox />
     case 'track':
       return <Track />
+    case 'niche':
+      return <Niche />
   }
 }

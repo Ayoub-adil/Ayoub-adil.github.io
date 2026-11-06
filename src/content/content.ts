@@ -46,7 +46,7 @@ export const steps: { id: StepId; verb: string; object: string; body: string; re
     verb: 'I capture',
     object: 'the scene.',
     body: 'LiDAR, time-of-flight, line-scan, area-scan and thermal cameras. I integrate the sensor, calibrate it and get clean data out of it.',
-    ref: 'LiDAR safety barrier · Track inspection',
+    ref: 'Tunnel inspection platform · Track inspection',
   },
   {
     id: 'reconstruct',
@@ -79,7 +79,7 @@ export const steps: { id: StepId; verb: string; object: string; body: string; re
 ]
 
 export type Status = 'In production' | 'Delivered' | 'In progress' | 'Proof of concept'
-export type Visual = 'lidar' | 'tof' | 'slam' | 'tunnel' | 'signalbox' | 'track'
+export type Visual = 'lidar' | 'tof' | 'slam' | 'tunnel' | 'signalbox' | 'track' | 'niche'
 
 export interface Project {
   id: string
@@ -116,7 +116,8 @@ export const projects: Project[] = [
     client: 'Food-industry group',
     status: 'In production',
     year: '2024',
-    summary: 'A time-of-flight camera inside an oven analyses the dough in 3D to track its volume and height.',
+    summary:
+      'A time-of-flight camera at the top of a tall rectangular oven films the inside. It produces depth images and a point cloud, used to compute the height and the volume of the dough over time while it bakes.',
     did: ['Operator interface', 'ToF camera integration', '3D viewer', 'Depth-image display'],
     stack: ['C++'],
     visual: 'tof',
@@ -142,7 +143,7 @@ export const projects: Project[] = [
     status: 'In progress',
     year: '2026',
     summary:
-      'An inspection system embedded in a truck that is carried by train through the tunnel. About fifteen services: acquisition on 24 cameras, control of 100+ lights, sensors, storage and the applications used to review the runs.',
+      'An inspection truck carried by train through the tunnel, to inspect the equipment installed on the tunnel walls and roof so it can be maintained. Several processing stations run on board. 22 cameras at the rear each film their own zone of the tunnel, 2 side cameras read the positioning signs, and more than 100 lights each light their own section. Thermal cameras, RFID + GPS, batteries and a fire panel complete it. Thirteen services and applications run the acquisition, then the upload, archiving, multi-screen inspection and history comparison.',
     did: ['Acquisition and synchronisation services', 'Operator tablet app', 'Multi-screen review app', 'History comparison app'],
     stack: ['.NET', 'WPF', 'C#', 'C++', 'Modbus / JBus'],
     visual: 'tunnel',
@@ -168,7 +169,7 @@ export const projects: Project[] = [
     status: 'In production',
     year: '2026',
     summary:
-      'Synchronised acquisition of rail images by 6 line-scan cameras (3 per rail: centre, inner, outer) and a forward-facing area-scan environment camera, in three vehicle variants.',
+      'A wagon with 6 line-scan cameras at the same level, 3 per rail (top, inner and outer view), each taking one line every millimetre on the train’s travel pulse, plus an area-scan camera at the front recording the surroundings to know where each rail image was taken. The sequences are then replayed to spot where the client needs to maintain each rail. Three vehicle variants.',
     did: [
       'Took over a colleague’s code and fixed malfunctions',
       'Refactored it into one modular application for the 3 configurations',
@@ -209,9 +210,11 @@ export const projects: Project[] = [
     client: 'Urban transit operator',
     status: 'In production',
     year: '2024',
-    summary: 'Took over a colleague’s code and finalised the application that detects niches in metro tunnels.',
+    summary:
+      'Niches are small refuges at ground level in metro tunnel walls, about the size of two people, where technicians step aside when a train passes. I took over a colleague’s code and finalised the application that detects them.',
     did: ['Takeover and finalisation'],
     stack: ['WPF'],
+    visual: 'niche',
   },
 ]
 
@@ -293,52 +296,56 @@ export const academic: Academic[] = [
 
 
 // Generic, anonymised view of the tunnel inspection platform.
+// Generic, anonymised view of the tunnel inspection platform.
+// `links` lists the upstream nodes each service depends on.
 export const architecture = {
   eyebrow: 'Case study · Tunnel inspection platform',
-  title: ['One truck,', 'about fifteen services.'],
+  title: ['One truck,', 'thirteen services.'],
   lede:
-    'My clearest example of working on a large system: I developed the services and applications of this inspection platform, from synchronised acquisition to the tools inspectors use afterwards. Generic, anonymised view.',
+    'My clearest example of working on a large system: I developed the services and applications of this inspection platform, from synchronised acquisition on board to the tools inspectors use afterwards. Generic, anonymised view.',
   layers: [
     {
       id: 'hw',
-      label: 'Hardware',
+      label: 'On the truck',
       nodes: [
-        { id: 'cams', label: '24 cameras', desc: 'Image acquisition across 24 cameras.' },
-        { id: 'lights', label: '100+ lights', desc: 'More than 100 lights driven by the system.' },
+        { id: 'rear', label: '22 rear cameras', desc: '22 cameras at the rear of the truck, each with its own direction and point of view, filming a precise zone of the tunnel where equipment is installed on the walls or the roof.' },
+        { id: 'side', label: '2 side cameras', desc: 'Two cameras on the side of the truck film the signs used to locate the truck in the tunnel.' },
+        { id: 'lights', label: '100+ lights', desc: 'More than 100 lights, each lighting its own section, like the cameras.' },
         { id: 'thermal', label: 'Thermal cameras', desc: 'Thermal cameras on board the truck.' },
-        { id: 'rfid', label: 'RFID + GPS', desc: 'Used to detect tunnel entry and exit.' },
-        { id: 'fire', label: 'Fire panel', desc: 'Fire alarm panel integrated into the system.' },
-        { id: 'bms', label: 'Battery BMS', desc: 'Battery management system.' },
+        { id: 'rfid', label: 'RFID + GPS', desc: 'Used to detect the entry into and exit from the tunnel, and which entry and exit.' },
+        { id: 'batt', label: 'Batteries', desc: 'Batteries powering the on-board system.' },
+        { id: 'fire', label: 'Fire panel', desc: 'Fire alarm panel with its detectors and triggers.' },
       ],
     },
     {
-      id: 'acq',
-      label: 'On-board services',
+      id: 'rt',
+      label: 'Acquisition services',
       nodes: [
-        { id: 'acq', label: 'Acquisition', desc: 'Image acquisition service for the 24 cameras.', links: ['cams'] },
-        { id: 'sync', label: 'Camera / light sync', desc: 'Synchronises cameras and lights.', links: ['cams', 'lights'] },
-        { id: 'tunnel', label: 'Tunnel entry / exit', desc: 'Detects entry and exit of the tunnel from RFID and GPS.', links: ['rfid'] },
-        { id: 'kp', label: 'Kilometre posts', desc: 'Detects kilometre-post signs.', links: ['acq'] },
-        { id: 'safety', label: 'Thermal · fire · BMS', desc: 'Thermal cameras, fire-panel integration and battery management.', links: ['thermal', 'fire', 'bms'] },
+        { id: 'tunnel', label: 'Tunnel entry / exit', desc: 'Detects entry and exit from RFID and GPS, to know when to start the acquisition and the triggers.', links: ['rfid'] },
+        { id: 'sync', label: 'Synchronisation', desc: 'Sends the triggers to the cameras and the lights at the same time, at the chosen frequency.', links: ['tunnel', 'rear', 'side', 'lights'] },
+        { id: 'acq', label: 'Video acquisition', desc: 'Acquires the video sequences of the cameras.', links: ['sync', 'rear', 'side'] },
+        { id: 'light', label: 'Lighting', desc: 'Configures how the lights flash, checks that each one works and alerts the operator if one fails.', links: ['lights'] },
+        { id: 'pos', label: 'Positioning', desc: 'Reads the positioning signs in the tunnel to give the position where each image was taken and the progress through the tunnel.', links: ['side'] },
+        { id: 'therm', label: 'Thermal', desc: 'Service for the thermal cameras.', links: ['thermal'] },
       ],
     },
     {
-      id: 'data',
-      label: 'Data',
+      id: 'sup',
+      label: 'Supervision',
       nodes: [
-        { id: 'compress', label: 'Compression', desc: 'Compresses the acquired images.', links: ['acq'] },
-        { id: 'nas', label: 'NAS archive', desc: 'Archives runs on a NAS.', links: ['compress'] },
-        { id: 'db', label: 'Database', desc: 'Database management for runs and positions.', links: ['tunnel', 'kp'] },
-        { id: 'upload', label: 'Depot upload', desc: 'Uploads the run to the depot network at the end of acquisition.', links: ['nas'] },
+        { id: 'battery', label: 'Battery', desc: 'Reports the state of the batteries and whether they will last the whole trip.', links: ['batt'] },
+        { id: 'firesvc', label: 'Fire', desc: 'Reports the state of the fire triggers and detectors.', links: ['fire'] },
+        { id: 'tablet', label: 'Operator tablet', desc: 'Tablet application for the operator to check and follow everything during the run.', links: ['tunnel', 'acq', 'light', 'pos', 'therm', 'battery', 'firesvc'] },
       ],
     },
     {
-      id: 'apps',
-      label: 'Applications',
+      id: 'post',
+      label: 'After the run',
       nodes: [
-        { id: 'tablet', label: 'Operator tablet', desc: 'Tablet application used by the operator during the run.', links: ['acq', 'tunnel', 'safety'] },
-        { id: 'review', label: 'Multi-screen review', desc: 'Review application for inspection: run selection, camera views.', links: ['nas', 'db'] },
-        { id: 'history', label: 'History comparison', desc: 'Compares the same zone across several periods.', links: ['nas', 'db'] },
+        { id: 'upload', label: 'Depot upload', desc: 'At the end of a round, uploads the acquisitions to the depot network.', links: ['acq'] },
+        { id: 'archive', label: 'Archiving', desc: 'Compresses the acquisitions and stores them on the archive NAS.', links: ['upload'] },
+        { id: 'inspect', label: 'Inspection app', desc: 'Large multi-screen application to replay the sequences: multi-camera, synchronisation and database.', links: ['archive', 'pos'] },
+        { id: 'history', label: 'History', desc: 'Compares several runs: how a precise spot looked from a given camera at date x and at date y.', links: ['archive', 'inspect'] },
       ],
     },
   ],

@@ -113,6 +113,14 @@ html.lenis body {
     transform: rotate(360deg);
   }
 }
+@keyframes rise {
+  0% { transform: scaleY(0.55); }
+  70%, 100% { transform: scaleY(1); }
+}
+@keyframes scan-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(41px); }
+}
 @keyframes pulse-o {
   0%, 100% { opacity: 0.25; }
   50% { opacity: 1; }
