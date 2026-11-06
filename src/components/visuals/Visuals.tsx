@@ -33,33 +33,49 @@ function rng(seed: number) {
   return () => ((s = (s * 16807) % 2147483647) / 2147483647)
 }
 
-/** LiDAR barrier, top view: rotating beam, charging zone, person, rain noise. */
+/** LiDAR barrier, top view: bus over its charging pad, a front and a right-side
+ *  LiDAR each drawing a barrier line; a person's cane crosses the side line. */
 function Lidar() {
   const r = rng(3)
-  const rain = Array.from({ length: 60 }, () => [r() * 320, r() * 200])
-  const person = Array.from({ length: 26 }, () => {
+  const noise = Array.from({ length: 70 }, () => [r() * 320, r() * 200])
+  const person = Array.from({ length: 22 }, () => {
     const a = r() * Math.PI * 2
-    const d = Math.sqrt(r()) * 9
-    return [178 + Math.cos(a) * d, 104 + Math.sin(a) * d * 0.7]
+    const d = Math.sqrt(r()) * 7
+    return [168 + Math.cos(a) * d, 176 + Math.sin(a) * d * 0.8]
   })
   return (
-    <Frame label="Top view of a LiDAR scanning a charging zone and detecting a person">
-      <rect x="26" y="40" width="86" height="120" rx="6" fill="none" stroke={M} strokeWidth="1" />
-      <text x="34" y="54" fill={M} fontSize="8" fontFamily="monospace">BUS</text>
-      <rect x="120" y="52" width="122" height="96" fill={S} fillOpacity=".05" stroke={S} strokeDasharray="4 4" strokeWidth="1" />
-      <text x="126" y="64" fill={S} fontSize="7" fontFamily="monospace" opacity=".8">HV ZONE</text>
-      {rain.map(([x, y], i) => (
+    <Frame label="Top view: two LiDARs draw a barrier in front of and beside a charging bus; a person's cane crosses the side line and is detected">
+      {noise.map(([x, y], i) => (
         <circle key={i} cx={x} cy={y} r=".9" fill={M} style={anim('pulse-o', 1.2 + (i % 5) * 0.3, (i % 7) * 0.2)} />
       ))}
-      <g style={{ transformOrigin: '284px 30px', ...anim('spin', 4, 0, 'linear') }}>
-        <path d="M284 30 L120 130 A190 190 0 0 1 170 170 Z" fill="url(#glow)" opacity=".5" />
-      </g>
-      <circle cx="284" cy="30" r="5" fill={S} />
+
+      {/* bus, front to the right */}
+      <rect x="40" y="62" width="168" height="56" rx="7" fill="#0a0d12" stroke={P} strokeOpacity=".7" />
+      <path d="M200 62 Q214 90 200 118" fill="none" stroke={P} strokeOpacity=".7" />
+      <rect x="96" y="74" width="56" height="32" fill={S} fillOpacity=".06" stroke={S} strokeOpacity=".55" strokeDasharray="3 3" />
+      <text x="100" y="94" fill={S} fontSize="6.5" fontFamily="monospace" opacity=".85">CHARGING PAD</text>
+      <text x="46" y="74" fill={M} fontSize="7" fontFamily="monospace">BUS</text>
+
+      {/* front LiDAR and its line */}
+      <path d="M210 90 L262 38 L262 142 Z" fill="url(#glow)" opacity=".35" style={anim('pulse-o', 2.4)} />
+      <line x1="262" y1="34" x2="262" y2="146" stroke={S} strokeDasharray="5 4" strokeWidth="1.4" />
+      <circle cx="210" cy="90" r="3.6" fill={S} />
+      <text x="232" y="28" fill={S} fontSize="6.5" fontFamily="monospace">FRONT LIDAR</text>
+
+      {/* right-side LiDAR and its line along the edge */}
+      <path d="M124 119 L20 152 L246 152 Z" fill="url(#glow)" opacity=".35" style={anim('pulse-o', 2.4, 1.2)} />
+      <line x1="16" y1="152" x2="250" y2="152" stroke={S} strokeDasharray="5 4" strokeWidth="1.4" />
+      <circle cx="124" cy="119" r="3.6" fill={S} />
+      <text x="20" y="145" fill={S} fontSize="6.5" fontFamily="monospace">SIDE LIDAR</text>
+
+      {/* person with a cane, the cane tip past the line */}
       {person.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="1.4" fill={S} />
+        <circle key={i} cx={x} cy={y} r="1.3" fill={S} />
       ))}
-      <rect x="164" y="91" width="28" height="26" fill="none" stroke={S} strokeWidth="1" style={anim('pulse-o', 1.4)} />
-      <text x="164" y="128" fill={S} fontSize="7" fontFamily="monospace">PERSON · STOP</text>
+      <line x1="163" y1="170" x2="150" y2="147" stroke={S} strokeWidth="1.6" />
+      <rect x="142" y="142" width="36" height="46" fill="none" stroke={S} strokeWidth="1" style={anim('pulse-o', 1.2)} />
+      <text x="184" y="182" fill={S} fontSize="6.5" fontFamily="monospace">CANE · ALERT</text>
+      <text x="230" y="192" fill={M} fontSize="6.5" fontFamily="monospace">RAIN · SNOW: IGNORED</text>
     </Frame>
   )
 }

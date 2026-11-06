@@ -144,13 +144,25 @@ function tunnelMesh(N: number) {
 }
 
 // ---------------------------------------------------------------- detection
+// A bus parked over a ground charging pad. Two LiDARs draw an immaterial barrier:
+// the front one scans a full line ahead of the bus, the right-side one scans
+// along its edge. A person with a cane crosses the side line and is detected;
+// rain and snow pass through the beams without being flagged.
+// Frame: bus faces +x, its right side is +z, ground at y = G.
 function detect(N: number) {
   const out = new Float32Array(N * 4)
   const w = new Writer(out)
   const r = mulberry32(37)
   const G = -1.3
-  const human = { x: 0.35, z: 0.2 }
+  const BUS = { x0: -4.6, x1: 1.2, z0: -0.85, z1: 0.85, y0: G + 0.32, y1: G + 2.15 }
+  const FRONT_LINE = 2.5 // x of the barrier line ahead of the bus
+  const SIDE_LINE = 2.0 // z of the barrier line along the right side
+  const lidarFront: [number, number, number] = [BUS.x1 + 0.05, G + 0.55, 0]
+  const lidarSide: [number, number, number] = [-1.7, G + 2.0, BUS.z1 + 0.05]
+  const person = { x: -0.6, z: 2.45 }
 
+  const lerp3 = (a: number[], b: number[], t: number, wt: number) =>
+    w.push(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, wt)
   const capsule = (ax: number, ay: number, az: number, bx: number, by: number, bz: number, rad: number, wt: number) => {
     const t = r()
     const a = r() * Math.PI * 2
@@ -159,9 +171,9 @@ function detect(N: number) {
   const boxEdges = (x0: number, y0: number, z0: number, x1: number, y1: number, z1: number, wt: number) => {
     const e = Math.floor(r() * 12)
     const t = r()
-    const xs = [x0, x1]
     const ys = [y0, y1]
     const zs = [z0, z1]
+    const xs = [x0, x1]
     const axis = Math.floor(e / 4)
     const a = (e >> 1) & 1
     const b = e & 1
@@ -169,110 +181,134 @@ function detect(N: number) {
     else if (axis === 1) w.push(xs[a], y0 + (y1 - y0) * t, zs[b], wt)
     else w.push(xs[a], ys[b], z0 + (z1 - z0) * t, wt)
   }
+  const dashed = (t: number) => Math.floor(t * 30) % 2 === 0
 
   fill(w, r, [
     [
-      0.16,
+      0.12,
       () => {
         // ground grid
         const along = r() < 0.5
         const k = Math.round((r() * 2 - 1) * 12) * 0.5
-        const t = (r() * 2 - 1) * 6
-        w.push(along ? t : k, G, along ? k * 0.66 : t * 0.66)
+        const t = (r() * 2 - 1) * 6.5
+        w.push(along ? t - 1.5 : k - 1.5, G, along ? k * 0.7 : t * 0.7)
       },
     ],
     [
-      0.17,
+      0.26,
       () => {
-        // bus body, mostly the face seen by the sensor
+        // bus body: sides, roof, rounded front, windows, door, wheels
+        const { x0, x1, z0, z1, y0, y1 } = BUS
         const u = r()
-        const [x0, x1, y0, y1, z0, z1] = [-5.4, -1.7, -1.0, 1.9, -3.2, 3.2]
-        if (u < 0.6) w.push(x1, y0 + r() * (y1 - y0), z0 + r() * (z1 - z0), 0.04)
-        else if (u < 0.8) w.push(x0 + r() * (x1 - x0), y1, z0 + r() * (z1 - z0))
-        else if (u < 0.9) {
-          // windows band
-          w.push(x1 + 0.01, 0.6 + r() * 0.9, z0 + 0.2 + r() * (z1 - z0 - 0.4), 0.08)
+        if (u < 0.3) w.push(x0 + r() * (x1 - x0), y0 + r() * (y1 - y0), r() < 0.5 ? z0 : z1, 0.03)
+        else if (u < 0.45) w.push(x0 + r() * (x1 - x0), y1, z0 + r() * (z1 - z0), 0.02)
+        else if (u < 0.55) {
+          // front face, slightly rounded
+          const z = z0 + r() * (z1 - z0)
+          const bulge = 0.12 * (1 - ((z / z1) ** 2))
+          w.push(x1 + bulge, y0 + r() * (y1 - y0), z, 0.04)
+        } else if (u < 0.6) w.push(x0, y0 + r() * (y1 - y0), z0 + r() * (z1 - z0), 0.02)
+        else if (u < 0.75) {
+          // window band on both sides and the windscreen
+          const side = r()
+          const y = G + 1.25 + r() * 0.7
+          if (side < 0.4) w.push(x0 + 0.3 + r() * (x1 - x0 - 0.6), y, z1 + 0.01, 0.12)
+          else if (side < 0.8) w.push(x0 + 0.3 + r() * (x1 - x0 - 0.6), y, z0 - 0.01, 0.12)
+          else w.push(x1 + 0.13, G + 1.05 + r() * 0.95, z0 + 0.1 + r() * (z1 - z0 - 0.2), 0.12)
+        } else if (u < 0.82) {
+          // front door on the right side
+          const dx = 0.15 + r() * 0.75
+          w.push(x1 - dx, y0 + 0.05 + r() * 1.55, z1 + 0.012, Math.abs(dx - 0.52) < 0.02 ? 0.4 : 0.08)
         } else {
-          const z = r() < 0.5 ? -2.1 : 2.1
+          // wheels
+          const wx = r() < 0.5 ? x1 - 1.1 : x0 + 1.2
+          const wz = r() < 0.5 ? z1 + 0.01 : z0 - 0.01
           const a = r() * Math.PI * 2
-          w.push(x1 + 0.02, -0.95 + Math.sin(a) * 0.45, z + Math.cos(a) * 0.45, 0.1)
+          const rr = 0.36 * (0.75 + 0.25 * r())
+          w.push(wx + Math.cos(a) * rr, G + 0.36 + Math.sin(a) * rr, wz, 0.1)
         }
       },
     ],
     [
       0.03,
-      // charging mast
-      () => capsule(-1.3, G, -2.7, -1.3, 2.4, -2.7, 0.12, 0.15),
+      () => {
+        // charging pad on the ground, under the bus
+        const x = -2.9 + r() * 1.6
+        const z = -0.55 + r() * 1.1
+        const edge = Math.abs(x + 2.1) > 0.76 || Math.abs(z) > 0.51
+        w.push(x, G + 0.01, z, edge ? 0.45 : 0.08)
+      },
+    ],
+    [
+      0.1,
+      () => {
+        // front LiDAR fan, down to a full line ahead of the bus
+        const t = r()
+        const z = (r() * 2 - 1) * 1.7
+        if (r() < 0.12) w.push(lidarFront[0] + gauss(r) * 0.04, lidarFront[1] + gauss(r) * 0.04, lidarFront[2] + gauss(r) * 0.04, 1)
+        else lerp3(lidarFront, [FRONT_LINE, G, z], Math.pow(t, 0.7), 0.16)
+      },
+    ],
+    [
+      0.13,
+      () => {
+        // right-side LiDAR fan, down to a line along the bus edge
+        const t = r()
+        const x = BUS.x0 - 0.4 + r() * (BUS.x1 - BUS.x0 + 1.6)
+        if (r() < 0.12) w.push(lidarSide[0] + gauss(r) * 0.04, lidarSide[1] + gauss(r) * 0.04, lidarSide[2] + gauss(r) * 0.04, 1)
+        else lerp3(lidarSide, [x, G, SIDE_LINE], Math.pow(t, 0.7), 0.24)
+      },
     ],
     [
       0.07,
       () => {
-        // charging zone, dashed border
-        const [x0, x1, z0, z1] = [-1.5, 1.9, -2.1, 2.1]
-        const side = Math.floor(r() * 4)
-        let t = r()
-        if (Math.floor(t * 18) % 2) t = Math.floor(t * 18) / 18
-        const x = side < 2 ? x0 + (x1 - x0) * t : side === 2 ? x0 : x1
-        const z = side < 2 ? (side === 0 ? z0 : z1) : z0 + (z1 - z0) * t
-        w.push(x, G + 0.01, z, 0.75)
-      },
-    ],
-    [0.04, () => w.push(-1.5 + r() * 3.4, G, -2.1 + r() * 4.2, 0.2)],
-    [
-      0.05,
-      () => {
-        // sensor and its scan fan
-        const s = [2.7, 1.9, -2.4]
-        const tx = -1.2 + r() * 3
-        const tz = -2 + r() * 4
-        const t = Math.pow(r(), 0.6)
-        if (r() < 0.25) w.push(s[0] + gauss(r) * 0.06, s[1] + gauss(r) * 0.06, s[2] + gauss(r) * 0.06, 1)
-        else w.push(s[0] + (tx - s[0]) * t, s[1] + (G - s[1]) * t, s[2] + (tz - s[2]) * t, 0.18)
+        // the two barrier lines on the ground, dashed
+        const t = r()
+        if (!dashed(t)) return
+        if (r() < 0.45) w.push(FRONT_LINE, G + 0.01, -1.7 + t * 3.4, 0.75)
+        else w.push(BUS.x0 - 0.4 + t * (BUS.x1 - BUS.x0 + 1.6), G + 0.01, SIDE_LINE, 0.75)
       },
     ],
     [
-      0.15,
+      0.13,
       () => {
-        // person inside the zone
-        const { x, z } = human
+        // person walking towards the side of the bus
+        const { x, z } = person
         const u = r()
-        if (u < 0.14) {
+        if (u < 0.13) {
           const a = r() * Math.PI * 2
           const b = Math.acos(2 * r() - 1)
           w.push(x + 0.13 * Math.sin(b) * Math.cos(a), G + 1.63 + 0.13 * Math.cos(b), z + 0.13 * Math.sin(b) * Math.sin(a), 1)
-        } else if (u < 0.5) capsule(x, G + 0.95, z, x, G + 1.45, z, 0.19, 1)
-        else if (u < 0.78) {
+        } else if (u < 0.48) capsule(x, G + 0.95, z, x, G + 1.45, z - 0.04, 0.18, 1)
+        else if (u < 0.76) {
           const s = r() < 0.5 ? -1 : 1
-          capsule(x + s * 0.1, G + 0.93, z, x + s * 0.14, G + 0.02, z + s * 0.06, 0.075, 1)
+          capsule(x + s * 0.1, G + 0.93, z, x + s * 0.16, G + 0.02, z + (s > 0 ? -0.18 : 0.12), 0.07, 1)
         } else {
           const s = r() < 0.5 ? -1 : 1
-          capsule(x + s * 0.24, G + 1.42, z, x + s * 0.33, G + 0.78, z + 0.08, 0.055, 1)
+          // right arm reaches forward to hold the cane
+          if (s > 0) capsule(x + 0.24, G + 1.42, z, x + 0.28, G + 0.92, z - 0.25, 0.05, 1)
+          else capsule(x - 0.24, G + 1.42, z, x - 0.3, G + 0.8, z + 0.05, 0.05, 1)
         }
       },
     ],
-    [0.04, () => boxEdges(human.x - 0.42, G, human.z - 0.32, human.x + 0.42, G + 1.85, human.z + 0.32, 1)],
     [
-      0.025,
+      0.02,
       () => {
-        // small object on the ground
-        const [cx, cz, s] = [1.25, -1.25, 0.22]
-        const f = Math.floor(r() * 3)
-        const a = (r() - 0.5) * s
-        const b = (r() - 0.5) * s
-        if (f === 0) w.push(cx + a, G + s, cz + b, 1)
-        else if (f === 1) w.push(cx + s / 2, G + s / 2 + b, cz + a, 1)
-        else w.push(cx + a, G + s / 2 + b, cz + s / 2, 1)
+        // the cane: its tip is already over the barrier line
+        const t = r()
+        w.push(person.x + 0.28 + (0.1 * t), G + 0.92 - 0.92 * t, person.z - 0.25 - (person.z - 0.25 - (SIDE_LINE - 0.12)) * t, 1)
       },
     ],
-    [0.015, () => boxEdges(1.25 - 0.22, G, -1.25 - 0.22, 1.25 + 0.22, G + 0.36, -1.25 + 0.22, 1)],
+    [0.035, () => boxEdges(person.x - 0.45, G, SIDE_LINE - 0.18, person.x + 0.5, G + 1.85, person.z + 0.3, 1)],
     [
-      0.12,
+      0.1,
       () => {
-        // rain: short vertical streaks, kept dim
-        const x = (r() * 2 - 1) * 6
+        // rain streaks and snow flakes, including inside the beams: never flagged
+        const x = -6 + r() * 10
         const z = (r() * 2 - 1) * 4
-        const y = G + r() * 4.5
-        w.push(x, y + r() * 0.12, z, 0)
+        const y = G + r() * 4.2
+        if (r() < 0.6) w.push(x, y + r() * 0.14, z, 0)
+        else w.push(x + gauss(r) * 0.02, y, z + gauss(r) * 0.02, 0)
       },
     ],
   ])

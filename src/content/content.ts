@@ -59,7 +59,7 @@ export const steps: { id: StepId; verb: string; object: string; body: string; re
     id: 'detect',
     verb: 'I detect',
     object: 'what matters.',
-    body: 'A person or a small object entering a high-voltage charging zone, told apart from noise such as rain, before the power is cut.',
+    body: 'Two LiDARs draw an invisible barrier around a bus charging from underneath. A person, a cane or any object crossing it is detected; rain, snow, the bus shaking or tilting are not.',
     ref: 'LiDAR safety barrier',
   },
   {
@@ -104,7 +104,7 @@ export const projects: Project[] = [
     status: 'Proof of concept',
     year: '2026',
     summary:
-      'Reads a LiDAR stream, builds a point cloud and detects people and objects entering the high-voltage charging zone of a bus. Small objects are detected without being confused with noise such as rain. The system alerts the driver, then cuts the power.',
+      'A bus charges from underneath while parked, and nobody may approach it. One LiDAR on the front scans a full line ahead of the bus, another on the right side scans along its edge. My software detects any person or object crossing those lines, even a cane, without false alarms from rain, snow, or the bus shaking or tilting. The system alerts the driver, then cuts the power.',
     did: ['Operator interface', 'Point-cloud processing', 'LiDAR integration', 'Calibration'],
     stack: ['Python', 'C++', 'C#', 'WPF / .NET'],
     visual: 'lidar',
