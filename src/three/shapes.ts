@@ -105,7 +105,6 @@ function tunnelScan(N: number) {
         else w.push((which < 0.66 ? -1 : 1) * 2.05 + gauss(r) * 0.03, 0.9 + gauss(r) * 0.05, z, 0.05)
       },
     ],
-    [0.06, () => w.push(gauss(r) * 2.2, T.CY + gauss(r) * 1.6, T.Z0 + r() * (T.Z1 - T.Z0))],
   ])
   return out
 }
@@ -147,7 +146,7 @@ function tunnelMesh(N: number) {
 // A bus parked over a ground charging pad. Two LiDARs draw an immaterial barrier:
 // the front one scans a full line ahead of the bus, the right-side one scans
 // along its edge. A person with a cane crosses the side line and is detected;
-// rain and snow pass through the beams without being flagged.
+// rain and snow are not drawn: the scene stays clean.
 // Frame: bus faces +x, its right side is +z, ground at y = G.
 function detect(N: number) {
   const out = new Float32Array(N * 4)
@@ -185,13 +184,13 @@ function detect(N: number) {
 
   fill(w, r, [
     [
-      0.12,
+      0.07,
       () => {
-        // ground grid
+        // ground grid, limited to the area around the bus
         const along = r() < 0.5
-        const k = Math.round((r() * 2 - 1) * 12) * 0.5
-        const t = (r() * 2 - 1) * 6.5
-        w.push(along ? t - 1.5 : k - 1.5, G, along ? k * 0.7 : t * 0.7)
+        const k = Math.round((r() * 2 - 1) * 6) * 0.5
+        const t = (r() * 2 - 1) * 4.2
+        w.push(along ? t - 1.2 : k - 1.2, G, along ? k * 0.75 + 0.5 : t * 0.75 + 0.5, 0)
       },
     ],
     [
@@ -300,17 +299,6 @@ function detect(N: number) {
       },
     ],
     [0.035, () => boxEdges(person.x - 0.45, G, SIDE_LINE - 0.18, person.x + 0.5, G + 1.85, person.z + 0.3, 1)],
-    [
-      0.1,
-      () => {
-        // rain streaks and snow flakes, including inside the beams: never flagged
-        const x = -6 + r() * 10
-        const z = (r() * 2 - 1) * 4
-        const y = G + r() * 4.2
-        if (r() < 0.6) w.push(x, y + r() * 0.14, z, 0)
-        else w.push(x + gauss(r) * 0.02, y, z + gauss(r) * 0.02, 0)
-      },
-    ],
   ])
   return out
 }
