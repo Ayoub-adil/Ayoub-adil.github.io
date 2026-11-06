@@ -18,6 +18,7 @@ const vertex = /* glsl */ `
   uniform float uYaw;
   uniform float uScanZ;
   uniform float uScanY;
+  uniform float uPulse;
   uniform float uMotion;
   uniform float uDim;
 
@@ -89,7 +90,10 @@ const vertex = /* glsl */ `
     float wTunnel = 1.0 - clamp(abs(m - 1.0), 0.0, 1.0);
     float dy = aP0.y - uScanY;
     float dz = aP1.z - uScanZ;
-    vScan = exp(-dy * dy * 160.0) * wHead * 0.55 + exp(-dz * dz * 6.0) * wTunnel;
+    // stage 5: maintenance pulse travelling from my workstation out to the sites
+    float wDeploy = clamp(m - 4.0, 0.0, 1.0);
+    float dr = length(aP5.xz) - uPulse;
+    vScan = exp(-dy * dy * 160.0) * wHead * 0.55 + exp(-dz * dz * 6.0) * wTunnel + exp(-dr * dr * 10.0) * wDeploy * 0.7;
 
     vHi = mix(max(a.w, 0.0), max(b.w, 0.0), tt);
     vLum = mix(lumOf(a.w), lumOf(b.w), tt);
@@ -189,6 +193,7 @@ export default function PointField({ count }: { count: number }) {
       uYaw: { value: 0 },
       uScanZ: { value: 0 },
       uScanY: { value: 9 },
+      uPulse: { value: 0 },
       uMotion: { value: field.reduced ? 0 : 1 },
       uOpacity: { value: 1 },
       uDim: { value: 0 },
@@ -209,7 +214,7 @@ export default function PointField({ count }: { count: number }) {
     // hold the intro until the head is loaded (or give up after 4 s)
     s.wait += dt
     if (s.ready || s.wait > 4) s.intro = Math.min(1, s.intro + dt / 2.6)
-    s.spin += dt * 0.25 * motion
+    s.spin += dt * 0.08 * motion
 
     const time = (u.uTime.value += dt)
     u.uMorph.value = s.morph
@@ -222,6 +227,7 @@ export default function PointField({ count }: { count: number }) {
     // a scan line down the face every 6 s, once the head has formed
     const cycle = (time % 6) / 6
     u.uScanY.value = field.reduced || s.intro < 1 ? 9 : 2.3 - cycle * 9
+    u.uPulse.value = field.reduced ? -9 : (time * 1.6) % 6
     u.uDim.value = s.dim
     u.uSize.value = 24 * gl.getPixelRatio()
   })

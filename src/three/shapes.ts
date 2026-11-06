@@ -387,69 +387,149 @@ function interfaceScreens(N: number) {
   return out
 }
 
-// ---------------------------------------------------------------- part
-// A flanged mechanical part (procedural), centred on y.
-function part(N: number) {
+// ---------------------------------------------------------------- deployment
+// Step 05: I install my applications on client sites and maintain them.
+// My workstation in the centre, four kinds of site around it, links between.
+// Sites match project types that are in production; nothing client-specific.
+export const DEPLOY = { radius: 3.2, ground: -1.2 }
+
+function deploy(N: number) {
   const out = new Float32Array(N * 4)
   const w = new Writer(out)
-  const r = mulberry32(71)
-  const S = 0.05
-  const R = 40 * S
-  const T_ = 10 * S
-  const HR = 20 * S
-  const H = 35 * S
-  const BR = 10 * S
-  const PCD = 30 * S
-  const HOLE = 4.5 * S
-  const OY = -H / 2
-  const holes = Array.from({ length: 6 }, (_, i) => [Math.cos((i * Math.PI) / 3) * PCD, Math.sin((i * Math.PI) / 3) * PCD])
-  const inHole = (x: number, z: number) => holes.some(([hx, hz]) => (x - hx) ** 2 + (z - hz) ** 2 < HOLE * HOLE)
-  const inKey = (x: number, z: number) => x > 0 && x < BR + 2.8 * S && Math.abs(z) < 3 * S
+  const r = mulberry32(83)
+  const G = DEPLOY.ground
 
-  const annulus = (r0: number, r1: number, y: number, wt: number) => {
-    for (;;) {
-      const rad = Math.sqrt(r0 * r0 + r() * (r1 * r1 - r0 * r0))
-      const a = r() * Math.PI * 2
-      const x = Math.cos(a) * rad
-      const z = Math.sin(a) * rad
-      if (!inHole(x, z) && !inKey(x, z)) return w.push(x, y + OY, z, wt)
-    }
+  // site placement on a ring (x, z), facing the centre
+  const site = (k: number) => {
+    const a = Math.PI / 4 + (k * Math.PI) / 2
+    return { x: Math.cos(a) * DEPLOY.radius, z: Math.sin(a) * DEPLOY.radius, a }
   }
-  const cyl = (cx: number, cz: number, rad: number, y0: number, y1: number, wt: number) => {
-    const a = r() * Math.PI * 2
-    w.push(cx + Math.cos(a) * rad, y0 + r() * (y1 - y0) + OY, cz + Math.sin(a) * rad, wt)
+  // local (u along tangent, v up, d radial) -> world
+  const at = (k: number, u: number, v: number, d: number, wt: number) => {
+    const s = site(k)
+    const tx = -Math.sin(s.a)
+    const tz = Math.cos(s.a)
+    const rx = Math.cos(s.a)
+    const rz = Math.sin(s.a)
+    w.push(s.x + tx * u + rx * d, G + v, s.z + tz * u + rz * d, wt)
   }
-  const circle = (cx: number, cz: number, rad: number, y: number, wt: number) => {
-    const a = r() * Math.PI * 2
-    w.push(cx + Math.cos(a) * rad + gauss(r) * 0.004, y + OY, cz + Math.sin(a) * rad + gauss(r) * 0.004, wt)
+  const boxSurf = (k: number, u0: number, u1: number, v0: number, v1: number, d0: number, d1: number, wt: number) => {
+    const f = Math.floor(r() * 6)
+    const u = u0 + r() * (u1 - u0)
+    const v = v0 + r() * (v1 - v0)
+    const d = d0 + r() * (d1 - d0)
+    if (f === 0) at(k, u, v, d0, wt)
+    else if (f === 1) at(k, u, v, d1, wt)
+    else if (f === 2) at(k, u, v1, d, wt)
+    else if (f === 3) at(k, u0, v, d, wt)
+    else if (f === 4) at(k, u1, v, d, wt)
+    else at(k, u, v0, d, wt * 0.5)
+  }
+  const circle = (k: number, cu: number, cv: number, d: number, rad: number, wt: number) => {
+    const t = r() * Math.PI * 2
+    at(k, cu + Math.cos(t) * rad, cv + Math.sin(t) * rad, d, wt)
   }
 
   fill(w, r, [
-    [0.2, () => annulus(HR, R, T_, 0.05)],
-    [0.12, () => annulus(BR, R, 0, 0)],
-    [0.1, () => cyl(0, 0, R, 0, T_, 0.05)],
-    [0.16, () => cyl(0, 0, HR, T_, H, 0.05)],
-    [0.05, () => annulus(BR, HR, H, 0.05)],
-    [0.08, () => cyl(0, 0, BR, 0, H, 0.02)],
     [
-      0.07,
+      0.1,
       () => {
-        const [hx, hz] = holes[Math.floor(r() * 6)]
-        cyl(hx, hz, HOLE, 0, T_, 0.3)
+        // ground: concentric rings, faint
+        const ring = 0.8 + Math.floor(r() * 4) * 1.2
+        const t = r() * Math.PI * 2
+        w.push(Math.cos(t) * ring, G, Math.sin(t) * ring, 0)
       },
     ],
     [
-      0.22,
+      0.07,
       () => {
-        // B-rep edges, highlighted
-        const u = r()
-        if (u < 0.3) circle(0, 0, R, r() < 0.5 ? 0 : T_, 0.85)
-        else if (u < 0.5) circle(0, 0, HR, r() < 0.5 ? T_ : H, 0.85)
-        else if (u < 0.62) circle(0, 0, BR, r() < 0.5 ? 0 : H, 0.85)
+        // my workstation: laptop base and tilted screen
+        const u = (r() - 0.5) * 1.0
+        if (r() < 0.45) w.push(u, G + 0.55, (r() - 0.5) * 0.65, 0.35)
         else {
-          const [hx, hz] = holes[Math.floor(r() * 6)]
-          circle(hx, hz, HOLE, r() < 0.5 ? 0 : T_, 1)
+          // screen: bright frame, dimmer panel
+          const h = r() * 0.62
+          const edge = Math.abs(u) > 0.46 || h < 0.03 || h > 0.59
+          w.push(u, G + 0.55 + h * 0.94, -0.33 - h * 0.34, edge ? 1 : 0.45)
         }
+      },
+    ],
+    [
+      0.04,
+      () => {
+        // desk under the laptop
+        const f = r()
+        if (f < 0.6) w.push((r() - 0.5) * 1.6, G + 0.52, (r() - 0.5) * 0.9, 0.1)
+        else w.push((r() < 0.5 ? -0.7 : 0.7), G + r() * 0.52, (r() < 0.5 ? -0.38 : 0.38), 0.1)
+      },
+    ],
+    [
+      0.12,
+      () => {
+        // links from the workstation to each site, slight arc
+        const k = Math.floor(r() * 4)
+        const s = site(k)
+        const t = r()
+        const lift = Math.sin(t * Math.PI) * 0.7
+        if (Math.floor(t * 40) % 2) return
+        w.push(s.x * (0.12 + 0.68 * t), G + 0.6 + lift - 0.5 * t, s.z * (0.12 + 0.68 * t), 0.35)
+      },
+    ],
+    [
+      0.16,
+      () => {
+        // site 0: train car on rails, cameras under the body
+        const f = r()
+        if (f < 0.62) boxSurf(0, -1.1, 1.1, 0.35, 1.25, -0.38, 0.38, 0.05)
+        else if (f < 0.75) at(0, -1.0 + r() * 2.0, 0.95 + r() * 0.15, -0.385, 0.25) // window band
+        else if (f < 0.85) circle(0, r() < 0.5 ? -0.7 : 0.7, 0.22, r() < 0.5 ? -0.39 : 0.39, 0.16, 0.1)
+        else if (f < 0.93) at(0, -1.6 + r() * 3.2, 0.03, r() < 0.5 ? -0.3 : 0.3, 0.15) // rails
+        else at(0, -0.4 + Math.floor(r() * 3) * 0.4 + (r() - 0.5) * 0.08, 0.3, (r() - 0.5) * 0.4, 1) // cameras
+      },
+    ],
+    [
+      0.16,
+      () => {
+        // site 1: conveyor through an industrial oven, camera above
+        const f = r()
+        if (f < 0.5) boxSurf(1, -0.65, 0.65, 0.25, 1.05, -0.45, 0.45, 0.05)
+        else if (f < 0.72) at(1, -1.4 + r() * 2.8, 0.3, (r() - 0.5) * 0.6, 0.06) // belt
+        else if (f < 0.86) {
+          // dough pieces on the belt
+          const c = -1.2 + Math.floor(r() * 4) * 0.8
+          const t = r() * Math.PI * 2
+          const rr = Math.sqrt(r()) * 0.14
+          at(1, c + Math.cos(t) * rr, 0.32 + (0.14 - rr) * 0.6, Math.sin(t) * rr, 0.6)
+        } else at(1, (r() - 0.5) * 0.12, 1.05 + r() * 0.12, (r() - 0.5) * 0.12, 1) // camera
+      },
+    ],
+    [
+      0.15,
+      () => {
+        // site 2: control desk with three screens
+        const f = r()
+        if (f < 0.3) boxSurf(2, -1.0, 1.0, 0.0, 0.5, -0.3, 0.3, 0.05)
+        else {
+          const p = Math.floor(r() * 3) - 1
+          const u = p * 0.66 + (r() - 0.5) * 0.6
+          const v = 0.6 + r() * 0.42
+          const border = r() < 0.4
+          const uu = border ? p * 0.66 + (r() < 0.5 ? -0.3 : 0.3) : u
+          at(2, uu, v, -0.2 - Math.abs(p) * 0.12, border ? 0.15 : 0.3 * r())
+        }
+      },
+    ],
+    [
+      0.13,
+      () => {
+        // site 3: metro tunnel section with a niche in the wall
+        const t = r() * Math.PI
+        const rad = 0.85
+        const u = Math.cos(t) * rad
+        const v = Math.sin(t) * rad + 0.25
+        const d = (r() - 0.5) * 1.5
+        const niche = Math.abs(d) < 0.2 && t < 0.9 && t > 0.4
+        at(3, u, v, d, niche ? 1 : 0.04)
       },
     ],
   ])
@@ -457,7 +537,7 @@ function part(N: number) {
 }
 
 export function buildShapes(N: number): Float32Array[] {
-  return [tunnelScan(N), tunnelMesh(N), detect(N), interfaceScreens(N), part(N)]
+  return [tunnelScan(N), tunnelMesh(N), detect(N), interfaceScreens(N), deploy(N)]
 }
 
 export const TUNNEL_Z = { min: T.Z0, max: T.Z1 }

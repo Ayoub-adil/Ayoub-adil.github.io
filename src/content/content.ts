@@ -73,8 +73,8 @@ export const steps: { id: StepId; verb: string; object: string; body: string; re
     id: 'ship',
     verb: 'I ship',
     object: 'to production.',
-    body: 'Installed on trains, running in an industrial oven, used in signal boxes. Then supported and maintained.',
-    ref: 'Track inspection · Dough monitoring · Signal-box assistant',
+    body: 'I install my applications on client sites and maintain them after delivery. They run on trains, in an industrial oven and in signal boxes.',
+    ref: 'Installation · maintenance · support',
   },
 ]
 
