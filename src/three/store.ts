@@ -9,6 +9,8 @@ export const field = {
   /** normalised pointer, -1..1 */
   pointer: { x: 0, y: 0 },
   reduced: false,
+  /** 0..1: position of the scroll within the current "What I do" step (drives a camera orbit) */
+  stepFrac: 0.5,
   /** 0..1: hero head flying onto the About portrait */
   toPhoto: 0,
   /** About portrait in NDC: left, top, right, bottom */

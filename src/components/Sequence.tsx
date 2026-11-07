@@ -27,6 +27,8 @@ export default function Sequence() {
         const reached = self.progress * h >= vh * 0.65
         field.morph = reached ? 1 + step : 0
         setActive(step)
+        // within a step, every scroll tick still moves the view: the camera orbits with it
+        field.stepFrac = Math.min(Math.max(p * steps.length - step, 0), 1)
         if (bar.current) bar.current.style.transform = `scaleY(${p})`
       },
       onLeaveBack() {
@@ -41,7 +43,8 @@ export default function Sequence() {
       id="process"
       ref={ref}
       aria-label="What I do: from sensor to production"
-      style={{ height: `${steps.length * 100 + 40}vh` }}
+      // ~60 % of a screen of scroll per step, so each step is a few wheel ticks
+      style={{ height: `${steps.length * 60 + 100}vh` }}
       className="relative"
     >
       <div className="sticky top-0 flex h-svh items-center">

@@ -22,11 +22,12 @@ const ease = (t: number) => t * t * (3 - 2 * t)
 
 function Rig({ wide }: { wide: boolean }) {
   const { camera } = useThree()
-  const s = useRef({ m: 0, px: 0, py: 0 })
+  const s = useRef({ m: 0, px: 0, py: 0, f: 0.5 })
   const pos = useMemo(() => new THREE.Vector3(), [])
   const tgt = useMemo(() => new THREE.Vector3(), [])
   const a = useMemo(() => new THREE.Vector3(), [])
   const b = useMemo(() => new THREE.Vector3(), [])
+  const up = useMemo(() => new THREE.Vector3(0, 1, 0), [])
 
   useEffect(() => {
     const cam = camera as THREE.PerspectiveCamera
@@ -48,6 +49,11 @@ function Rig({ wide }: { wide: boolean }) {
     tgt.lerpVectors(a.fromArray(KEYS[i].target), b.fromArray(KEYS[i + 1].target), f)
 
     const motion = field.reduced ? 0 : 1
+    // in the "What I do" steps, orbit around the subject with the scroll inside the step
+    st.f += (field.stepFrac - st.f) * (1 - Math.exp(-dt * 5))
+    const inSeq = Math.min(Math.max(st.m, 0), 1)
+    const orbit = (st.f - 0.5) * 0.55 * inSeq * motion
+    pos.sub(tgt).applyAxisAngle(up, orbit).add(tgt)
     pos.x += st.px * 0.45 * motion
     pos.y += st.py * 0.3 * motion
     camera.position.copy(pos)
