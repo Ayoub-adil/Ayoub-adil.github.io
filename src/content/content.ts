@@ -266,8 +266,8 @@ export const academic: Academic[] = [
     summary: 'A development framework in Unreal Engine 5 mapping gestures and postures to the manipulation of 3D objects.',
     stack: ['Unreal Engine 5', 'VR'],
     media: [
-      { type: 'video', src: '/img/projects/rokoko-mocap.mp4', poster: '/img/projects/rokoko-mocap-poster.jpg', alt: 'Me in a motion-capture suit driving a 3D avatar in real time' },
       { type: 'image', src: '/img/projects/vr-interaction.webp', alt: 'Motion-capture gloves used in the project' },
+      { type: 'video', src: '/img/projects/rokoko-mocap.mp4', poster: '/img/projects/rokoko-mocap-poster.jpg', alt: 'Me in a motion-capture suit driving a 3D avatar in real time' },
     ],
   },
   {
