@@ -7,7 +7,7 @@ export default function Skills() {
     <section id="skills" className="screen relative">
       <div className="container-x">
         <SectionHead
-          n="06"
+          n="05"
           eyebrow="Skills"
           title={['My toolbox,', 'from shaders to sensors.']}
           lede="Languages and frameworks I use, the 3D tools I learned in my master’s, and the hardware I integrate at work."

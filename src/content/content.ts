@@ -302,7 +302,7 @@ export const architecture = {
   eyebrow: 'Case study · Tunnel inspection platform',
   title: ['One truck,', 'thirteen services.'],
   lede:
-    'The largest system I have worked on. I developed its services and applications, from synchronised acquisition on board the truck to the tools inspectors use after the run. Hover a service to see what it does. Generic, anonymised view.',
+    'The largest system I have worked on. I developed its services and applications, from synchronised acquisition on board the truck to the tools inspectors use after the run. Hover a service to see what it does and what feeds it. Generic, anonymised view.',
   layers: [
     {
       id: 'hw',

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { architecture } from '../content/content'
-import { SectionHead } from './ui'
 
 type Node = { id: string; label: string; desc: string; links?: string[] }
 type Edge = { from: string; to: string }
 
-export default function Architecture() {
+// Interactive architecture of the tunnel inspection platform, shown in that project's dialog.
+export default function ArchitectureDiagram() {
   const wrap = useRef<HTMLDivElement>(null)
   const [focus, setFocus] = useState<string | null>(null)
   const [paths, setPaths] = useState<{ key: string; d: string; from: string; to: string }[]>([])
@@ -26,7 +26,7 @@ export default function Architecture() {
 
   const measure = useCallback(() => {
     const root = wrap.current
-    if (!root || window.innerWidth < 1024) return setPaths([])
+    if (!root || window.innerWidth < 768) return setPaths([])
     const box = root.getBoundingClientRect()
     const pos = (id: string) => {
       const el = root.querySelector<HTMLElement>(`[data-node="${id}"]`)
@@ -62,13 +62,9 @@ export default function Architecture() {
   const active = nodes.find((n) => n.id === focus)
 
   return (
-    <section id="architecture" className="screen relative">
-      <div className="container-x">
-        <SectionHead n="05" eyebrow={architecture.eyebrow} title={architecture.title} lede={architecture.lede} />
-
-        <div className="mt-[3.5svh] rounded-xl border border-line bg-ink-2/60 p-4 backdrop-blur-sm md:p-6">
-          <div ref={wrap} className="relative grid gap-8 lg:grid-cols-4 lg:gap-14">
-            <svg className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block" aria-hidden>
+        <div className="rounded-xl border border-line bg-ink/60 p-4 md:p-5">
+          <div ref={wrap} className="relative grid gap-6 md:grid-cols-4 md:gap-10">
+            <svg className="pointer-events-none absolute inset-0 hidden h-full w-full md:block" aria-hidden>
               {paths.map((p) => {
                 const on = focus && (p.from === focus || p.to === focus)
                 return (
@@ -122,11 +118,8 @@ export default function Architecture() {
 
           <div className="mt-[2.5svh] flex min-h-[2.5rem] items-start gap-4 border-t border-line pt-[1.8svh]" aria-live="polite">
             <span className="label shrink-0 pt-0.5">{active ? active.label : 'Hover a service'}</span>
-            <p className="text-paper/75">{active ? active.desc : 'Hardware → on-board services → data → applications. Connections show which service feeds which.'}</p>
+            <p className="text-[0.9rem] text-paper/75">{active ? active.desc : 'On the truck → acquisition services → supervision → after the run. Lines show which service feeds which.'}</p>
           </div>
         </div>
-        <p className="label mt-3 !normal-case !tracking-normal">Stack: .NET · WPF · C# · C++ · Modbus / JBus</p>
-      </div>
-    </section>
   )
 }

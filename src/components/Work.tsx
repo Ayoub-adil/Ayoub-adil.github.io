@@ -1,6 +1,7 @@
-import { academic, featured, more, type Media as MediaItem, type Project } from '../content/content'
+import { academic, architecture, featured, more, type Media as MediaItem, type Project } from '../content/content'
+import ArchitectureDiagram from './Architecture'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Arrow, SectionHead, StatusPill } from './ui'
+import { SectionHead, StatusPill } from './ui'
 import { lockScroll } from '../lib/scroll'
 
 /**
@@ -231,7 +232,9 @@ function Card({ p, n, onOpen }: { p: Project; n: number; onOpen: () => void }) {
               </li>
             ))}
           </ul>
-          <span className="label shrink-0 !text-[0.62rem] !text-signal opacity-70 transition-opacity group-hover:opacity-100">Details +</span>
+          <span className="label shrink-0 !text-[0.62rem] !text-signal opacity-70 transition-opacity group-hover:opacity-100">
+            {p.id === 'tunnel-platform' ? 'Details + architecture' : 'Details +'}
+          </span>
         </div>
       </div>
     </article>
@@ -315,16 +318,18 @@ function ProjectDialog({ index, onClose, onGo }: { index: number | null; onClose
                   </li>
                 ))}
               </ul>
-              {p.id === 'tunnel-platform' && (
-                <a
-                  href="#architecture"
-                  onClick={onClose}
-                  className="inline-flex w-fit items-center gap-2 text-[0.9rem] text-signal hover:underline"
-                >
-                  See the architecture of its services <Arrow />
-                </a>
-              )}
             </div>
+            {/* the tunnel inspection platform shows its service architecture right here */}
+            {p.id === 'tunnel-platform' && (
+              <div className="border-t border-line p-6 md:col-span-2 md:p-7">
+                <p className="eyebrow mb-2">Architecture</p>
+                <h4 className="display text-[clamp(1.5rem,3.4svh,2.1rem)]">
+                  {architecture.title[0]} <span className="accent">{architecture.title[1]}</span>
+                </h4>
+                <p className="mb-5 mt-2 max-w-2xl text-[0.92rem] leading-relaxed text-paper/70">{architecture.lede}</p>
+                <ArchitectureDiagram />
+              </div>
+            )}
           </div>
         </div>
       )}
