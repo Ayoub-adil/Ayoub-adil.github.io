@@ -44,6 +44,7 @@ export default function App() {
     // everywhere else it dissolves into dust behind the content.
     const seq = document.getElementById('process')!
     const photo = document.getElementById('about-photo')
+    const about = document.getElementById('about')
     // without WebGL or with reduced motion the photo is simply shown
     const handoff = webgl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const clamp = (v: number) => Math.min(Math.max(v, 0), 1)
@@ -56,8 +57,10 @@ export default function App() {
         const r = photo.getBoundingClientRect()
         const vw = window.innerWidth
         field.photoRect = [(r.left / vw) * 2 - 1, 1 - (r.top / vh) * 2, (r.right / vw) * 2 - 1, 1 - (r.bottom / vh) * 2]
-        const docTop = r.top + window.scrollY
-        const end = Math.max(docTop - 0.15 * vh, 1)
+        // the handoff ends just before the About section is framed at the top of the screen,
+        // so the photo is complete exactly when the page is aligned (no text cut off)
+        const aboutTop = (about?.getBoundingClientRect().top ?? r.top) + window.scrollY
+        const end = Math.max(aboutTop * 0.94, 1)
         const t = clamp(window.scrollY / end)
         field.toPhoto = t
         // the photo only appears at the very end, when the points have become it
