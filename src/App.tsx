@@ -42,7 +42,6 @@ export default function App() {
 
     // The point field is the subject in the hero and the "What I do" sequence;
     // everywhere else it dissolves into dust behind the content.
-    const hero = document.getElementById('top')!
     const seq = document.getElementById('process')!
     const photo = document.getElementById('about-photo')
     // without WebGL or with reduced motion the photo is simply shown
@@ -50,12 +49,7 @@ export default function App() {
     const clamp = (v: number) => Math.min(Math.max(v, 0), 1)
     const onScroll = () => {
       const vh = window.innerHeight
-      const h = hero.getBoundingClientRect()
       const s = seq.getBoundingClientRect()
-      const afterSeq = clamp((0.85 * vh - s.bottom) / (0.6 * vh))
-      // the head no longer dissolves after the hero: it flies onto the About portrait
-      field.dim = afterSeq
-      void h
 
       // hero -> About portrait handoff, driven by the scroll position of the photo
       if (photo) {
@@ -70,6 +64,13 @@ export default function App() {
         const fade = handoff ? clamp((t - 0.9) / 0.1) : 1
         photo.style.opacity = String(fade)
       }
+
+      // dust behind the content after the "What I do" sequence; and once the head has
+      // become the photo, its points live on as that star field until the sequence is
+      // reached (same threshold as Sequence.tsx), where the tunnel gathers from them
+      const afterSeq = clamp((0.85 * vh - s.bottom) / (0.6 * vh))
+      const starsAfterPhoto = field.toPhoto >= 0.999 && s.top > 0.35 * vh ? 1 : 0
+      field.dim = Math.max(afterSeq, starsAfterPhoto)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })

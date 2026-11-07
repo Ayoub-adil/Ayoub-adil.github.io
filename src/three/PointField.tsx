@@ -137,7 +137,9 @@ const vertex = /* glsl */ `
     // the cloud tightens as it lands: dim the additive glow so it never saturates to white
     vAlpha = mix(vAlpha * mix(1.0, 0.3, e), 1.0, vPhoto) * (1.0 - smoothstep(0.9, 1.0, kk) * (1.0 - done));
     // after the handoff, points leaving stage 0 fade in as they gather into the tunnel
-    vAlpha *= mix(1.0, i0 < 0.5 ? tt : 1.0, done);
+    // and while the photo is shown they fade in as the sparse star field (dim / dust),
+    // from which the tunnel later gathers
+    vAlpha *= mix(1.0, i0 < 0.5 ? max(tt, dis) : 1.0, done);
     vScan *= 1.0 - kk;
     vCol = aCol;
   }

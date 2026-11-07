@@ -5,7 +5,7 @@ export default function About() {
   return (
     <section id="about" className="relative py-[clamp(6rem,14vh,10rem)]">
       <div className="container-x grid gap-14 lg:grid-cols-12">
-        <figure className="lg:col-span-5">
+        <figure className="lg:order-2 lg:col-span-5">
           <div className="relative">
             {/* cut-out portrait (same crop and matte as the hero point cloud, which lands on it) */}
             <img
@@ -26,7 +26,7 @@ export default function About() {
           </div>
         </figure>
 
-        <div className="flex flex-col lg:col-span-7">
+        <div className="flex flex-col lg:order-1 lg:col-span-7">
           <p className="eyebrow mb-5">
             <span className="mr-3 text-mute">01</span>
             {about.eyebrow}
