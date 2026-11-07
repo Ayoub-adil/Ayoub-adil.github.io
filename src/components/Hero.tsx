@@ -6,16 +6,7 @@ export default function Hero() {
     <section id="top" className="relative flex min-h-svh flex-col justify-end pb-[11vh] pt-28">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/45 to-transparent md:via-ink/30 md:to-60%" />
       <div className="container-x relative">
-        <div className="mb-8 flex items-center gap-4 reveal">
-          <img
-            src="/img/ayoub-600.webp"
-            alt=""
-            width={56}
-            height={56}
-            className="h-14 w-14 rounded-full border border-paper/20 object-cover object-[50%_20%]"
-          />
-          <p className="eyebrow">{hero.eyebrow}</p>
-        </div>
+        <p className="eyebrow mb-8 reveal">{hero.eyebrow}</p>
         <h1 className="display text-[clamp(3.2rem,9.6vw,8.6rem)] reveal">{hero.name}</h1>
         <p className="mt-3 text-[clamp(1.6rem,3.6vw,3rem)] leading-[1.05] tracking-tight reveal">
           {hero.title[0]} <span className="accent text-signal">{hero.title[1]}</span>

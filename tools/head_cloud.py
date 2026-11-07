@@ -4,8 +4,13 @@
   2. Depth Anything V2: per-pixel relative depth of the face
   3. sample points, denser on facial detail, brightness from the photo
 
-Output: public/models/head.bin, little-endian, N records of
-  int16 x, int16 y, int16 z (units * 4096), uint8 brightness, uint8 pad
+The crop is exactly the About portrait (public/img/ayoub.jpg: full width, 4:5 from
+3 % below the top), so a point's (x, y) maps to a pixel of that image. The site uses
+this to fly the cloud onto the photo and hand over to it.
+
+Output: public/models/head.bin, little-endian, N records of 10 bytes:
+  int16 x, int16 y, int16 z (units * 4096), uint8 r, g, b (colour in ayoub.jpg),
+  uint8 brightness (for the white point-cloud look)
 Records are shuffled, so any prefix is a uniform subsample (mobile uses fewer).
 
 Run: tools/.venv/Scripts/python tools/head_cloud.py [photo] [--debug]
@@ -19,13 +24,15 @@ from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
 PHOTO = ROOT / "pro_photos" / "AA_hd2.jpg"
+PORTRAIT = ROOT / "public" / "img" / "ayoub.jpg"  # graded 4:5 crop shown in About
+CUTOUT = ROOT / "public" / "img" / "ayoub-cutout.webp"  # same crop, background removed
+CUTOUT_SMALL = ROOT / "public" / "img" / "ayoub-cutout-600.webp"
 OUT = ROOT / "public" / "models" / "head.bin"
 DEBUG = ROOT / "tools" / "debug"
 
 N = 85_000
 WORK_W = 1200          # processing width in px
-CROP = (0.0, 0.03, 1.0, 0.78)  # head and shoulders, fractions of the photo
-HEIGHT_UNITS = 4.6     # height of the crop in scene units
+HEIGHT_UNITS = 5.1     # height of the 4:5 crop in scene units (keep in sync with HEAD_H in PointField.tsx)
 DEPTH_RATIO = 0.62     # face relief depth relative to head width
 SEED = 7
 
@@ -37,7 +44,8 @@ def main():
 
     im = Image.open(photo).convert("RGB")
     W, H = im.size
-    im = im.crop((int(CROP[0] * W), int(CROP[1] * H), int(CROP[2] * W), int(CROP[3] * H)))
+    top = int(H * 0.03)  # same crop as the About portrait
+    im = im.crop((0, top, W, top + int(W * 5 / 4)))
     im = im.resize((WORK_W, int(im.size[1] * WORK_W / im.size[0])), Image.LANCZOS)
     w, h = im.size
 
@@ -47,6 +55,15 @@ def main():
     session = new_session("birefnet-portrait")
     matte = remove(im, session=session, only_mask=True)
     alpha = np.asarray(matte, dtype=np.float32) / 255.0
+
+    # cut-out portrait for the About section: same crop, same matte, no white background.
+    # Colour decontamination removes the white fringe in the curls: F = (I - (1 - a) * white) / a
+    portrait_rgb = np.asarray(Image.open(PORTRAIT).convert("RGB").resize((w, h), Image.LANCZOS), dtype=np.float32)
+    a3 = np.clip(alpha, 1e-3, 1)[..., None]
+    fg = np.clip((portrait_rgb - (1 - a3) * 255.0) / a3, 0, 255)
+    cut = np.dstack([fg, alpha * 255]).astype(np.uint8)
+    Image.fromarray(cut, "RGBA").save(CUTOUT, quality=86, method=6)
+    Image.fromarray(cut, "RGBA").resize((600, 750), Image.LANCZOS).save(CUTOUT_SMALL, quality=86, method=6)
 
     # 2. depth
     import torch
@@ -99,12 +116,16 @@ def main():
     shade = 0.45 + 0.55 * np.clip(dn[py, px], 0, 1)
     bright = np.clip(0.04 + 0.96 * tone * shade, 0, 1)
 
-    q = np.empty(N, dtype=[("x", "<i2"), ("y", "<i2"), ("z", "<i2"), ("b", "u1"), ("p", "u1")])
+    # colour from the portrait actually displayed on the site (same crop, graded)
+    portrait = np.asarray(Image.open(PORTRAIT).convert("RGB").resize((w, h), Image.LANCZOS), dtype=np.uint8)
+    rgb = portrait[py, px]
+
+    q = np.empty(N, dtype=[("x", "<i2"), ("y", "<i2"), ("z", "<i2"), ("r", "u1"), ("g", "u1"), ("bl", "u1"), ("b", "u1")])
     q["x"] = np.round(x * 4096).astype(np.int16)
     q["y"] = np.round(y * 4096).astype(np.int16)
     q["z"] = np.round(z * 4096).astype(np.int16)
+    q["r"], q["g"], q["bl"] = rgb[:, 0], rgb[:, 1], rgb[:, 2]
     q["b"] = np.round(bright * 255).astype(np.uint8)
-    q["p"] = 0
     q = q[rng.permutation(N)]
     OUT.parent.mkdir(parents=True, exist_ok=True)
     q.tofile(OUT)

@@ -8,6 +8,9 @@ import { field } from './store'
 // Stages 1..5 are the procedural "What I do" scenes.
 export const HEAD_URL = '/models/head.bin'
 export const LAST = 5
+// Height of the head crop in scene units; must match HEIGHT_UNITS in tools/head_cloud.py.
+// The crop is the 4:5 About portrait, so (x, y) maps to a pixel of that photo.
+const HEAD_H = 5.1
 
 const vertex = /* glsl */ `
   uniform float uMorph;
@@ -21,7 +24,12 @@ const vertex = /* glsl */ `
   uniform float uPulse;
   uniform float uMotion;
   uniform float uDim;
+  uniform float uToPhoto;  // 0..1: hero head flying onto the About portrait
+  uniform vec4 uRect;      // portrait rect in NDC: left, top, right, bottom
+  uniform float uHeadH;
+  uniform float uPhotoPt;  // point size once laid on the photo
 
+  attribute vec3 aCol;     // colour of the point in the portrait (linear)
   attribute vec4 aP0;
   attribute vec4 aP1;
   attribute vec4 aP2;
@@ -34,6 +42,8 @@ const vertex = /* glsl */ `
   varying float vLum;
   varying float vAlpha;
   varying float vScan;
+  varying vec3 vCol;
+  varying float vPhoto;
 
   vec4 spinY(vec4 p, float a) {
     float c = cos(a), s = sin(a);
@@ -41,7 +51,11 @@ const vertex = /* glsl */ `
   }
 
   vec4 shapeAt(float i) {
-    if (i < 0.5) return spinY(aP0, uYaw);
+    if (i < 0.5) {
+      float done = smoothstep(0.97, 1.0, uToPhoto);
+      vec3 scatter = (aRnd.yzw - 0.5) * vec3(26.0, 16.0, 26.0);
+      return mix(spinY(aP0, uYaw), vec4(scatter, aP0.w), done);
+    }
     if (i < 1.5) return aP1;
     if (i < 2.5) return aP2;
     if (i < 3.5) return aP3;
@@ -99,7 +113,7 @@ const vertex = /* glsl */ `
     vLum = mix(lumOf(a.w), lumOf(b.w), tt);
 
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
-    gl_Position = projectionMatrix * mv;
+    vec4 clip = projectionMatrix * mv;
     float depth = -mv.z;
     float size = uSize * (0.55 + aRnd.y * 0.9) * (1.0 + vHi * 0.6 + vScan * 1.2);
     gl_PointSize = min(size / depth, uSize * 0.32);
@@ -108,6 +122,24 @@ const vertex = /* glsl */ `
     vAlpha *= mix(1.0, step(aRnd.w, 0.16) * 0.7, dis);
     vLum = mix(vLum, 1.0, dis);
     gl_PointSize *= mix(1.0, 0.55, dis);
+
+    // hero -> About: each head point flies to its own pixel of the portrait, in screen space,
+    // takes the photo's colour, then fades while the photo itself appears
+    float kk = uToPhoto * wHead;
+    float done = smoothstep(0.97, 1.0, uToPhoto);
+    float e = smoothstep(0.0, 1.0, clamp(kk * 1.12 - aRnd.x * 0.12, 0.0, 1.0)) * (1.0 - done);
+    vec2 uv = vec2(aP0.x / (uHeadH * 0.8) + 0.5, 0.5 - aP0.y / uHeadH);
+    vec2 target = vec2(mix(uRect.x, uRect.z, uv.x), mix(uRect.y, uRect.w, uv.y));
+    vec2 ndc = clip.xy / clip.w;
+    gl_Position = vec4(mix(ndc, target, e) * clip.w, clip.z, clip.w);
+    gl_PointSize = mix(gl_PointSize, uPhotoPt, e);
+    vPhoto = smoothstep(0.38, 0.78, kk) * (1.0 - done);
+    // the cloud tightens as it lands: dim the additive glow so it never saturates to white
+    vAlpha = mix(vAlpha * mix(1.0, 0.3, e), 1.0, vPhoto) * (1.0 - smoothstep(0.9, 1.0, kk) * (1.0 - done));
+    // after the handoff, points leaving stage 0 fade in as they gather into the tunnel
+    vAlpha *= mix(1.0, i0 < 0.5 ? tt : 1.0, done);
+    vScan *= 1.0 - kk;
+    vCol = aCol;
   }
 `
 
@@ -120,37 +152,46 @@ const fragment = /* glsl */ `
   varying float vLum;
   varying float vAlpha;
   varying float vScan;
+  varying vec3 vCol;
+  varying float vPhoto;
 
   void main() {
     vec2 c = gl_PointCoord - 0.5;
     float r = length(c);
-    if (r > 0.5) discard;
-    float disk = smoothstep(0.5, 0.0, r);
+    // soft round points, becoming solid squares that tile the photo
+    if (r > 0.5 && vPhoto < 0.5) discard;
+    float disk = mix(smoothstep(0.5, 0.0, r), 1.0, vPhoto);
     float hi = clamp(vHi + vScan, 0.0, 1.0);
-    vec3 col = mix(uBase, uAccent, hi);
-    float a = disk * vAlpha * uOpacity * (0.55 + hi * 0.9) * mix(vLum, 1.0, hi);
-    gl_FragColor = vec4(col, a);
+    vec3 col = mix(mix(uBase, uAccent, hi), vCol, vPhoto);
+    float a = disk * vAlpha * uOpacity * mix((0.55 + hi * 0.9) * mix(vLum, 1.0, hi), 1.0, vPhoto);
+    // premultiplied: alpha 0 = additive glow (point cloud), alpha a = normal 'over' (photo)
+    gl_FragColor = vec4(col * a, a * vPhoto);
     #include <colorspace_fragment>
   }
 `
 
-/** Decode head.bin: int16 x, y, z (/4096), uint8 brightness, uint8 pad. */
-async function loadHead(count: number, out: Float32Array) {
+/** Decode head.bin: int16 x, y, z (/4096), uint8 r, g, b, uint8 brightness. */
+async function loadHead(count: number, out: Float32Array, col: Float32Array) {
   const buf = await (await fetch(HEAD_URL)).arrayBuffer()
   const dv = new DataView(buf)
-  const n = buf.byteLength / 8
+  const n = buf.byteLength / 10
+  const c = new THREE.Color()
   for (let i = 0; i < count; i++) {
-    const o = (i % n) * 8
+    const o = (i % n) * 10
     out[i * 4] = dv.getInt16(o, true) / 4096
     out[i * 4 + 1] = dv.getInt16(o + 2, true) / 4096
     out[i * 4 + 2] = dv.getInt16(o + 4, true) / 4096
-    out[i * 4 + 3] = dv.getUint8(o + 6) / 255 - 1
+    out[i * 4 + 3] = dv.getUint8(o + 9) / 255 - 1
+    c.setRGB(dv.getUint8(o + 6) / 255, dv.getUint8(o + 7) / 255, dv.getUint8(o + 8) / 255, THREE.SRGBColorSpace)
+    col[i * 3] = c.r
+    col[i * 3 + 1] = c.g
+    col[i * 3 + 2] = c.b
   }
 }
 
 export default function PointField({ count }: { count: number }) {
   const mat = useRef<THREE.ShaderMaterial>(null)
-  const { gl } = useThree()
+  const { gl, size } = useThree()
   const state = useRef({ morph: 0, dim: 0, intro: field.reduced ? 1 : 0, spin: 0, ready: false, wait: 0 })
 
   const geometry = useMemo(() => {
@@ -159,6 +200,7 @@ export default function PointField({ count }: { count: number }) {
     // position is only used for bounding volumes; the shader reads aP0..aP5
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3))
     g.setAttribute('aP0', new THREE.BufferAttribute(new Float32Array(count * 4), 4))
+    g.setAttribute('aCol', new THREE.BufferAttribute(new Float32Array(count * 3), 3))
     shapes.forEach((s, i) => g.setAttribute(`aP${i + 1}`, new THREE.BufferAttribute(s, 4)))
     const rnd = new Float32Array(count * 4)
     for (let i = 0; i < rnd.length; i++) rnd[i] = Math.random()
@@ -169,11 +211,13 @@ export default function PointField({ count }: { count: number }) {
 
   useEffect(() => {
     const attr = geometry.getAttribute('aP0') as THREE.BufferAttribute
+    const colAttr = geometry.getAttribute('aCol') as THREE.BufferAttribute
     let alive = true
-    loadHead(count, attr.array as Float32Array)
+    loadHead(count, attr.array as Float32Array, colAttr.array as Float32Array)
       .then(() => {
         if (!alive) return
         attr.needsUpdate = true
+        colAttr.needsUpdate = true
         state.current.ready = true
       })
       .catch(() => (state.current.ready = true))
@@ -197,6 +241,10 @@ export default function PointField({ count }: { count: number }) {
       uMotion: { value: field.reduced ? 0 : 1 },
       uOpacity: { value: 1 },
       uDim: { value: 0 },
+      uToPhoto: { value: 0 },
+      uRect: { value: new THREE.Vector4(0.2, 0.5, 0.6, -0.5) },
+      uHeadH: { value: HEAD_H },
+      uPhotoPt: { value: 2 },
       uBase: { value: new THREE.Color('#e6eaf0') },
       uAccent: { value: new THREE.Color('#fab529') },
     }),
@@ -221,7 +269,7 @@ export default function PointField({ count }: { count: number }) {
     u.uIntro.value = s.intro
     u.uSpin.value = s.spin
     // slow look left / right, small enough to stay inside what the photo captured
-    u.uYaw.value = Math.sin(time * 0.35) * 0.22 * motion
+    u.uYaw.value = Math.sin(time * 0.35) * 0.22 * motion * (1 - field.toPhoto)
     const span = TUNNEL_Z.max - TUNNEL_Z.min
     u.uScanZ.value = field.reduced ? 2 : TUNNEL_Z.max - ((time * 3.5) % (span + 6))
     // a scan line down the face every 6 s, once the head has formed
@@ -230,6 +278,13 @@ export default function PointField({ count }: { count: number }) {
     u.uPulse.value = field.reduced ? -9 : (time * 1.6) % 6
     u.uDim.value = s.dim
     u.uSize.value = 24 * gl.getPixelRatio()
+    const [x0, y0, x1, y1] = field.photoRect
+    u.uToPhoto.value = field.reduced ? 0 : field.toPhoto
+    u.uRect.value.set(x0, y0, x1, y1)
+    // points just large enough to tile the portrait without gaps
+    const wpx = ((x1 - x0) / 2) * size.width
+    const hpx = ((y0 - y1) / 2) * size.height
+    u.uPhotoPt.value = Math.min(Math.max(Math.sqrt((wpx * hpx) / (count * 0.5)) * 1.5, 1.5), 7) * gl.getPixelRatio()
   })
 
   return (
@@ -241,7 +296,9 @@ export default function PointField({ count }: { count: number }) {
         uniforms={uniforms}
         transparent
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.CustomBlending}
+        blendSrc={THREE.OneFactor}
+        blendDst={THREE.OneMinusSrcAlphaFactor}
       />
     </points>
   )

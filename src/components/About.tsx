@@ -6,21 +6,20 @@ export default function About() {
     <section id="about" className="relative py-[clamp(6rem,14vh,10rem)]">
       <div className="container-x grid gap-14 lg:grid-cols-12">
         <figure className="lg:col-span-5">
-          <div className="relative overflow-hidden rounded-xl border border-line">
-            <picture>
-              <source type="image/webp" srcSet="/img/ayoub-600.webp 600w, /img/ayoub.webp 1200w" sizes="(min-width: 1024px) 34vw, 92vw" />
-              <img
-                src="/img/ayoub.jpg"
-                alt="Portrait of Ayoub ADIL"
-                width={1200}
-                height={1500}
-                loading="lazy"
-                decoding="async"
-                className="aspect-[4/5] w-full object-cover brightness-[.93]"
-              />
-            </picture>
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
-            <figcaption className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+          <div className="relative">
+            {/* cut-out portrait (same crop and matte as the hero point cloud, which lands on it) */}
+            <img
+              id="about-photo"
+              src="/img/ayoub-cutout.webp"
+              srcSet="/img/ayoub-cutout-600.webp 600w, /img/ayoub-cutout.webp 1200w"
+              sizes="(min-width: 1024px) 34vw, 92vw"
+              alt="Portrait of Ayoub ADIL"
+              width={1200}
+              height={1500}
+              decoding="async"
+              className="aspect-[4/5] w-full object-cover [mask-image:linear-gradient(to_bottom,black_70%,transparent)]"
+            />
+            <figcaption className="mt-2 flex items-end justify-between border-t border-line pt-4">
               <span className="label !text-paper/90">{profile.name}</span>
               <span className="label !text-paper/70">{profile.location}</span>
             </figcaption>

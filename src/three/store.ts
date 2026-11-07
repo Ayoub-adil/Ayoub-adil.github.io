@@ -9,6 +9,10 @@ export const field = {
   /** normalised pointer, -1..1 */
   pointer: { x: 0, y: 0 },
   reduced: false,
+  /** 0..1: hero head flying onto the About portrait */
+  toPhoto: 0,
+  /** About portrait in NDC: left, top, right, bottom */
+  photoRect: [0.2, 0.5, 0.6, -0.5] as [number, number, number, number],
 }
 
 export const MOBILE_QUERY = '(max-width: 767px)'

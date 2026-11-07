@@ -44,21 +44,40 @@ export default function App() {
     // everywhere else it dissolves into dust behind the content.
     const hero = document.getElementById('top')!
     const seq = document.getElementById('process')!
+    const photo = document.getElementById('about-photo')
+    // without WebGL or with reduced motion the photo is simply shown
+    const handoff = webgl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const clamp = (v: number) => Math.min(Math.max(v, 0), 1)
     const onScroll = () => {
       const vh = window.innerHeight
       const h = hero.getBoundingClientRect()
       const s = seq.getBoundingClientRect()
-      const afterHero = clamp((0.75 * vh - h.bottom) / (0.5 * vh))
-      const beforeSeq = clamp((s.top - 0.15 * vh) / (0.5 * vh))
       const afterSeq = clamp((0.85 * vh - s.bottom) / (0.6 * vh))
-      field.dim = Math.max(afterSeq, Math.min(afterHero, beforeSeq))
+      // the head no longer dissolves after the hero: it flies onto the About portrait
+      field.dim = afterSeq
+      void h
+
+      // hero -> About portrait handoff, driven by the scroll position of the photo
+      if (photo) {
+        const r = photo.getBoundingClientRect()
+        const vw = window.innerWidth
+        field.photoRect = [(r.left / vw) * 2 - 1, 1 - (r.top / vh) * 2, (r.right / vw) * 2 - 1, 1 - (r.bottom / vh) * 2]
+        const docTop = r.top + window.scrollY
+        const end = Math.max(docTop - 0.15 * vh, 1)
+        const t = clamp(window.scrollY / end)
+        field.toPhoto = t
+        // the photo only appears at the very end, when the points have become it
+        const fade = handoff ? clamp((t - 0.9) / 0.1) : 1
+        photo.style.opacity = String(fade)
+      }
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
     return () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
     }
   }, [])
 

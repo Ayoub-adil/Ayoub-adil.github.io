@@ -22,7 +22,9 @@ export default function Sequence() {
         const p = (self.progress * h - vh) / (h - vh)
         const { morph, step } = progressToMorph(Math.max(p, 0), steps.length)
         // stage 0 is the head (hero); the sequence covers stages 1..5
-        field.morph = 1 + (field.reduced ? Math.round(morph) : morph)
+        // stage 1 only appears once the section is reached; until then nothing is shown
+        const reached = self.progress * h >= vh * 0.65
+        field.morph = reached ? 1 + (field.reduced ? Math.round(morph) : morph) : 0
         setActive(step)
         if (bar.current) bar.current.style.transform = `scaleY(${Math.max(p, 0)})`
       },
