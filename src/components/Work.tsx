@@ -175,10 +175,13 @@ function Rail({ label, note, children }: { label: string; note: string; children
           </button>
         </div>
       </div>
+      {/* full-bleed track: the cards start on the content grid but the neighbours peek in at
+          the screen edges, so it is obvious there is more to see on either side */}
       <div
         ref={track}
         onScroll={update}
-        className="-mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ ['--g' as string]: 'calc(max((100vw - 1320px) / 2, 0px) + clamp(1.25rem, 4vw, 3rem))' }}
+        className="mx-[calc(50%-50vw)] flex snap-x snap-mandatory gap-5 overflow-x-auto px-[var(--g)] pb-2 [scroll-padding-left:calc(var(--g)+4.5rem)] [scroll-padding-right:var(--g)] [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_2.5rem,black_calc(100%-2.5rem),transparent)] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>
@@ -186,7 +189,8 @@ function Rail({ label, note, children }: { label: string; note: string; children
   )
 }
 
-const slot = 'w-[min(86vw,26rem)] shrink-0 snap-start lg:w-[calc((100%-2.5rem)/3)]'
+// a little under a third of the content width, so part of the next card shows on the right
+const slot = 'w-[min(78vw,24rem)] shrink-0 snap-start lg:w-[calc((min(1320px,100vw)-6rem-2.5rem)/3.2)]'
 
 function Card({ p, n }: { p: Project; n: number }) {
   return (
