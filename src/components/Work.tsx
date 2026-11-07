@@ -1,6 +1,7 @@
 import { academic, featured, more, products, type Media as MediaItem, type Project } from '../content/content'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { SectionHead, StatusPill, T } from './ui'
+import { Arrow, SectionHead, StatusPill, T } from './ui'
+import { lockScroll } from '../lib/scroll'
 
 /**
  * Media shown one after the other: videos play to the end, images stay 4.5 s.
@@ -192,11 +193,16 @@ function Rail({ label, note, children }: { label: string; note: string; children
 // three cards fill the content width; neighbours only show as a thin faded strip at the edges
 const slot = 'w-[min(78vw,24rem)] shrink-0 snap-start lg:w-[calc((min(1320px,100vw)-2*clamp(1.25rem,4vw,3rem)-2.5rem)/3)]'
 
-function Card({ p, n }: { p: Project; n: number }) {
+function Card({ p, n, onOpen }: { p: Project; n: number; onOpen: () => void }) {
   return (
     <article
       id={`p-${p.id}`}
-      className={`${slot} group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-paper/25`}
+      role="button"
+      tabIndex={0}
+      aria-label={`${p.title}: show details`}
+      onClick={onOpen}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onOpen())}
+      className={`${slot} group flex cursor-pointer scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-signal/60`}
     >
       <div className="relative h-[min(20svh,240px)] border-b border-line bg-ink">
         {p.cardVideo && <LoopVideo name={p.cardVideo} label={p.title} />}
@@ -217,21 +223,120 @@ function Card({ p, n }: { p: Project; n: number }) {
           <span className="label mr-2 !text-[0.6rem] !text-signal">My role</span>
           {p.did.join(' · ')}
         </p>
-        <ul className="mt-auto flex flex-wrap gap-1 pt-1">
-          {p.stack.map((s) => (
-            <li key={s} className="rounded-[3px] border border-line px-1.5 py-0.5 font-mono text-[0.64rem] text-mute">
-              {s}
-            </li>
-          ))}
-        </ul>
+        <div className="mt-auto flex items-end justify-between gap-3 pt-1">
+          <ul className="flex flex-wrap gap-1">
+            {p.stack.map((s) => (
+              <li key={s} className="rounded-[3px] border border-line px-1.5 py-0.5 font-mono text-[0.64rem] text-mute">
+                {s}
+              </li>
+            ))}
+          </ul>
+          <span className="label shrink-0 !text-[0.62rem] !text-signal opacity-70 transition-opacity group-hover:opacity-100">Details +</span>
+        </div>
       </div>
     </article>
   )
 }
 
+/** Foreground dialog with everything about one project; ‹ › browse, Esc / backdrop close. */
+function ProjectDialog({ index, onClose, onGo }: { index: number | null; onClose: () => void; onGo: (i: number) => void }) {
+  const ref = useRef<HTMLDialogElement>(null)
+  const open = index !== null
+  useEffect(() => {
+    const d = ref.current
+    if (!d) return
+    if (open && !d.open) d.showModal()
+    if (!open && d.open) d.close()
+    lockScroll(open)
+  }, [open])
+  useEffect(() => {
+    if (!open) return
+    const k = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') onGo((index! + 1) % featured.length)
+      if (e.key === 'ArrowLeft') onGo((index! - 1 + featured.length) % featured.length)
+    }
+    window.addEventListener('keydown', k)
+    return () => window.removeEventListener('keydown', k)
+  }, [open, index, onGo])
+  const p = open ? featured[index!] : null
+  const nav = 'grid h-9 w-9 place-items-center rounded-full border border-line text-paper/80 hover:border-paper hover:text-paper'
+  return (
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      onClick={(e) => e.target === ref.current && onClose()}
+      aria-label={p ? p.title : 'Project details'}
+      className="m-auto max-h-[92svh] w-[min(64rem,94vw)] overflow-hidden rounded-2xl border border-line bg-ink-2 p-0 text-paper shadow-2xl backdrop:bg-ink/80 backdrop:backdrop-blur-sm"
+    >
+      {p && (
+        <div className="flex max-h-[92svh] flex-col">
+          <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="font-mono text-xs text-signal">{pad(index! + 1)}</span>
+              <StatusPill status={p.status} />
+              <span className="label !text-[0.64rem]">{p.year}</span>
+              <span className="label !text-[0.64rem]">{p.tag}</span>
+            </div>
+            <div className="flex gap-2">
+              <button className={nav} onClick={() => onGo((index! - 1 + featured.length) % featured.length)} aria-label="Previous project">
+                ‹
+              </button>
+              <button className={nav} onClick={() => onGo((index! + 1) % featured.length)} aria-label="Next project">
+                ›
+              </button>
+              <button className={nav} onClick={onClose} aria-label="Close">
+                ×
+              </button>
+            </div>
+          </div>
+          <div className="grid min-h-0 overflow-y-auto md:grid-cols-[1.15fr_1fr]" data-lenis-prevent>
+            <div className="relative h-[34svh] bg-ink md:h-auto md:min-h-[26rem]">{p.cardVideo && <LoopVideo key={p.id} name={p.cardVideo} label={p.title} />}</div>
+            <div className="flex flex-col gap-4 p-6 md:p-7">
+              <div>
+                <h3 className="text-[clamp(1.4rem,3.2svh,1.9rem)] font-medium leading-tight tracking-tight">{p.title}</h3>
+                <p className="label mt-2 !normal-case !tracking-normal !text-[0.82rem]">{p.client}</p>
+              </div>
+              <p className="leading-relaxed text-paper/80">{p.summary}</p>
+              <div className="rounded-lg border border-signal/25 bg-signal/[0.04] p-4">
+                <p className="label mb-2 !text-[0.62rem] !text-signal">My role</p>
+                <ul className="space-y-1.5 text-[0.92rem] text-paper/90">
+                  {p.did.map((d) => (
+                    <li key={d} className="flex gap-3">
+                      <span className="mt-[0.6em] h-px w-3 shrink-0 bg-signal" />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <ul className="flex flex-wrap gap-1.5">
+                {p.stack.map((s) => (
+                  <li key={s} className="rounded-[3px] border border-line px-2 py-1 font-mono text-[0.7rem] text-mute">
+                    {s}
+                  </li>
+                ))}
+              </ul>
+              {p.id === 'tunnel-platform' && (
+                <a
+                  href="#architecture"
+                  onClick={onClose}
+                  className="inline-flex w-fit items-center gap-2 text-[0.9rem] text-signal hover:underline"
+                >
+                  See the architecture of its services <Arrow />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </dialog>
+  )
+}
+
 export default function Work() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null)
   return (
     <>
+      <ProjectDialog index={openIdx} onClose={() => setOpenIdx(null)} onGo={setOpenIdx} />
       {/* screen 1: header + industrial projects */}
       <section id="work" className="screen relative">
         <div className="container-x">
@@ -244,7 +349,7 @@ export default function Work() {
           <div className="mt-[2.5svh]">
             <Rail label="Industrial" note="Selected projects · 2024 – today">
               {featured.map((p, i) => (
-                <Card key={p.id} p={p} n={i + 1} />
+                <Card key={p.id} p={p} n={i + 1} onOpen={() => setOpenIdx(i)} />
               ))}
             </Rail>
           </div>

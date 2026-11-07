@@ -145,7 +145,7 @@ export const projects: Project[] = [
     summary:
       'An inspection truck carried by train through the tunnel, to inspect the equipment installed on the tunnel walls and roof so it can be maintained. Several processing stations run on board. 22 cameras at the rear each film their own zone of the tunnel, 2 side cameras read the positioning signs, and more than 100 lights each light their own section. Thermal cameras, RFID + GPS, batteries and a fire panel complete it. Thirteen services and applications run the acquisition, then the upload, archiving, multi-screen inspection and history comparison.',
     did: ['Acquisition and synchronisation services', 'Operator tablet app', 'Multi-screen review app', 'History comparison app'],
-    stack: ['.NET', 'WPF', 'C#', 'C++', 'Modbus / JBus'],
+    stack: ['.NET', 'WPF', 'C#', 'C++', 'Modbus / JBus', 'Phoxene', 'NI cards'],
     cardVideo: 'tunnel',
   },
   {

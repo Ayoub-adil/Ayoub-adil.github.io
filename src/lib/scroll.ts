@@ -21,7 +21,7 @@ export function startSmoothScroll(reduced: boolean) {
     const el = document.querySelector(a.getAttribute('href')!)
     if (!el) return
     e.preventDefault()
-    lenis.scrollTo(el as HTMLElement, { offset: 0 })
+    lenis.scrollTo(el as HTMLElement, { offset: 0, force: true })
     history.replaceState(null, '', a.getAttribute('href'))
   }
   document.addEventListener('click', onClick)
@@ -32,6 +32,13 @@ export function startSmoothScroll(reduced: boolean) {
     lenis?.destroy()
     lenis = null
   }
+}
+
+/** Pause / resume page scrolling (used while a dialog is open). */
+export function lockScroll(on: boolean) {
+  if (on) lenis?.stop()
+  else lenis?.start()
+  document.documentElement.style.overflow = on ? 'hidden' : ''
 }
 
 export { gsap, ScrollTrigger }
