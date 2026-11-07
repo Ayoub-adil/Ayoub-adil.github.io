@@ -175,13 +175,13 @@ function Rail({ label, note, children }: { label: string; note: string; children
           </button>
         </div>
       </div>
-      {/* full-bleed track: the cards start on the content grid but the neighbours peek in at
-          the screen edges, so it is obvious there is more to see on either side */}
+      {/* full-bleed track: three cards on the content grid; a thin faded strip of the neighbours
+          shows at each edge, so it is obvious there is more to see on either side */}
       <div
         ref={track}
         onScroll={update}
         style={{ ['--g' as string]: 'calc(max((100vw - 1320px) / 2, 0px) + clamp(1.25rem, 4vw, 3rem))' }}
-        className="mx-[calc(50%-50vw)] flex snap-x snap-mandatory gap-5 overflow-x-auto px-[var(--g)] pb-2 [scroll-padding-left:calc(var(--g)+4.5rem)] [scroll-padding-right:var(--g)] [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_2.5rem,black_calc(100%-2.5rem),transparent)] [&::-webkit-scrollbar]:hidden"
+        className="mx-[calc(50%-50vw)] flex snap-x snap-mandatory gap-5 overflow-x-auto px-[var(--g)] pb-2 [scroll-padding-inline:var(--g)] [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent_calc(var(--g)-3rem),black_var(--g),black_calc(100%-var(--g)),transparent_calc(100%-var(--g)+3rem))] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>
@@ -189,8 +189,8 @@ function Rail({ label, note, children }: { label: string; note: string; children
   )
 }
 
-// a little under a third of the content width, so part of the next card shows on the right
-const slot = 'w-[min(78vw,24rem)] shrink-0 snap-start lg:w-[calc((min(1320px,100vw)-6rem-2.5rem)/3.2)]'
+// three cards fill the content width; neighbours only show as a thin faded strip at the edges
+const slot = 'w-[min(78vw,24rem)] shrink-0 snap-start lg:w-[calc((min(1320px,100vw)-2*clamp(1.25rem,4vw,3rem)-2.5rem)/3)]'
 
 function Card({ p, n }: { p: Project; n: number }) {
   return (
@@ -242,7 +242,7 @@ export default function Work() {
             lede="Industrial systems, projects from my master’s, and my own products. Clients are anonymised; industrial visuals are synthetic."
           />
           <div className="mt-[2.5svh]">
-            <Rail label="Industrial" note={`${featured.length} projects · 2024 – today`}>
+            <Rail label="Industrial" note="Selected projects · 2024 – today">
               {featured.map((p, i) => (
                 <Card key={p.id} p={p} n={i + 1} />
               ))}
