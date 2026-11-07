@@ -6,14 +6,15 @@ export default function Contact() {
   const mail = isTodo(profile.email) ? null : profile.email
   return (
     <>
-      <section id="contact" className="relative py-[clamp(7rem,18vh,12rem)]">
-        <div className="container-x text-center">
-          <p className="eyebrow mb-7">Contact</p>
-          <h2 className="display mx-auto max-w-[16ch] text-[clamp(2.8rem,7.4vw,6.6rem)]">
+      {/* contact and footer share one screen */}
+      <section id="contact" className="relative flex min-h-svh flex-col pt-[max(4.5rem,9svh)]">
+        <div className="container-x flex flex-1 flex-col items-center justify-center text-center">
+          <p className="eyebrow mb-[3svh]">Contact</p>
+          <h2 className="display mx-auto max-w-[16ch] text-[clamp(2.4rem,min(7.4vw,10svh),6.2rem)]">
             Let’s build <span className="accent">the next part.</span>
           </h2>
-          <p className="mx-auto mt-8 max-w-md text-paper/70">Open to 3D software roles in Paris. The quickest way to reach me is email or LinkedIn.</p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <p className="mx-auto mt-[3svh] max-w-md text-paper/70">Open to 3D software roles in Paris. The quickest way to reach me is email or LinkedIn.</p>
+          <div className="mt-[4svh] flex flex-wrap justify-center gap-3">
             {mail ? <Button href={`mailto:${mail}`}>{mail}</Button> : <T>{profile.email}</T>}
             <Button href={profile.linkedin} variant="ghost" external>
               LinkedIn
@@ -23,10 +24,9 @@ export default function Contact() {
             </Button>
           </div>
         </div>
-      </section>
 
-      <footer className="border-t border-line">
-        <div className="container-x grid gap-10 py-14 md:grid-cols-12">
+      <footer className="mt-[4svh] border-t border-line">
+        <div className="container-x grid gap-8 py-[4svh] md:grid-cols-12">
           <div className="md:col-span-5">
             <div className="flex items-center gap-3">
               <Mark />
@@ -59,13 +59,14 @@ export default function Contact() {
             <p className="text-sm leading-relaxed text-mute">Client names are withheld. Industrial 3D scenes and diagrams are synthetic.</p>
           </div>
         </div>
-        <div className="container-x flex flex-wrap justify-between gap-2 border-t border-line py-6">
+        <div className="container-x flex flex-wrap justify-between gap-2 border-t border-line py-[2svh]">
           <p className="label !text-[0.62rem]">© {new Date().getFullYear()} {profile.name} · {profile.location}</p>
           <a href="#top" className="label !text-[0.62rem] hover:!text-signal">
             Back to top ↑
           </a>
         </div>
       </footer>
+      </section>
     </>
   )
 }

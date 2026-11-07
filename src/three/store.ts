@@ -25,13 +25,3 @@ export function hasWebGL(): boolean {
     return false
   }
 }
-
-/** Scroll progress through the sequence (0..1) -> morph value with holds on each stage. */
-export function progressToMorph(p: number, stages: number) {
-  const z = Math.min(Math.max(p, 0), 0.9999) * stages
-  const k = Math.floor(z)
-  const f = z - k
-  if (k >= stages - 1) return { morph: stages - 1, step: stages - 1 }
-  const t = Math.min(Math.max((f - 0.5) / 0.5, 0), 1)
-  return { morph: k + t * t * (3 - 2 * t), step: f < 0.75 ? k : k + 1 }
-}

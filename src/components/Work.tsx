@@ -1,6 +1,6 @@
 import { academic, featured, more, products, type Media as MediaItem, type Project } from '../content/content'
-import { useEffect, useRef, useState } from 'react'
-import { Reveal, SectionHead, StatusPill, T } from './ui'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { SectionHead, StatusPill, T } from './ui'
 
 /**
  * Media shown one after the other: videos play to the end, images stay 4.5 s.
@@ -136,39 +136,86 @@ function LoopVideo({ name, label }: { name: string; label: string }) {
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+/** Horizontal, snapping row of cards with prev / next buttons; the header holds the controls. */
+function Rail({ label, note, children }: { label: string; note: string; children: ReactNode }) {
+  const track = useRef<HTMLDivElement>(null)
+  const [edge, setEdge] = useState({ start: true, end: false })
+  const update = () => {
+    const t = track.current
+    if (!t) return
+    setEdge({ start: t.scrollLeft < 8, end: t.scrollLeft + t.clientWidth > t.scrollWidth - 8 })
+  }
+  useEffect(() => {
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  const go = (dir: number) => {
+    const t = track.current
+    if (!t) return
+    const card = t.firstElementChild as HTMLElement | null
+    const step = card ? card.offsetWidth + 20 : t.clientWidth
+    t.scrollBy({ left: dir * step, behavior: 'smooth' })
+  }
+  const btn =
+    'grid h-9 w-9 place-items-center rounded-full border border-line text-paper/80 transition-colors hover:border-paper hover:text-paper disabled:opacity-30 disabled:hover:border-line'
+  return (
+    <div>
+      <div className="mb-[2svh] flex flex-wrap items-end justify-between gap-3 border-b border-line pb-[1.4svh]">
+        <div className="flex flex-wrap items-baseline gap-x-4">
+          <h3 className="text-[clamp(1.2rem,2.8svh,1.5rem)] font-medium tracking-tight">{label}</h3>
+          <p className="label !normal-case !tracking-normal !text-[0.82rem]">{note}</p>
+        </div>
+        <div className="flex gap-2">
+          <button className={btn} onClick={() => go(-1)} disabled={edge.start} aria-label={`Previous ${label} projects`}>
+            ‹
+          </button>
+          <button className={btn} onClick={() => go(1)} disabled={edge.end} aria-label={`Next ${label} projects`}>
+            ›
+          </button>
+        </div>
+      </div>
+      <div
+        ref={track}
+        onScroll={update}
+        className="-mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+const slot = 'w-[min(86vw,26rem)] shrink-0 snap-start lg:w-[calc((100%-2.5rem)/3)]'
+
 function Card({ p, n }: { p: Project; n: number }) {
   return (
     <article
       id={`p-${p.id}`}
-      className="group flex w-full scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-paper/25"
+      className={`${slot} group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm transition-colors duration-500 hover:border-paper/25`}
     >
-      <div className="relative aspect-[16/10] border-b border-line bg-ink">
+      <div className="relative h-[min(20svh,240px)] border-b border-line bg-ink">
         {p.cardVideo && <LoopVideo name={p.cardVideo} label={p.title} />}
-        <span className="absolute left-4 top-4 font-mono text-xs text-signal">{pad(n)}</span>
-        <span className="label absolute right-4 top-4 !text-[0.62rem]">{p.tag}</span>
+        <span className="absolute left-4 top-3 font-mono text-xs text-signal">{pad(n)}</span>
+        <span className="label absolute right-4 top-3 !text-[0.62rem]">{p.tag}</span>
       </div>
-      <div className="flex flex-1 flex-col gap-4 p-6 md:p-7">
+      <div className="flex flex-1 flex-col gap-[1svh] p-[clamp(0.85rem,2svh,1.3rem)]">
         <div className="flex flex-wrap items-center gap-3">
           <StatusPill status={p.status} />
           <span className="label !text-[0.64rem]">{p.year}</span>
         </div>
-        <h3 className="text-[1.45rem] font-medium leading-tight tracking-tight">{p.title}</h3>
-        <p className="label !normal-case !tracking-normal !text-[0.82rem]">{p.client}</p>
-        <p className="leading-relaxed text-paper/75">{p.summary}</p>
-        <div className="rounded-lg border border-signal/25 bg-signal/[0.04] p-4">
-          <p className="label mb-2 !text-[0.62rem] !text-signal">My role</p>
-          <ul className="space-y-1.5 text-[0.92rem] text-paper/90">
-            {p.did.map((d) => (
-              <li key={d} className="flex gap-3">
-                <span className="mt-[0.6em] h-px w-3 shrink-0 bg-signal" />
-                {d}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <ul className="mt-auto flex flex-wrap gap-1.5 pt-2">
+        <h4 className="text-[clamp(1.05rem,2.4svh,1.25rem)] font-medium leading-tight tracking-tight">{p.title}</h4>
+        <p className="label !normal-case !tracking-normal !text-[0.78rem]">{p.client}</p>
+        <p className="line-clamp-3 text-[0.88rem] leading-relaxed text-paper/75" title={p.summary}>
+          {p.summary}
+        </p>
+        <p className="line-clamp-2 border-l-2 border-signal pl-3 text-[0.85rem] text-paper/90">
+          <span className="label mr-2 !text-[0.6rem] !text-signal">My role</span>
+          {p.did.join(' · ')}
+        </p>
+        <ul className="mt-auto flex flex-wrap gap-1 pt-1">
           {p.stack.map((s) => (
-            <li key={s} className="rounded-[3px] border border-line px-2 py-1 font-mono text-[0.68rem] text-mute">
+            <li key={s} className="rounded-[3px] border border-line px-1.5 py-0.5 font-mono text-[0.64rem] text-mute">
               {s}
             </li>
           ))}
@@ -178,117 +225,122 @@ function Card({ p, n }: { p: Project; n: number }) {
   )
 }
 
-function SubHead({ label, note }: { label: string; note: string }) {
-  return (
-    <div className="mb-8 mt-24 flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-4">
-      <h3 className="text-[1.6rem] font-medium tracking-tight">{label}</h3>
-      <p className="label !normal-case !tracking-normal !text-[0.85rem]">{note}</p>
-    </div>
-  )
-}
-
 export default function Work() {
   return (
-    <section id="work" className="relative py-[clamp(6rem,14vh,10rem)]">
-      <div className="container-x">
-        <SectionHead
-          n="04"
-          eyebrow="Projects"
-          title={['What I’ve built,', '3D first.']}
-          lede="Industrial systems, projects from my master’s, and my own products. Clients are anonymised; industrial visuals are synthetic."
-        />
-
-        <SubHead label="Industrial" note="2024 – today" />
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {featured.map((p, i) => (
-            <Reveal key={p.id} delay={(i % 3) * 140} className="flex">
-              <Card p={p} n={i + 1} />
-            </Reveal>
-          ))}
+    <>
+      {/* screen 1: header + industrial projects */}
+      <section id="work" className="screen relative">
+        <div className="container-x">
+          <SectionHead
+            n="04"
+            eyebrow="Projects"
+            title={['What I’ve built,', '3D first.']}
+            lede="Industrial systems, projects from my master’s, and my own products. Clients are anonymised; industrial visuals are synthetic."
+          />
+          <div className="mt-[2.5svh]">
+            <Rail label="Industrial" note={`${featured.length} projects · 2024 – today`}>
+              {featured.map((p, i) => (
+                <Card key={p.id} p={p} n={i + 1} />
+              ))}
+            </Rail>
+          </div>
         </div>
+      </section>
 
-        <ul className="mt-10 divide-y divide-line border-y border-line">
-          {more.map((p, i) => (
-            <li key={p.id} id={`p-${p.id}`} className="grid scroll-mt-24 gap-3 py-6 md:grid-cols-12 md:gap-6">
-              <span className="font-mono text-xs text-signal md:col-span-1">{pad(featured.length + i + 1)}</span>
-              <div className="md:col-span-4">
-                <h4 className="text-lg font-medium tracking-tight">{p.title}</h4>
-                <p className="label mt-1 !normal-case !tracking-normal !text-[0.8rem]">{p.client}</p>
-              </div>
-              <p className="text-[0.95rem] leading-relaxed text-paper/70 md:col-span-5">{p.summary}</p>
-              <div className="flex flex-wrap items-start gap-2 md:col-span-2 md:justify-end">
-                <StatusPill status={p.status} />
-                <span className="label !text-[0.64rem]">{p.year}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        <SubHead label="Academic & personal" note="Rendering, virtual reality, full-stack" />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {academic.map((a, i) => (
-            <Reveal
-              as="article"
-              key={a.id}
-              id={`p-${a.id}`}
-              delay={(i % 3) * 140}
-              className="group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm"
-            >
-              <div className="relative overflow-hidden border-b border-line">
-                <MediaCarousel items={a.media} title={a.title} />
-                <span className="absolute left-4 top-4 rounded-[3px] bg-ink/80 px-1.5 py-0.5 font-mono text-xs text-signal">{pad(i + 1)}</span>
-              </div>
-              <div className="flex flex-1 flex-col gap-3 p-6">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="label !text-[0.62rem]">{a.context}</span>
-                  <span className="font-mono text-[0.68rem] text-mute">{a.year}</span>
+      {/* screen 2: other industrial projects and my products */}
+      <section id="work-more" className="screen relative">
+        <div className="container-x">
+          <div className="mb-[2svh] flex flex-wrap items-baseline gap-x-4 border-b border-line pb-[1.4svh]">
+            <h3 className="text-[clamp(1.2rem,2.8svh,1.5rem)] font-medium tracking-tight">More industrial projects</h3>
+          </div>
+          <ul className="divide-y divide-line">
+            {more.map((p, i) => (
+              <li key={p.id} id={`p-${p.id}`} className="grid scroll-mt-24 gap-2 py-[1.8svh] md:grid-cols-12 md:gap-6">
+                <span className="font-mono text-xs text-signal md:col-span-1">{pad(featured.length + i + 1)}</span>
+                <div className="md:col-span-4">
+                  <h4 className="text-[1.05rem] font-medium tracking-tight">{p.title}</h4>
+                  <p className="label mt-1 !normal-case !tracking-normal !text-[0.78rem]">{p.client}</p>
                 </div>
-                <h4 className="text-[1.25rem] font-medium leading-tight tracking-tight">{a.title}</h4>
-                <p className="text-[0.95rem] leading-relaxed text-paper/70">{a.summary}</p>
-                <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-3">
-                  {a.stack.map((s) => (
-                    <span key={s} className="rounded-[3px] border border-line px-2 py-1 font-mono text-[0.68rem] text-mute">
-                      {s}
-                    </span>
-                  ))}
-                  {a.links?.map(([l, h]) => (
-                    <a key={h} href={h} target="_blank" rel="noreferrer" className="ml-auto font-mono text-[0.7rem] text-signal hover:underline">
-                      {l} ↗
-                    </a>
-                  ))}
+                <p className="text-[0.9rem] leading-relaxed text-paper/70 md:col-span-5">{p.summary}</p>
+                <div className="flex flex-wrap items-start gap-2 md:col-span-2 md:justify-end">
+                  <StatusPill status={p.status} />
+                  <span className="label !text-[0.64rem]">{p.year}</span>
                 </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+              </li>
+            ))}
+          </ul>
 
-        <SubHead label="My products" note="SaaS I design and build on my own" />
-        <div className="grid gap-5 md:grid-cols-2">
-          {products.map((p) => (
-            <article key={p.id} className="flex flex-col gap-4 rounded-xl border border-line bg-ink-2/60 p-7 backdrop-blur-sm">
-              <span className="label !text-[0.64rem]">{p.kind}</span>
-              <h4 className="text-[1.9rem] font-medium tracking-tight">
-                <T>{p.name}</T>
-              </h4>
-              <p className="leading-relaxed text-paper/75">{p.summary}</p>
-              <dl className="mt-auto grid grid-cols-[5rem_1fr] gap-y-2 border-t border-line pt-4 text-sm">
-                <dt className="label !text-[0.64rem] pt-0.5">Stack</dt>
-                <dd>
-                  <T>{p.stack}</T>
-                </dd>
-                <dt className="label !text-[0.64rem] pt-0.5">Status</dt>
-                <dd>
-                  <T>{p.status}</T>
-                </dd>
-                <dt className="label !text-[0.64rem] pt-0.5">Link</dt>
-                <dd>
-                  <T>{p.link}</T>
-                </dd>
-              </dl>
-            </article>
-          ))}
+          <div className="mb-[2svh] mt-[5svh] flex flex-wrap items-baseline gap-x-4 border-b border-line pb-[1.4svh]">
+            <h3 className="text-[clamp(1.2rem,2.8svh,1.5rem)] font-medium tracking-tight">My products</h3>
+            <p className="label !normal-case !tracking-normal !text-[0.82rem]">SaaS I design and build on my own</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {products.map((p) => (
+              <article key={p.id} className="flex flex-col gap-2 rounded-xl border border-line bg-ink-2/60 p-[clamp(1rem,2.4svh,1.5rem)] backdrop-blur-sm">
+                <span className="label !text-[0.62rem]">{p.kind}</span>
+                <h4 className="text-[clamp(1.3rem,3svh,1.7rem)] font-medium tracking-tight">
+                  <T>{p.name}</T>
+                </h4>
+                <p className="text-[0.9rem] leading-relaxed text-paper/75">{p.summary}</p>
+                <dl className="mt-2 grid grid-cols-[4.5rem_1fr] gap-y-1 border-t border-line pt-3 text-[0.85rem]">
+                  <dt className="label !text-[0.6rem] pt-0.5">Stack</dt>
+                  <dd>
+                    <T>{p.stack}</T>
+                  </dd>
+                  <dt className="label !text-[0.6rem] pt-0.5">Status</dt>
+                  <dd>
+                    <T>{p.status}</T>
+                  </dd>
+                  <dt className="label !text-[0.6rem] pt-0.5">Link</dt>
+                  <dd>
+                    <T>{p.link}</T>
+                  </dd>
+                </dl>
+              </article>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* screen 3: academic and personal projects */}
+      <section id="work-academic" className="screen relative">
+        <div className="container-x">
+          <Rail label="Academic & personal" note="Rendering, virtual reality, full-stack">
+            {academic.map((a, i) => (
+              <article
+                key={a.id}
+                id={`p-${a.id}`}
+                className={`${slot} group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-line bg-ink-2/70 backdrop-blur-sm`}
+              >
+                <div className="relative overflow-hidden border-b border-line">
+                  <MediaCarousel items={a.media} title={a.title} />
+                  <span className="absolute left-4 top-3 rounded-[3px] bg-ink/80 px-1.5 py-0.5 font-mono text-xs text-signal">{pad(i + 1)}</span>
+                </div>
+                <div className="flex flex-1 flex-col gap-[1.2svh] p-[clamp(0.9rem,2.2svh,1.4rem)]">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="label !text-[0.6rem]">{a.context}</span>
+                    <span className="font-mono text-[0.66rem] text-mute">{a.year}</span>
+                  </div>
+                  <h4 className="text-[clamp(1.05rem,2.4svh,1.2rem)] font-medium leading-tight tracking-tight">{a.title}</h4>
+                  <p className="text-[0.88rem] leading-relaxed text-paper/70">{a.summary}</p>
+                  <div className="mt-auto flex flex-wrap items-center gap-1 pt-1">
+                    {a.stack.map((s) => (
+                      <span key={s} className="rounded-[3px] border border-line px-1.5 py-0.5 font-mono text-[0.64rem] text-mute">
+                        {s}
+                      </span>
+                    ))}
+                    {a.links?.map(([l, h]) => (
+                      <a key={h} href={h} target="_blank" rel="noreferrer" className="ml-auto font-mono text-[0.68rem] text-signal hover:underline">
+                        {l} ↗
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </Rail>
+        </div>
+      </section>
+    </>
   )
 }

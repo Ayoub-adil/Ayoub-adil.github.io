@@ -258,7 +258,8 @@ export default function PointField({ count }: { count: number }) {
     if (!u) return
     const s = state.current
     const motion = field.reduced ? 0 : 1
-    const k = 1 - Math.exp(-dt * (field.reduced ? 60 : 3.2))
+    // ~1.3 s to settle: each step's cloud plays its own transition when its page appears
+    const k = 1 - Math.exp(-dt * (field.reduced ? 60 : 2.4))
     s.morph += (field.morph - s.morph) * k
     s.dim += (field.dim - s.dim) * (1 - Math.exp(-dt * 2.5))
     // hold the intro until the head is loaded (or give up after 4 s)

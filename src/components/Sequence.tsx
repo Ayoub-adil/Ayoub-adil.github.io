@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { steps } from '../content/content'
-import { field, progressToMorph } from '../three/store'
+import { field } from '../three/store'
 import { ScrollTrigger } from '../lib/scroll'
 
 const pad = (n: number) => String(n + 1).padStart(2, '0')
@@ -19,14 +19,15 @@ export default function Sequence() {
       onUpdate(self) {
         const h = ref.current!.offsetHeight
         const vh = window.innerHeight
-        const p = (self.progress * h - vh) / (h - vh)
-        const { morph, step } = progressToMorph(Math.max(p, 0), steps.length)
-        // stage 0 is the head (hero); the sequence covers stages 1..5
-        // stage 1 only appears once the section is reached; until then nothing is shown
+        const p = Math.max((self.progress * h - vh) / (h - vh), 0)
+        // one page per step: the step whose page is on screen is shown, and its cloud
+        // animates in on its own (time-based easing in the renderer), not scrubbed by scroll
+        const step = Math.min(steps.length - 1, Math.floor(p * steps.length))
+        // stage 0 is the head (hero); the sequence covers stages 1..5, from when the section is reached
         const reached = self.progress * h >= vh * 0.65
-        field.morph = reached ? 1 + (field.reduced ? Math.round(morph) : morph) : 0
+        field.morph = reached ? 1 + step : 0
         setActive(step)
-        if (bar.current) bar.current.style.transform = `scaleY(${Math.max(p, 0)})`
+        if (bar.current) bar.current.style.transform = `scaleY(${p})`
       },
       onLeaveBack() {
         field.morph = 0

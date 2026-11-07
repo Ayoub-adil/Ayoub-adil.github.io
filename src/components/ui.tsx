@@ -28,13 +28,13 @@ export function SectionHead({ eyebrow, title, lede, n }: { eyebrow: string; titl
   return (
     <header className="grid gap-6 md:grid-cols-12 md:items-end">
       <div className="md:col-span-7">
-        <p className="eyebrow mb-5 flex items-center gap-3">
+        <p className="eyebrow mb-[2svh] flex items-center gap-3">
           {n && <span className="text-mute">{n}</span>}
           {eyebrow}
         </p>
-        <Title lines={title} className="text-[clamp(2.4rem,5.6vw,4.8rem)]" />
+        <Title lines={title} className="text-[clamp(2rem,min(5vw,7svh),4.2rem)]" />
       </div>
-      {lede && <p className="max-w-md text-[1.05rem] leading-relaxed text-mute md:col-span-5 md:justify-self-end">{lede}</p>}
+      {lede && <p className="max-w-md text-[0.98rem] leading-relaxed text-mute md:col-span-5 md:justify-self-end">{lede}</p>}
     </header>
   )
 }

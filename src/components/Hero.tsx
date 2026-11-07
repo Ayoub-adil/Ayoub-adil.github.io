@@ -3,22 +3,22 @@ import { Button } from './ui'
 
 export default function Hero() {
   return (
-    <section id="top" className="relative flex min-h-svh flex-col justify-end pb-[11vh] pt-28">
+    <section id="top" className="relative flex min-h-svh flex-col justify-end pb-[8svh] pt-24">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/45 to-transparent md:via-ink/30 md:to-60%" />
       <div className="container-x relative">
-        <p className="eyebrow mb-8 reveal">{hero.eyebrow}</p>
-        <h1 className="display text-[clamp(3.2rem,9.6vw,8.6rem)] reveal">{hero.name}</h1>
+        <p className="eyebrow mb-[3svh] reveal">{hero.eyebrow}</p>
+        <h1 className="display text-[clamp(3rem,min(9.6vw,13svh),8.6rem)] reveal">{hero.name}</h1>
         <p className="mt-3 text-[clamp(1.6rem,3.6vw,3rem)] leading-[1.05] tracking-tight reveal">
           {hero.title[0]} <span className="accent text-signal">{hero.title[1]}</span>
         </p>
-        <p className="mt-7 max-w-xl text-[1.06rem] leading-relaxed text-paper/75 reveal">{hero.lede}</p>
-        <div className="mt-9 flex flex-wrap gap-3 reveal">
+        <p className="mt-[3svh] max-w-xl text-[1.06rem] leading-relaxed text-paper/75 reveal">{hero.lede}</p>
+        <div className="mt-[3.5svh] flex flex-wrap gap-3 reveal">
           <Button href="#about">About me</Button>
           <Button href="/cv/" variant="ghost">
             View my CV
           </Button>
         </div>
-        <dl className="mt-12 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-4 border-t border-paper/10 pt-6 md:grid-cols-4 reveal">
+        <dl className="mt-[5svh] grid max-w-3xl grid-cols-2 gap-x-8 gap-y-4 border-t border-paper/10 pt-6 md:grid-cols-4 reveal">
           {hero.facts.map(([k, v]) => (
             <div key={k}>
               <dt className="label !text-[0.62rem]">{k}</dt>
