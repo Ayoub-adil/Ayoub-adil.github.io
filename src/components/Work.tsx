@@ -1,6 +1,6 @@
-import { academic, featured, more, products, type Media as MediaItem, type Project } from '../content/content'
+import { academic, featured, more, type Media as MediaItem, type Project } from '../content/content'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Arrow, SectionHead, StatusPill, T } from './ui'
+import { Arrow, SectionHead, StatusPill } from './ui'
 import { lockScroll } from '../lib/scroll'
 
 /**
@@ -46,7 +46,7 @@ function MediaCarousel({ items, title }: { items: MediaItem[]; title: string }) 
   return (
     <div
       ref={box}
-      className="relative aspect-[16/10] overflow-hidden bg-ink"
+      className="relative h-[min(19svh,220px)] overflow-hidden bg-ink"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       role={many ? 'region' : undefined}
@@ -344,7 +344,7 @@ export default function Work() {
             n="04"
             eyebrow="Projects"
             title={['What I’ve built,', '3D first.']}
-            lede="A selection of the industrial systems I built, projects from my master’s and my own products. Clients are anonymised; industrial visuals are synthetic renders."
+            lede="A selection of the industrial systems I built, and projects from my master’s. Clients are anonymised; industrial visuals are synthetic renders."
           />
           <div className="mt-[2.5svh]">
             <Rail label="Industrial" note="Selected projects · 2024 – today">
@@ -356,7 +356,7 @@ export default function Work() {
         </div>
       </section>
 
-      {/* screen 2: other industrial projects and my products */}
+      {/* screen 2: other industrial projects, then academic and personal projects */}
       <section id="work-more" className="screen relative">
         <div className="container-x">
           <div className="mb-[2svh] flex flex-wrap items-baseline gap-x-4 border-b border-line pb-[1.4svh]">
@@ -364,13 +364,13 @@ export default function Work() {
           </div>
           <ul className="divide-y divide-line">
             {more.map((p, i) => (
-              <li key={p.id} id={`p-${p.id}`} className="grid scroll-mt-24 gap-2 py-[1.8svh] md:grid-cols-12 md:gap-6">
+              <li key={p.id} id={`p-${p.id}`} className="grid scroll-mt-24 gap-2 py-[1.2svh] md:grid-cols-12 md:gap-6">
                 <span className="font-mono text-xs text-signal md:col-span-1">{pad(featured.length + i + 1)}</span>
                 <div className="md:col-span-4">
                   <h4 className="text-[1.05rem] font-medium tracking-tight">{p.title}</h4>
                   <p className="label mt-1 !normal-case !tracking-normal !text-[0.78rem]">{p.client}</p>
                 </div>
-                <p className="text-[0.9rem] leading-relaxed text-paper/70 md:col-span-5">{p.summary}</p>
+                <p className="text-[0.86rem] leading-relaxed text-paper/70 md:col-span-5">{p.summary}</p>
                 <div className="flex flex-wrap items-start gap-2 md:col-span-2 md:justify-end">
                   <StatusPill status={p.status} />
                   <span className="label !text-[0.64rem]">{p.year}</span>
@@ -379,41 +379,8 @@ export default function Work() {
             ))}
           </ul>
 
-          <div className="mb-[2svh] mt-[5svh] flex flex-wrap items-baseline gap-x-4 border-b border-line pb-[1.4svh]">
-            <h3 className="text-[clamp(1.2rem,2.8svh,1.5rem)] font-medium tracking-tight">My products</h3>
-            <p className="label !normal-case !tracking-normal !text-[0.82rem]">SaaS I design and build on my own</p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {products.map((p) => (
-              <article key={p.id} className="flex flex-col gap-2 rounded-xl border border-line bg-ink-2/60 p-[clamp(1rem,2.4svh,1.5rem)] backdrop-blur-sm">
-                <span className="label !text-[0.62rem]">{p.kind}</span>
-                <h4 className="text-[clamp(1.3rem,3svh,1.7rem)] font-medium tracking-tight">
-                  <T>{p.name}</T>
-                </h4>
-                <p className="text-[0.9rem] leading-relaxed text-paper/75">{p.summary}</p>
-                <dl className="mt-2 grid grid-cols-[4.5rem_1fr] gap-y-1 border-t border-line pt-3 text-[0.85rem]">
-                  <dt className="label !text-[0.6rem] pt-0.5">Stack</dt>
-                  <dd>
-                    <T>{p.stack}</T>
-                  </dd>
-                  <dt className="label !text-[0.6rem] pt-0.5">Status</dt>
-                  <dd>
-                    <T>{p.status}</T>
-                  </dd>
-                  <dt className="label !text-[0.6rem] pt-0.5">Link</dt>
-                  <dd>
-                    <T>{p.link}</T>
-                  </dd>
-                </dl>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* screen 3: academic and personal projects */}
-      <section id="work-academic" className="screen relative">
-        <div className="container-x">
+          {/* My products are hidden for now (on hold); data kept in content.ts */}
+          <div className="mt-[3.5svh]">
           <Rail label="Academic & personal" note="Rendering, virtual reality, full-stack">
             {academic.map((a, i) => (
               <article
@@ -448,8 +415,10 @@ export default function Work() {
               </article>
             ))}
           </Rail>
+          </div>
         </div>
       </section>
+
     </>
   )
 }
