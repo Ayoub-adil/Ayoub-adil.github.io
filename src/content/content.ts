@@ -25,7 +25,7 @@ export const profile = {
 }
 
 export const hero = {
-  eyebrow: 'Portfolio · Paris area',
+  eyebrow: 'Portfolio · 3D & computer vision',
   name: 'Ayoub ADIL',
   title: ['3D & computer-vision', 'software engineer.'],
   lede:
@@ -33,7 +33,7 @@ export const hero = {
   facts: [
     ['Education', 'Master, Image & 3D · Strasbourg'],
     ['Now', 'Software Engineer, industrial vision'],
-    ['Based in', 'Paris area, France'],
+    ['Focus', '3D, point clouds, machine vision'],
     ['Languages', 'FR · EN · AR'],
   ] as [string, string][],
 }
@@ -475,10 +475,10 @@ export const recommendation = {
 
 export const about = {
   eyebrow: 'About me',
-  title: ['Casablanca, Strasbourg,', 'now Paris.'],
+  title: ['Sensors, geometry,', 'and the software in between.'],
   body: [
-    'I’m Ayoub, a software engineer specialised in 3D and computer vision. I grew up in Casablanca, studied computer science in Mohammedia and Clermont-Ferrand, then did a master’s in Image & 3D at the University of Strasbourg, where I worked on virtual reality with the ICube lab and on rendering.',
-    'In 2024 I joined R&D Vision, near Paris, as an R&D intern on 3D reconstruction from images. I stayed as Application Engineer, and since September 2025 I work as Software Engineer: LiDAR and depth cameras, synchronised multi-camera acquisition, and the operator applications that run in production.',
+    'I’m Ayoub, a software engineer specialised in 3D and computer vision. I studied mathematics and computer science, then did a master’s in Image & 3D at the University of Strasbourg, where I worked on virtual reality with the ICube lab and on rendering.',
+    'In 2024 I joined R&D Vision as an R&D intern on 3D reconstruction from images. I stayed as Application Engineer, and since September 2025 I work as Software Engineer: LiDAR and depth cameras, synchronised multi-camera acquisition, and the operator applications that run in production.',
     'What I enjoy most is the full path: from a raw sensor, to a geometry I can trust, to an interface someone uses every day.',
   ],
 }

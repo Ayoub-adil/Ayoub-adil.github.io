@@ -13,7 +13,7 @@ export default function Contact() {
           <h2 className="display mx-auto max-w-[16ch] text-[clamp(2.4rem,min(7.4vw,10svh),6.2rem)]">
             Let’s build <span className="accent">the next part.</span>
           </h2>
-          <p className="mx-auto mt-[3svh] max-w-md text-paper/70">Open to 3D software roles in Paris. The quickest way to reach me is email or LinkedIn.</p>
+          <p className="mx-auto mt-[3svh] max-w-md text-paper/70">Open to 3D software roles. The quickest way to reach me is email or LinkedIn.</p>
           <div className="mt-[4svh] flex flex-wrap justify-center gap-3">
             {mail ? <Button href={`mailto:${mail}`}>{mail}</Button> : <T>{profile.email}</T>}
             <Button href={profile.linkedin} variant="ghost" external>
@@ -60,7 +60,7 @@ export default function Contact() {
           </div>
         </div>
         <div className="container-x flex flex-wrap justify-between gap-2 border-t border-line py-[2svh]">
-          <p className="label !text-[0.62rem]">© {new Date().getFullYear()} {profile.name} · {profile.location}</p>
+          <p className="label !text-[0.62rem]">© {new Date().getFullYear()} {profile.name}</p>
           <a href="#top" className="label !text-[0.62rem] hover:!text-signal">
             Back to top ↑
           </a>

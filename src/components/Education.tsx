@@ -8,7 +8,7 @@ export default function Education() {
         <SectionHead
           n="03"
           eyebrow="Education"
-          title={['From Casablanca', 'to a master’s in 3D.']}
+          title={['From mathematics', 'to a master’s in 3D.']}
           lede="Mathematics first, then computer science, then a specialisation in image, rendering and 3D."
         />
 

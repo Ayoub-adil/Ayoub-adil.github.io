@@ -21,7 +21,7 @@ export default function About() {
             />
             <figcaption className="mt-2 flex items-end justify-between border-t border-line pt-4">
               <span className="label !text-paper/90">{profile.name}</span>
-              <span className="label !text-paper/70">{profile.location}</span>
+              <span className="label !text-paper/70">Software Engineer · 3D & vision</span>
             </figcaption>
           </div>
         </figure>
