@@ -11,7 +11,7 @@ export default function Experience() {
           n="02"
           eyebrow="Experience"
           title={['Where I’ve', 'worked so far.']}
-          lede="From VR research in a university lab to industrial vision systems running on trains and in factories."
+          lede="From virtual-reality research in a university lab to vision systems that run on trains and in factories."
         />
 
         <ol className="mt-[5svh] border-t border-line">

@@ -25,15 +25,15 @@ export const profile = {
 }
 
 export const hero = {
-  eyebrow: 'Portfolio · 3D & computer vision',
+  eyebrow: 'Software engineer · 3D & computer vision',
   name: 'Ayoub ADIL',
   title: ['3D & computer-vision', 'software engineer.'],
   lede:
-    'I hold a master’s in Image & 3D from the University of Strasbourg. Since 2024 I build 3D and machine-vision software for industrial systems: LiDAR and depth cameras, point clouds, and the operator interfaces that run in production.',
+    'I turn raw sensor data into software people rely on: LiDAR and depth cameras, point clouds and 3D reconstruction, and the operator applications that run in production, on trains, in signal boxes and in an industrial oven.',
   facts: [
-    ['Education', 'Master, Image & 3D · Strasbourg'],
+    ['Education', 'Master’s, Image & 3D'],
     ['Now', 'Software Engineer, industrial vision'],
-    ['Focus', '3D, point clouds, machine vision'],
+    ['Strengths', 'Sensor to production, end to end'],
     ['Languages', 'FR · EN · AR'],
   ] as [string, string][],
 }
@@ -45,14 +45,14 @@ export const steps: { id: StepId; verb: string; object: string; body: string; re
     id: 'capture',
     verb: 'I capture',
     object: 'the scene.',
-    body: 'LiDAR, time-of-flight, line-scan, area-scan and thermal cameras. I integrate the sensor, calibrate it and get clean data out of it.',
+    body: 'LiDAR, time-of-flight, line-scan, area-scan and thermal cameras. I integrate them, calibrate them and synchronise them, up to 24 cameras and more than 100 lights on one shared trigger.',
     ref: 'Tunnel inspection platform · Track inspection',
   },
   {
     id: 'reconstruct',
     verb: 'I reconstruct',
     object: 'the geometry.',
-    body: 'Point clouds, stereo calibration, visual SLAM. My master’s internship applied ORB-SLAM and PLVS to real rail and metro tunnel data.',
+    body: 'Point clouds, stereo calibration and visual SLAM. In my master’s internship I applied ORB-SLAM and PLVS to real rail and metro tunnel footage.',
     ref: '3D tunnel reconstruction',
   },
   {
@@ -66,7 +66,7 @@ export const steps: { id: StepId; verb: string; object: string; body: string; re
     id: 'interface',
     verb: 'I build',
     object: 'the interface.',
-    body: 'Multi-screen operator applications, replay modes, 3D viewers and depth-image displays. The part people actually use.',
+    body: 'Three-screen operator applications, replay modes, 3D viewers and depth-image displays: the part people use every day, so it has to be clear and reliable.',
     ref: 'Signal-box assistant · Dough monitoring',
   },
   {
@@ -117,7 +117,7 @@ export const projects: Project[] = [
     status: 'In production',
     year: '2024',
     summary:
-      'A time-of-flight camera at the top of a tall rectangular oven films the inside. It produces depth images and a point cloud, used to compute the height and the volume of the dough over time while it bakes.',
+      'A time-of-flight camera at the top of a tall oven films the dough while it bakes. From its depth images and point cloud, the system tracks the height and the volume of the dough over time.',
     did: ['Operator interface', 'ToF camera integration', '3D viewer', 'Depth-image display'],
     stack: ['C++'],
     cardVideo: 'tof',
@@ -130,7 +130,7 @@ export const projects: Project[] = [
     status: 'Proof of concept',
     year: '03/2024 – 08/2024',
     summary:
-      'Visual SLAM (ORB-SLAM, PLVS) applied to real rail data: tunnels, trains, metro. Point clouds, stereo calibration, reconstruction and visualisation.',
+      'Visual SLAM (ORB-SLAM, PLVS) applied to real footage of rail tunnels, trains and metro: point clouds, stereo calibration, 3D reconstruction and visualisation.',
     did: ['Literature review', 'Implementation', 'Processing and analysis of results', 'Application to real data'],
     stack: ['C++', 'Docker', 'Ubuntu'],
     cardVideo: 'slam',
@@ -302,7 +302,7 @@ export const architecture = {
   eyebrow: 'Case study · Tunnel inspection platform',
   title: ['One truck,', 'thirteen services.'],
   lede:
-    'My clearest example of working on a large system: I developed the services and applications of this inspection platform, from synchronised acquisition on board to the tools inspectors use afterwards. Generic, anonymised view.',
+    'The largest system I have worked on. I developed its services and applications, from synchronised acquisition on board the truck to the tools inspectors use after the run. Hover a service to see what it does. Generic, anonymised view.',
   layers: [
     {
       id: 'hw',
@@ -404,7 +404,7 @@ export const experience: Job[] = [
       { from: '03/2024', to: '08/2024', title: 'R&D Intern', note: 'Master’s final internship: 3D reconstruction from images' },
     ],
     summary:
-      'I build acquisition services, 3D and vision processing and operator applications, then install them on site and support them. I have worked solo, in pairs and in larger teams, and I am at ease in all three.',
+      'I build acquisition services, 3D and vision processing and the operator applications on top, then install them on site and keep them running. I have worked solo, in pairs and in larger teams, and I am at ease in all three.',
   },
   {
     org: 'ICube lab (IGG team) · University of Strasbourg',
@@ -477,9 +477,9 @@ export const about = {
   eyebrow: 'About me',
   title: ['Sensors, geometry,', 'and the software in between.'],
   body: [
-    'I’m Ayoub, a software engineer specialised in 3D and computer vision. I studied mathematics and computer science, then did a master’s in Image & 3D at the University of Strasbourg, where I worked on virtual reality with the ICube lab and on rendering.',
-    'In 2024 I joined R&D Vision as an R&D intern on 3D reconstruction from images. I stayed as Application Engineer, and since September 2025 I work as Software Engineer: LiDAR and depth cameras, synchronised multi-camera acquisition, and the operator applications that run in production.',
-    'What I enjoy most is the full path: from a raw sensor, to a geometry I can trust, to an interface someone uses every day.',
+    'I’m Ayoub, a software engineer specialised in 3D and computer vision. I came to it through mathematics and computer science, then a master’s in Image & 3D at the University of Strasbourg, where I worked on virtual reality with the ICube lab and on Monte Carlo path tracing.',
+    'Since 2024 I have been building industrial vision systems at R&D Vision: first as an R&D intern on 3D reconstruction, then as Application Engineer, and since September 2025 as Software Engineer. I integrate LiDAR, time-of-flight, line-scan and thermal cameras, write the services that acquire and process their data, and build the applications operators use.',
+    'What I care about is the whole chain: a sensor I can trust, a geometry that holds, an interface people use every day, and a system that keeps running after I install it.',
   ],
 }
 

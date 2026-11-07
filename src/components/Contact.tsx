@@ -11,9 +11,9 @@ export default function Contact() {
         <div className="container-x flex flex-1 flex-col items-center justify-center text-center">
           <p className="eyebrow mb-[3svh]">Contact</p>
           <h2 className="display mx-auto max-w-[16ch] text-[clamp(2.4rem,min(7.4vw,10svh),6.2rem)]">
-            Let’s build <span className="accent">the next part.</span>
+            Let’s build <span className="accent">what’s next.</span>
           </h2>
-          <p className="mx-auto mt-[3svh] max-w-md text-paper/70">Open to 3D software roles. The quickest way to reach me is email or LinkedIn.</p>
+          <p className="mx-auto mt-[3svh] max-w-md text-paper/70">I’m open to 3D software roles. Email or LinkedIn is the quickest way to reach me.</p>
           <div className="mt-[4svh] flex flex-wrap justify-center gap-3">
             {mail ? <Button href={`mailto:${mail}`}>{mail}</Button> : <T>{profile.email}</T>}
             <Button href={profile.linkedin} variant="ghost" external>

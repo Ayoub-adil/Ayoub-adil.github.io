@@ -239,7 +239,7 @@ export default function Work() {
             n="04"
             eyebrow="Projects"
             title={['What I’ve built,', '3D first.']}
-            lede="Industrial systems, projects from my master’s, and my own products. Clients are anonymised; industrial visuals are synthetic."
+            lede="A selection of the industrial systems I built, projects from my master’s and my own products. Clients are anonymised; industrial visuals are synthetic renders."
           />
           <div className="mt-[2.5svh]">
             <Rail label="Industrial" note="Selected projects · 2024 – today">
