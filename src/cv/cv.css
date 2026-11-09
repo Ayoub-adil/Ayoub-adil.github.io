@@ -15,6 +15,13 @@ html {
   border-color: #d9d6d0;
 }
 
+/* the site hides horizontal overflow; the A4 sheet must stay scrollable on narrow windows */
+@media screen {
+  body {
+    overflow-x: auto;
+  }
+}
+
 .sheet {
   width: 210mm;
   min-height: 297mm;
