@@ -21,7 +21,7 @@ body {
   color: #a8740a;
   border-bottom: 1px solid rgb(10 13 18 / 0.12);
   padding-bottom: 3px;
-  margin: 10px 0 6px;
+  margin: 8px 0 5px;
 }
 
 @page {
@@ -42,5 +42,8 @@ body {
     box-shadow: none;
     width: auto;
     min-height: auto;
+    padding: 12mm 15mm;
+    /* set by the page so that every language fits on one A4 page */
+    zoom: var(--cv-fit, 1);
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ElementType, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { isTodo } from '../content/content'
 
 /** Renders a value, or a visible TODO marker when the content is missing. */
@@ -6,10 +6,11 @@ export function T({ children }: { children: string }) {
   return isTodo(children) ? <span className="todo">{children}</span> : <>{children}</>
 }
 
-export function Arrow({ className = '' }: { className?: string }) {
+/** ↗ for links that leave the site, → for links inside it. */
+export function Arrow({ className = '', out = true }: { className?: string; out?: boolean }) {
   return (
-    <svg viewBox="0 0 12 12" className={`inline-block h-[0.7em] w-[0.7em] ${className}`} aria-hidden>
-      <path d="M3 9 9 3M4 3h5v5" fill="none" stroke="currentColor" strokeWidth="1.4" />
+    <svg viewBox="0 0 12 12" className={`inline-block h-[0.7em] w-[0.7em] rtl:-scale-x-100 ${className}`} aria-hidden>
+      <path d={out ? 'M3 9 9 3M4 3h5v5' : 'M2 6h8M6.5 2.5 10 6l-3.5 3.5'} fill="none" stroke="currentColor" strokeWidth="1.4" />
     </svg>
   )
 }
@@ -61,60 +62,20 @@ export function Button({
   return (
     <a href={href} className={`${base} ${look} ${className}`} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}>
       {children}
-      <Arrow className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      <Arrow
+        out={external || href.startsWith('mailto:')}
+        className={`transition-transform duration-300 group-hover:translate-x-0.5 ${external || href.startsWith('mailto:') ? 'group-hover:-translate-y-0.5' : ''}`}
+      />
     </a>
   )
 }
 
-export function StatusPill({ status }: { status: string }) {
-  const live = status === 'In production'
+/** `status` is the label already translated; `live` marks a system in production. */
+export function StatusPill({ status, live = false }: { status: string; live?: boolean }) {
   return (
-    <span className="label inline-flex items-center gap-2 rounded-full border border-line px-2.5 py-1 !text-[0.64rem]">
+    <span className="label inline-flex items-center gap-2 rounded-full border border-line px-2.5 py-1">
       <span className={`h-1.5 w-1.5 rounded-full ${live ? 'bg-signal shadow-[0_0_8px_var(--color-signal)]' : 'bg-mute/60'}`} />
       {status}
     </span>
-  )
-}
-
-/** Fades and lifts its content in when it enters the viewport, once. */
-export function Reveal({
-  as: Tag = 'div',
-  delay = 0,
-  className = '',
-  children,
-  ...rest
-}: {
-  as?: ElementType
-  delay?: number
-  className?: string
-  children: ReactNode
-  id?: string
-}) {
-  const ref = useRef<HTMLElement>(null)
-  const [shown, setShown] = useState(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setShown(true)
-          io.disconnect()
-        }
-      },
-      { rootMargin: '0px 0px -12% 0px' },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-  return (
-    <Tag
-      ref={ref}
-      {...rest}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(.2,.7,.1,1)] ${shown ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} ${className}`}
-    >
-      {children}
-    </Tag>
   )
 }

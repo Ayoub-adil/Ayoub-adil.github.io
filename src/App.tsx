@@ -28,6 +28,8 @@ export default function App() {
   const reduced = useMedia('(prefers-reduced-motion: reduce)')
   const mobile = useMedia(MOBILE_QUERY)
   const [webgl] = useState(hasWebGL)
+  // the render loop stops once the scene is only still dust behind the lower sections
+  const [live, setLive] = useState(true)
   field.reduced = reduced
 
   useEffect(() => startSmoothScroll(reduced), [reduced])
@@ -47,6 +49,21 @@ export default function App() {
     // without WebGL or with reduced motion the photo is simply shown
     const handoff = webgl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const clamp = (v: number) => Math.min(Math.max(v, 0), 1)
+    let pause: number | undefined
+    let running = true
+    const setRunning = (on: boolean) => {
+      if (on) {
+        window.clearTimeout(pause)
+        pause = undefined
+        if (!running) setLive((running = true))
+      } else if (running && pause === undefined) {
+        // let the dust finish settling before the last frame is kept
+        pause = window.setTimeout(() => {
+          pause = undefined
+          setLive((running = false))
+        }, 2500)
+      }
+    }
     const onScroll = () => {
       const vh = window.innerHeight
       const s = seq.getBoundingClientRect()
@@ -72,7 +89,10 @@ export default function App() {
       // reached (same threshold as Sequence.tsx), where the tunnel gathers from them
       const afterSeq = clamp((0.85 * vh - s.bottom) / (0.6 * vh))
       const starsAfterPhoto = field.toPhoto >= 0.999 && s.top > 0.35 * vh ? 1 : 0
-      field.dim = Math.max(afterSeq, starsAfterPhoto)
+      // reduced motion: no sequence animation, so the field stays dust once the hero is left
+      const reducedDust = field.reduced && field.toPhoto >= 0.999 ? 1 : 0
+      field.dim = Math.max(afterSeq, starsAfterPhoto, reducedDust)
+      setRunning(afterSeq < 1)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -81,6 +101,7 @@ export default function App() {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
+      window.clearTimeout(pause)
     }
   }, [])
 
@@ -89,7 +110,7 @@ export default function App() {
       <div className="fixed inset-0 z-0" aria-hidden>
         {webgl ? (
           <Suspense fallback={<Backdrop />}>
-            <Stage active mobile={mobile} />
+            <Stage active={live} mobile={mobile} />
           </Suspense>
         ) : (
           <Backdrop />

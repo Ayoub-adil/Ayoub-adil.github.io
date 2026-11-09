@@ -4,9 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0A0D12" />
-    <meta name="description" content="Ayoub ADIL, software engineer building 3D and computer-vision software for industrial systems: LiDAR, point clouds, depth cameras, operator interfaces." />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>Ayoub ADIL · 3D & Computer Vision Software Engineer</title>
+    <meta name="description" content="Ayoub ADIL, software engineer: I design, develop and maintain applications, with a background in 3D (point clouds, 3D viewers, reconstruction)." />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- the hero point cloud: full set on desktop, 30k-point prefix on phones (see PointField.tsx) -->
+    <link rel="preload" href="/models/head.bin" as="fetch" type="application/octet-stream" crossorigin media="(min-width: 768px)" />
+    <link rel="preload" href="/models/head-30k.bin" as="fetch" type="application/octet-stream" crossorigin media="(max-width: 767px)" />
+    <title>Ayoub ADIL · Software Engineer, 3D</title>
+    <!-- link previews (LinkedIn, Slack, mail). Absolute URLs assume GitHub Pages at ayoub-adil.github.io: update if the site is hosted elsewhere -->
+    <link rel="canonical" href="https://ayoub-adil.github.io/" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="Ayoub ADIL" />
+    <meta property="og:title" content="Ayoub ADIL · Software Engineer, 3D" />
+    <meta property="og:description" content="I design, develop and maintain software applications, from the first architecture to support after delivery, with a background in 3D." />
+    <meta property="og:url" content="https://ayoub-adil.github.io/" />
+    <meta property="og:image" content="https://ayoub-adil.github.io/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Ayoub ADIL, portrait rendered as a 3D point cloud" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

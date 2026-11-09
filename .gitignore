@@ -41,3 +41,7 @@ __pycache__
 # Photo -> point cloud toolchain
 tools/.venv
 tools/debug
+
+# Private, never pushed (repo is public)
+CLAUDE.md
+pro_photos/

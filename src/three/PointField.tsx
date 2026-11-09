@@ -7,6 +7,8 @@ import { field } from './store'
 // Stage 0 is my head, reconstructed from a portrait (tools/head_cloud.py).
 // Stages 1..5 are the procedural "What I do" scenes.
 export const HEAD_URL = '/models/head.bin'
+// first 30k points of head.bin (points are stored shuffled, so any prefix is a uniform sample): for phones
+export const HEAD_URL_SMALL = '/models/head-30k.bin'
 export const LAST = 5
 // Height of the head crop in scene units; must match HEIGHT_UNITS in tools/head_cloud.py.
 // The crop is the 4:5 About portrait, so (x, y) maps to a pixel of that photo.
@@ -174,7 +176,7 @@ const fragment = /* glsl */ `
 
 /** Decode head.bin: int16 x, y, z (/4096), uint8 r, g, b, uint8 brightness. */
 async function loadHead(count: number, out: Float32Array, col: Float32Array) {
-  const buf = await (await fetch(HEAD_URL)).arrayBuffer()
+  const buf = await (await fetch(count <= 30000 ? HEAD_URL_SMALL : HEAD_URL)).arrayBuffer()
   const dv = new DataView(buf)
   const n = buf.byteLength / 10
   const c = new THREE.Color()
@@ -260,6 +262,8 @@ export default function PointField({ count }: { count: number }) {
     const motion = field.reduced ? 0 : 1
     // ~1.3 s to settle: each step's cloud plays its own transition when its page appears
     const k = 1 - Math.exp(-dt * (field.reduced ? 60 : 2.4))
+    // a fast scroll that skips steps shows one transition only, not a parade of half-built scenes
+    if (Math.abs(field.morph - s.morph) > 1) s.morph = field.morph - Math.sign(field.morph - s.morph)
     s.morph += (field.morph - s.morph) * k
     s.dim += (field.dim - s.dim) * (1 - Math.exp(-dt * 2.5))
     // hold the intro until the head is loaded (or give up after 4 s)

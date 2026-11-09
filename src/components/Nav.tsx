@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Arrow } from './ui'
-
-const links = [
-  { href: '#about', label: 'About' },
-  { href: '#experience', label: 'Experience' },
-  { href: '#education', label: 'Education' },
-  { href: '#work', label: 'Projects' },
-  { href: '#skills', label: 'Skills' },
-]
+import LangSwitcher from './LangSwitcher'
+import { useContent } from '../i18n'
 
 export default function Nav() {
+  const c = useContent()
+  const t = c.ui.nav
+  const links = [
+    { href: '#about', label: t.about },
+    { href: '#experience', label: t.experience },
+    { href: '#education', label: t.education },
+    { href: '#work', label: t.projects },
+    { href: '#skills', label: t.skills },
+  ]
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -26,16 +29,16 @@ export default function Nav() {
         scrolled || open ? 'bg-ink/75 backdrop-blur-md' : 'bg-transparent'
       }`}
     >
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:bg-ink focus:px-3 focus:py-2">
-        Skip to content
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:bg-ink focus:px-3 focus:py-2">
+        {c.ui.skip}
       </a>
       <nav className="container-x flex h-16 items-center justify-between" aria-label="Main">
-        <a href="#top" className="flex items-center gap-3" aria-label="Ayoub ADIL, home">
+        <a href="#top" className="flex items-center gap-3" aria-label={c.ui.home}>
           <Mark />
-          <span className="font-mono text-[0.78rem] font-semibold tracking-[0.22em] uppercase">Ayoub Adil</span>
+          <span className="font-mono text-[0.78rem] font-semibold uppercase tracking-[0.22em]">{c.name}</span>
         </a>
 
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-7 lg:flex">
           {links.map((l) => (
             <li key={l.href}>
               <a href={l.href} className="label !text-paper/80 transition-colors hover:!text-signal">
@@ -45,29 +48,24 @@ export default function Nav() {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <a href="/cv/" className="label rounded-[3px] border border-paper/30 px-3.5 py-2 !text-paper hover:border-paper">
-            CV
+        <div className="flex items-center gap-2">
+          <LangSwitcher />
+          <a href="/cv/" className="label hidden rounded-[3px] border border-paper/30 px-3.5 py-2 !text-paper hover:border-paper md:inline-block">
+            {t.cv}
           </a>
-          <a href="#contact" className="label inline-flex items-center gap-2 rounded-[3px] bg-signal px-3.5 py-2 !text-ink hover:bg-paper">
-            Contact <Arrow />
+          <a href="#contact" className="label hidden items-center gap-2 rounded-[3px] bg-signal px-3.5 py-2 !text-ink hover:bg-paper md:inline-flex">
+            {t.contact} <Arrow out={false} />
           </a>
+          <button className="label ms-2 !text-paper lg:hidden" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((o) => !o)}>
+            {open ? c.ui.close : c.ui.menu}
+          </button>
         </div>
-
-        <button
-          className="label !text-paper md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          onClick={() => setOpen((o) => !o)}
-        >
-          {open ? 'Close' : 'Menu'}
-        </button>
       </nav>
 
       {open && (
-        <div id="mobile-menu" className="container-x pb-6 md:hidden">
+        <div id="mobile-menu" className="container-x pb-6 lg:hidden">
           <ul className="flex flex-col gap-1 border-t border-line pt-4">
-            {[...links, { href: '/cv/', label: 'CV' }, { href: '#contact', label: 'Contact' }].map((l) => (
+            {[...links, { href: '/cv/', label: t.cv }, { href: '#contact', label: t.contact }].map((l) => (
               <li key={l.href}>
                 <a href={l.href} onClick={() => setOpen(false)} className="block py-2 text-2xl">
                   {l.label}
@@ -81,21 +79,14 @@ export default function Nav() {
   )
 }
 
-export function Mark({ className = 'h-6 w-6' }: { className?: string }) {
+/**
+ * The site's logo (nav, footer): same render as the CV header, without the background. The whole cut-out photo at the
+ * circle's width, so the head stays complete and the circle only hides the straight cut at the bottom.
+ */
+export function Mark({ className = 'h-8 w-8' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <g fill="#FAB529">
-        <circle cx="9" cy="22" r="1.7" />
-        <circle cx="13" cy="16" r="1.7" />
-        <circle cx="16" cy="10" r="1.7" />
-        <circle cx="19" cy="16" r="1.7" />
-        <circle cx="23" cy="22" r="1.7" />
-      </g>
-      <g fill="#ECE8E1" opacity=".6">
-        <circle cx="11" cy="19" r="1" />
-        <circle cx="16" cy="19" r="1" />
-        <circle cx="21" cy="19" r="1" />
-      </g>
-    </svg>
+    <span className={`${className} block shrink-0 overflow-hidden rounded-full`} aria-hidden>
+      <img src="/img/ayoub-cutout-600.webp" alt="" width={600} height={750} decoding="async" className="block h-auto w-full" />
+    </span>
   )
 }

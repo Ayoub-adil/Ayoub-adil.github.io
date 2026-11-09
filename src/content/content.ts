@@ -8,73 +8,73 @@ export const isTodo = (s: string | undefined | null) => !!s && s.startsWith('TOD
 export const profile = {
   name: 'Ayoub ADIL',
   role: 'Software Engineer',
-  focus: '3D & Computer Vision',
+  focus: 'Software engineering · 3D',
   company: 'R&D Vision',
   companyNote: 'industrial machine vision',
   location: 'Paris area, France',
   email: 'ayoub.adil0406@gmail.com',
   linkedin: 'https://www.linkedin.com/in/ayoub-adil/',
-  github: 'https://github.com/Ayoub-adil',
-  // "Fluent" for French, English, Arabic comes from the v1 site's own text
+  // levels: Arabic native, French fluent (years living in France), English fluent (changed from conversational on 09/11/2026)
   languages: [
+    { name: 'Arabic', level: 'Native' },
     { name: 'French', level: 'Fluent' },
     { name: 'English', level: 'Fluent' },
-    { name: 'Arabic', level: 'Fluent' },
-    { name: 'German', level: 'Learning (just started)' },
+    { name: 'German', level: 'Learning' },
   ],
+  site: 'https://ayoub-adil.github.io/',
 }
 
 export const hero = {
-  eyebrow: 'Software engineer · 3D & computer vision',
   name: 'Ayoub ADIL',
-  title: ['3D & computer-vision', 'software engineer.'],
+  title: ['Software engineer,', 'with a 3D background.'],
   lede:
-    'I turn raw sensor data into software people rely on: LiDAR and depth cameras, point clouds and 3D reconstruction, and the operator applications that run in production, on trains, in signal boxes and in an industrial oven.',
+    'I design, develop and maintain software applications, from the first architecture to support after delivery. I work on 3D software, such as point clouds, 3D viewers and reconstruction, and on larger systems: multi-service platforms and the applications their users work with. Several of my applications run in production today.',
   facts: [
-    ['Education', 'Master’s, Image & 3D'],
     ['Now', 'Software Engineer, industrial vision'],
-    ['Strengths', 'Sensor to production, end to end'],
-    ['Languages', 'FR · EN · AR'],
+    ['Education', 'Master’s, Image & 3D'],
+    ['What I do', 'Design · development · maintenance'],
+    ['Code', 'C++ · C# · Python'],
   ] as [string, string][],
 }
 
 export type StepId = 'capture' | 'reconstruct' | 'detect' | 'interface' | 'ship'
 
-export const steps: { id: StepId; verb: string; object: string; body: string; ref: string }[] = [
+// General text per step, then example projects (refs link to the project cards).
+export const steps: { id: StepId; verb: string; object: string; body: string; refs: [string, string][] }[] = [
   {
     id: 'capture',
     verb: 'I capture',
     object: 'the scene.',
-    body: 'LiDAR, time-of-flight, line-scan, area-scan and thermal cameras. I integrate them, calibrate them and synchronise them, up to 24 cameras and more than 100 lights on one shared trigger.',
-    ref: 'Tunnel inspection platform · Track inspection',
+    body: 'I integrate sensors into software: industrial cameras (line-scan, area-scan, time-of-flight, thermal) and LiDAR. I connect and configure them, and synchronise their acquisition with the rest of the system.',
+    refs: [['Tunnel inspection platform', 'tunnel-platform'], ['Track inspection', 'track-inspection'], ['LiDAR safety barrier', 'lidar-barrier']],
   },
   {
     id: 'reconstruct',
     verb: 'I reconstruct',
     object: 'the geometry.',
-    body: 'Point clouds, stereo calibration and visual SLAM. In my master’s internship I applied ORB-SLAM and PLVS to real rail and metro tunnel footage.',
-    ref: '3D tunnel reconstruction',
+    body: 'I work with 3D data: point clouds, depth images, stereo calibration and 3D reconstruction, and I build the viewers that display them.',
+    refs: [['3D tunnel reconstruction', 'slam-tunnels'], ['Dough monitoring', 'dough-tof'], ['LiDAR safety barrier', 'lidar-barrier']],
   },
   {
     id: 'detect',
     verb: 'I detect',
     object: 'what matters.',
-    body: 'Two LiDARs draw an invisible barrier around a bus charging from underneath. A person, a cane or any object crossing it is detected; rain, snow, the bus shaking or tilting are not.',
-    ref: 'LiDAR safety barrier',
+    body: 'I calibrate the sensors, process their data and turn it into the result the client needs: a measurement, a detection or an alert, reliable in the real conditions on site.',
+    refs: [['LiDAR safety barrier', 'lidar-barrier'], ['Dough monitoring', 'dough-tof'], ['Niche detection', 'metro-niches']],
   },
   {
     id: 'interface',
     verb: 'I build',
     object: 'the interface.',
-    body: 'Three-screen operator applications, replay modes, 3D viewers and depth-image displays: the part people use every day, so it has to be clear and reliable.',
-    ref: 'Signal-box assistant · Dough monitoring',
+    body: 'I design and develop the applications people work with: desktop and multi-screen applications, tablet apps, replay and history tools, made to be clear for the people who use them.',
+    refs: [['Signal-box assistant', 'signal-box'], ['Tunnel inspection platform', 'tunnel-platform'], ['Fabric defect inspection', 'fabric']],
   },
   {
     id: 'ship',
     verb: 'I ship',
     object: 'to production.',
-    body: 'I install my applications on client sites and maintain them after delivery. They run on trains, in an industrial oven and in signal boxes.',
-    ref: 'Installation · maintenance · support',
+    body: 'I install my applications on site, support them after delivery and keep them evolving: fixes, and refactoring when a product has to grow.',
+    refs: [['Track inspection', 'track-inspection']],
   },
 ]
 
@@ -92,84 +92,72 @@ export interface Project {
   stack: string[]
   // looping 3D render for the card: public/img/cards/<cardVideo>.mp4 (tools/render_cards.mjs)
   cardVideo?: string
+  /** shown as a card in the grid (most interesting first); the others go to the compact list */
+  featured?: boolean
   tag: '3D' | 'Systems'
 }
 
+// Order = most interesting first (no numbering on the site).
 export const projects: Project[] = [
+  {
+    id: 'tunnel-platform',
+    tag: 'Systems',
+    featured: true,
+    title: 'Tunnel inspection platform',
+    client: 'Rail tunnel operator',
+    status: 'In progress',
+    year: '2026',
+    summary:
+      'An inspection truck, carried through the tunnel by train, films the equipment on the tunnel walls and roof so it can be maintained. 22 rear cameras each cover their own zone, 2 side cameras read the positioning signs and more than 100 lights each light their own section, alongside thermal cameras, RFID + GPS, batteries and a fire panel. Thirteen services and applications handle the acquisition on board, then the upload, archiving, multi-screen inspection and run-to-run comparison.',
+    did: [
+      'Developed most of the services and the communication between them',
+      'Developed all the applications: operator tablet, multi-screen inspection, history comparison',
+    ],
+    stack: ['.NET', 'WPF', 'C#', 'C++', 'Modbus / JBus', 'Phoxene', 'NI DAQ'],
+    cardVideo: 'tunnel',
+  },
   {
     id: 'lidar-barrier',
     tag: '3D',
+    featured: true,
     title: 'LiDAR safety barrier for e-bus high-voltage charging',
     client: 'Transport-sector manufacturer',
     status: 'Proof of concept',
     year: '2026',
     summary:
-      'A bus charges from underneath while parked, and nobody may approach it. One LiDAR on the front scans a full line ahead of the bus, another on the right side scans along its edge. My software detects any person or object crossing those lines, even a cane, without false alarms from rain, snow, or the bus shaking or tilting. The system alerts the driver, then cuts the power.',
-    did: ['Operator interface', 'Point-cloud processing', 'LiDAR integration', 'Calibration'],
+      'Detects any person or object, down to a cane, approaching a bus that charges at high voltage from underneath, without false alarms from rain, snow or the bus shaking or tilting. Two LiDARs at the top of the bus scan a line ahead of it and along its right side. The system alerts the driver, then cuts the power.',
+    did: [
+      'Wrote the point-cloud processing that tells real intrusions from rain, snow and bus motion',
+      'Integrated and calibrated the LiDARs',
+      'Built the operator interface',
+    ],
     stack: ['Python', 'C++', 'C#', 'WPF / .NET'],
     cardVideo: 'lidar',
   },
   {
     id: 'dough-tof',
     tag: '3D',
+    featured: true,
     title: '3D dough monitoring in an industrial oven',
     client: 'Food-industry group',
     status: 'In production',
     year: '2024',
     summary:
-      'A time-of-flight camera at the top of a tall oven films the dough while it bakes. From its depth images and point cloud, the system tracks the height and the volume of the dough over time.',
-    did: ['Operator interface', 'ToF camera integration', '3D viewer', 'Depth-image display'],
+      'Tracks the height and volume of the dough over time while it bakes, from the depth images and point cloud of a time-of-flight camera at the top of the oven.',
+    did: ['Integrated the ToF camera', 'Built the 3D viewer and the depth-image display', 'Built the operator interface'],
     stack: ['C++'],
     cardVideo: 'tof',
   },
   {
-    id: 'slam-tunnels',
-    tag: '3D',
-    title: '3D reconstruction of rail and metro tunnels from images',
-    client: 'Master’s final internship',
-    status: 'Proof of concept',
-    year: '03/2024 – 08/2024',
-    summary:
-      'Visual SLAM (ORB-SLAM, PLVS) applied to real footage of rail tunnels, trains and metro: point clouds, stereo calibration, 3D reconstruction and visualisation.',
-    did: ['Literature review', 'Implementation', 'Processing and analysis of results', 'Application to real data'],
-    stack: ['C++', 'Docker', 'Ubuntu'],
-    cardVideo: 'slam',
-  },
-  {
-    id: 'tunnel-platform',
-    tag: 'Systems',
-    title: 'Tunnel inspection platform',
-    client: 'Cross-border rail tunnel operator',
-    status: 'In progress',
-    year: '2026',
-    summary:
-      'An inspection truck carried by train through the tunnel, to inspect the equipment installed on the tunnel walls and roof so it can be maintained. Several processing stations run on board. 22 cameras at the rear each film their own zone of the tunnel, 2 side cameras read the positioning signs, and more than 100 lights each light their own section. Thermal cameras, RFID + GPS, batteries and a fire panel complete it. Thirteen services and applications run the acquisition, then the upload, archiving, multi-screen inspection and history comparison.',
-    did: ['Acquisition and synchronisation services', 'Operator tablet app', 'Multi-screen review app', 'History comparison app'],
-    stack: ['.NET', 'WPF', 'C#', 'C++', 'Modbus / JBus', 'Phoxene', 'NI cards'],
-    cardVideo: 'tunnel',
-  },
-  {
-    id: 'signal-box',
-    tag: 'Systems',
-    title: 'Signal-box route-setting assistant',
-    client: 'National rail operator',
-    status: 'In production',
-    year: '2025',
-    summary:
-      'A three-screen application: route preparation and command, detection of the switches to operate, train-passage detection by zone, recording and history, and a replay mode to replay what happened on the switch tables. 3 cameras and lights per table, 2 tables per signal box.',
-    did: ['Complete application', 'Replay mode', 'Recording and history'],
-    stack: ['.NET', 'WPF', 'C#', 'C++'],
-    cardVideo: 'signalbox',
-  },
-  {
     id: 'track-inspection',
     tag: 'Systems',
+    featured: true,
     title: 'Track inspection software, 3 vehicle configurations',
     client: 'Rail inspection company',
     status: 'In production',
     year: '2026',
     summary:
-      'A wagon with 6 line-scan cameras at the same level, 3 per rail (top, inner and outer view), each taking one line every millimetre on the train’s travel pulse, plus an area-scan camera at the front recording the surroundings to know where each rail image was taken. The sequences are then replayed to spot where the client needs to maintain each rail. Three vehicle variants.',
+      'Six line-scan cameras, three per rail (top, inner and outer view), each capture one line per millimetre of travel, and a forward area-scan camera records the surroundings so each rail image can be located. Inspectors replay the sequences to decide where each rail needs maintenance.',
     did: [
       'Took over a colleague’s code and fixed malfunctions',
       'Refactored it into one modular application for the 3 configurations',
@@ -180,16 +168,32 @@ export const projects: Project[] = [
     cardVideo: 'track',
   },
   {
-    id: 'train-passage',
+    id: 'signal-box',
     tag: 'Systems',
-    title: 'Train passage detection',
-    client: 'National rail operator',
-    status: 'Delivered',
-    year: '2026',
+    featured: true,
+    title: 'Signal-box route-setting assistant',
+    client: 'Rail operator',
+    status: 'In production',
+    year: '2025',
     summary:
-      'I developed the data-consultation application and the data-reporting service, queryable by third-party applications and from a web interface.',
-    did: ['Consultation application', 'Data-reporting service'],
-    stack: ['.NET', 'WPF'],
+      'A three-screen application for signal-box operators: preparing and setting routes, detecting which switches to operate, detecting train passages by zone, recording everything, and replaying what happened on the switch tables. 3 cameras and lights per table, 2 tables per signal box.',
+    did: ['Built the complete application', 'Recording, history and replay mode'],
+    stack: ['.NET', 'WPF', 'C#', 'C++'],
+    cardVideo: 'signalbox',
+  },
+  {
+    id: 'slam-tunnels',
+    tag: '3D',
+    featured: true,
+    title: '3D reconstruction of rail and metro tunnels from images',
+    client: 'Master’s internship',
+    status: 'Proof of concept',
+    year: '2024',
+    summary:
+      'Visual SLAM (ORB-SLAM, PLVS) applied to real footage of rail tunnels, trains and metro: stereo calibration, point clouds, 3D reconstruction and visualisation.',
+    did: ['Reviewed the visual-SLAM literature', 'Implemented and ran ORB-SLAM and PLVS', 'Applied them to real rail and metro footage and analysed the results'],
+    stack: ['C++', 'Docker', 'Ubuntu'],
+    cardVideo: 'slam',
   },
   {
     id: 'fabric',
@@ -199,9 +203,21 @@ export const projects: Project[] = [
     status: 'Delivered',
     year: '2025 – 2026',
     summary:
-      'Inspection table: fabric placement detection (no hands), image capture, registration, shape detection, then defect detection by a trained model. I built the interface, including the dataset-creation tools used to train the model.',
-    did: ['Operator interface', 'Dataset-creation tools'],
+      'An inspection table checks that the fabric is laid out with no hands in view, captures and registers the image, detects its shape, then finds defects with a trained model. I built the operator interface, including the tools that create the training datasets.',
+    did: ['Built the operator interface', 'Built the dataset-creation tools'],
     stack: ['C#', 'C++', 'WPF / .NET'],
+  },
+  {
+    id: 'train-passage',
+    tag: 'Systems',
+    title: 'Train passage detection',
+    client: 'Rail operator',
+    status: 'Delivered',
+    year: '2026',
+    summary:
+      'A system that detects passing trains. I built the application to browse its data and the service that makes the data available to third-party applications and a web interface.',
+    did: ['Built the data-browsing application', 'Built the data service'],
+    stack: ['.NET', 'WPF'],
   },
   {
     id: 'metro-niches',
@@ -212,14 +228,14 @@ export const projects: Project[] = [
     year: '2024',
     summary:
       'Niches are small refuges at ground level in metro tunnel walls, about the size of two people, where technicians step aside when a train passes. I took over a colleague’s code and finalised the application that detects them.',
-    did: ['Takeover and finalisation'],
+    did: ['Took over a colleague’s code', 'Finalised the niche-detection application'],
     stack: ['WPF'],
     cardVideo: 'niche',
   },
 ]
 
-export const featured = projects.filter((p) => p.cardVideo)
-export const more = projects.filter((p) => !p.cardVideo)
+export const featured = projects.filter((p) => p.featured)
+export const more = projects.filter((p) => !p.featured)
 
 // From the v1 site (archive-v1). Images are my own academic work.
 export type Media = { type: 'image' | 'video'; src: string; poster?: string; alt: string }
@@ -240,9 +256,9 @@ export const academic: Academic[] = [
   {
     id: 'path-tracing',
     title: 'Monte Carlo path tracing',
-    context: 'Master course project · University of Strasbourg',
+    context: 'Master course project',
     year: '12/2023',
-    summary: 'GPU path tracer studying Monte Carlo sampling in scenes with reflection, shadows and transparency.',
+    summary: 'A GPU path tracer built to study Monte Carlo sampling on scenes with reflections, shadows and transparency.',
     stack: ['C++', 'OpenGL', 'Shaders'],
     media: [
       { type: 'video', src: '/img/projects/path-tracing.mp4', poster: '/img/projects/path-tracing.webp', alt: 'Path tracer converging on a scene with columns and spheres' },
@@ -252,18 +268,18 @@ export const academic: Academic[] = [
   {
     id: 'vr-protocols',
     title: 'Experimental protocols in virtual reality',
-    context: 'Master project · IGG-ICube',
-    year: '09/2023 – 01/2024',
-    summary: 'Design and development of virtual environments for psychological research, and integration of VR into therapeutic applications.',
+    context: 'Master project · ICube lab',
+    year: '09/2023 – 12/2023',
+    summary: 'I designed and built virtual environments for psychology research, and integrated VR into therapeutic applications.',
     stack: ['Unity', 'VR'],
     media: [{ type: 'image', src: '/img/projects/vr-protocols.webp', alt: 'Virtual environments built for psychological research' }],
   },
   {
     id: 'vr-interaction',
     title: 'Interaction with objects in virtual reality',
-    context: 'Research project · IGG-ICube',
+    context: 'Research project · ICube lab',
     year: '01/2023 – 06/2023',
-    summary: 'A development framework in Unreal Engine 5 mapping gestures and postures to the manipulation of 3D objects.',
+    summary: 'A development framework in Unreal Engine 5 that maps gestures and postures to the manipulation of 3D objects.',
     stack: ['Unreal Engine 5', 'VR'],
     media: [
       { type: 'image', src: '/img/projects/vr-interaction.webp', alt: 'Motion-capture gloves used in the project' },
@@ -271,38 +287,24 @@ export const academic: Academic[] = [
     ],
   },
   {
-    id: 'metahuman',
-    title: 'MetaHuman character',
-    context: 'Personal project',
-    year: '2023',
-    summary: 'Creating a MetaHuman character and integrating it into a virtual environment.',
-    stack: ['Unreal Engine 5', 'Blender'],
-    media: [{ type: 'image', src: '/img/projects/metahuman.webp', alt: 'MetaHuman character rendered in Unreal Engine 5' }],
-  },
-  {
     id: 'smart-home',
     title: 'Smart home',
-    context: 'Internship · FST Mohammedia',
+    context: 'Bachelor’s internship · FST Mohammedia',
     year: '04/2020 – 06/2020',
-    summary: 'Web app, Android app, console and API for the remote management of smart homes.',
+    summary: 'A web app, an Android app, a console and an API to manage smart homes remotely.',
     stack: ['Node.js', 'Python', 'TypeScript'],
     media: [{ type: 'image', src: '/img/projects/smart-home.webp', alt: 'Smart home app landing screen' }],
-    links: [
-      ['Web repo', 'https://github.com/Ayoub-adil/SmartHomeWeb'],
-      ['Mobile repo', 'https://github.com/Ayoub-adil/SmartHomeMobile'],
-    ],
   },
 ]
 
 
-// Generic, anonymised view of the tunnel inspection platform.
 // Generic, anonymised view of the tunnel inspection platform.
 // `links` lists the upstream nodes each service depends on.
 export const architecture = {
   eyebrow: 'Case study · Tunnel inspection platform',
   title: ['One truck,', 'thirteen services.'],
   lede:
-    'The largest system I have worked on. I developed its services and applications, from synchronised acquisition on board the truck to the tools inspectors use after the run. Hover a service to see what it does and what feeds it. Generic, anonymised view.',
+    'The largest system I have worked on. The hardware was not my part: I developed most of the services and the communication between them, and all the applications, from synchronised acquisition on board the truck to the tools inspectors use after the run.',
   layers: [
     {
       id: 'hw',
@@ -310,7 +312,7 @@ export const architecture = {
       nodes: [
         { id: 'rear', label: '22 rear cameras', desc: '22 cameras at the rear of the truck, each with its own direction and point of view, filming a precise zone of the tunnel where equipment is installed on the walls or the roof.' },
         { id: 'side', label: '2 side cameras', desc: 'Two cameras on the side of the truck film the signs used to locate the truck in the tunnel.' },
-        { id: 'lights', label: '100+ lights', desc: 'More than 100 lights, each lighting its own section, like the cameras.' },
+        { id: 'lights', label: '100+ lights', desc: 'More than 100 lights, each lighting its own section of the tunnel.' },
         { id: 'thermal', label: 'Thermal cameras', desc: 'Thermal cameras on board the truck.' },
         { id: 'rfid', label: 'RFID + GPS', desc: 'Used to detect the entry into and exit from the tunnel, and which entry and exit.' },
         { id: 'batt', label: 'Batteries', desc: 'Batteries powering the on-board system.' },
@@ -372,15 +374,6 @@ export const products = [
   },
 ]
 
-export const howIBuild = {
-  eyebrow: 'How I build',
-  title: ['Engineering,', 'with AI in the loop.'],
-  lede: 'AI is part of my daily workflow, for my own projects and at work.',
-  items: [
-    { title: 'Claude Code, every day', body: 'I work with Claude Code every day, for my personal projects as well as at work.' },
-  ],
-}
-
 // Entries before R&D Vision, and education dates, come from the v1 site (archive-v1 branch).
 export interface Job {
   org: string
@@ -395,58 +388,42 @@ export interface Job {
 export const experience: Job[] = [
   {
     org: 'R&D Vision',
-    place: 'Saint-Maur-des-Fossés · industrial machine vision',
+    place: 'Industrial machine vision',
     from: '03/2024',
     to: 'Present',
     roles: [
-      { from: '09/2025', to: 'Present', title: 'Software Engineer', note: 'More software-focused projects, more autonomy' },
+      // same work as Application Engineer: the company renamed its job titles in 09/2025 (confirmed 07/11/2026)
+      { from: '09/2025', to: 'Present', title: 'Software Engineer', note: 'Same role, renamed when the company specialised its job titles' },
       { from: '09/2024', to: '09/2025', title: 'Application Engineer' },
       { from: '03/2024', to: '08/2024', title: 'R&D Intern', note: 'Master’s final internship: 3D reconstruction from images' },
     ],
     summary:
-      'I build acquisition services, 3D and vision processing and the operator applications on top, then install them on site and keep them running. I have worked solo, in pairs and in larger teams, and I am at ease in all three.',
-  },
-  {
-    org: 'ICube lab (IGG team) · University of Strasbourg',
-    place: 'Strasbourg',
-    from: '01/2023',
-    to: '12/2023',
-    roles: [
-      { from: '09/2023', to: '12/2023', title: 'Master project', note: 'Experimental protocols in virtual reality' },
-      { from: '01/2023', to: '06/2023', title: 'Research project', note: 'Interaction with objects in virtual reality' },
-    ],
-    summary: 'Virtual-reality research projects with the ICube laboratory during my master’s.',
-    projects: ['vr-protocols', 'vr-interaction'],
-  },
-  {
-    org: 'FST Mohammedia · Hassan II University',
-    place: 'Mohammedia, Morocco',
-    from: '04/2020',
-    to: '06/2020',
-    roles: [{ from: '04/2020', to: '06/2020', title: 'Intern', note: 'Smart home IoT' }],
-    summary: 'Web, Android, console and API for the remote management of smart homes.',
-    projects: ['smart-home'],
+      'Depending on the project, I work solo, in a pair or in a larger team, and I install and support what I deliver.',
   },
 ]
 
 export const education = [
   {
-    title: 'Master, Image & 3D',
+    title: 'Master’s, Image & 3D',
     org: 'UFR Math-Info · University of Strasbourg',
+    // school logos from the v1 site (archive-v1), recoloured to the site's light monochrome
+    logo: '/img/schools/unistra.webp',
     place: 'Strasbourg, France',
     years: '2021 – 2024',
-    body: 'Computer-graphics track (I3D): geometric modelling, virtual reality, rendering and image processing. Projects with the ICube research lab.',
+    body: 'Computer-graphics track (I3D): geometric modelling, virtual reality, rendering and image processing. Research and master projects with the ICube lab.',
   },
   {
-    title: 'Bachelor, Computer Science',
+    title: 'Bachelor’s (final year), Computer Science',
     org: 'INP-ISIMA · Clermont Auvergne University',
+    logo: '/img/schools/isima.webp',
     place: 'Clermont-Ferrand, France',
     years: '2020 – 2021',
-    body: 'Third year of the bachelor’s: algorithms, networks, databases.',
+    body: 'Final year of a French bachelor’s: algorithms, networks, databases.',
   },
   {
-    title: 'Bachelor of Science & Technology: Computer Science, Networks & Multimedia',
+    title: 'Bachelor’s, Computer Science, Networks & Multimedia',
     org: 'FST Mohammedia · Hassan II University',
+    logo: '/img/schools/fst.webp',
     place: 'Mohammedia, Morocco',
     years: '2019 – 2020',
     body: 'Software development, networks and multimedia.',
@@ -475,26 +452,35 @@ export const recommendation = {
 
 export const about = {
   eyebrow: 'About me',
-  title: ['Sensors, geometry,', 'and the software in between.'],
+  title: ['Software I design,', 'build and keep running.'],
+  // site only, not on the CV. Rank confirmed 07/11/2026 (Ascendant 1). "Top 9%" = Ascendant 1 and above,
+  // 9.20% of ranked players (vstats.gg, V26 Act 6, 19/10/2026; 8-9% across sources). Changes every act.
+  // Icons: Valorant "V" mark (Wikimedia Commons, recoloured) and the official rank icon (valorant-api.com).
+  outside: {
+    category: 'Gaming',
+    items: [
+      {
+        name: 'Valorant',
+        mode: 'Competitive',
+        icon: '/img/outside/valorant.svg',
+        rank: 'Ascendant 1',
+        percentile: 'top 9% of all ranked players',
+        rankIcon: '/img/outside/ascendant-1.webp',
+      },
+    ],
+  },
   body: [
-    'I’m Ayoub, a software engineer specialised in 3D and computer vision. I came to it through mathematics and computer science, then a master’s in Image & 3D at the University of Strasbourg, where I worked on virtual reality with the ICube lab and on Monte Carlo path tracing.',
-    'Since 2024 I have been building industrial vision systems at R&D Vision: first as an R&D intern on 3D reconstruction, then as Application Engineer, and since September 2025 as Software Engineer. I integrate LiDAR, time-of-flight, line-scan and thermal cameras, write the services that acquire and process their data, and build the applications operators use.',
-    'What I care about is the whole chain: a sensor I can trust, a geometry that holds, an interface people use every day, and a system that keeps running after I install it.',
+    'I’m Ayoub, a software engineer with a background in 3D. I came to it through mathematics and computer science, then a master’s in Image & 3D at the University of Strasbourg: rendering, geometric modelling and virtual reality.',
+    'Since 2024, as a software engineer, I design and develop applications and services, from multi-service platforms to 3D viewers and operator applications, then install them on site and maintain them after delivery. Many of these projects are built around cameras and LiDAR; the software is what I bring.',
   ],
 }
 
-export const certifications = ['Kaggle: Pandas', 'Kaggle: Data Visualization', 'Kaggle: Data Cleaning', 'Human Coders: GitHub Copilot']
 
 export const skills: Record<string, string[]> = {
   languages: ['C++', 'C#', 'Python', 'TypeScript', 'JavaScript'],
   '3D & graphics': ['OpenGL / shaders', 'three.js', 'Unity', 'Unreal Engine 5', 'Blender'],
   'vision & data': ['OpenCV', 'Point clouds', 'Visual SLAM', 'Stereo calibration'],
   frameworks: ['.NET / WPF', 'React', 'Node.js'],
-  tools: ['Git', 'Docker', 'Linux'],
+  tools: ['Git', 'Docker', 'Linux', 'Claude Code'],
   hardware: ['Line-scan cameras', 'Area-scan cameras', 'ToF cameras', 'Thermal cameras', 'LiDAR', 'NI DAQ', 'Modbus / JBus', 'RFID / GPS'],
 }
-
-export const marquee = [
-  'C++', 'C#', 'Python', '.NET / WPF', 'OpenCV', 'three.js', 'Unreal Engine 5', 'Unity', 'React', 'TypeScript',
-  'LiDAR', 'Time-of-flight', 'Line-scan', 'Thermal', 'Point clouds', 'Visual SLAM', 'Docker', 'Linux',
-]

@@ -9,6 +9,8 @@ export const field = {
   /** normalised pointer, -1..1 */
   pointer: { x: 0, y: 0 },
   reduced: false,
+  /** right-to-left page (Arabic): the 3D subject moves to the other side of the text */
+  rtl: false,
   /** 0..1: position of the scroll within the current "What I do" step (drives a camera orbit) */
   stepFrac: 0.5,
   /** 0..1: hero head flying onto the About portrait */

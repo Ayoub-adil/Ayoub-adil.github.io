@@ -1,16 +1,20 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { architecture } from '../content/content'
+import { useContent } from '../i18n'
 
 type Node = { id: string; label: string; desc: string; links?: string[] }
 type Edge = { from: string; to: string }
 
+const DEFAULT = 'sync'
+
 // Interactive architecture of the tunnel inspection platform, shown in that project's dialog.
 export default function ArchitectureDiagram() {
+  const { architecture, ui } = useContent()
   const wrap = useRef<HTMLDivElement>(null)
-  const [focus, setFocus] = useState<string | null>(null)
+  // a service is always selected, so the diagram reads before any interaction
+  const [focus, setFocus] = useState<string | null>(DEFAULT)
   const [paths, setPaths] = useState<{ key: string; d: string; from: string; to: string }[]>([])
 
-  const nodes = useMemo(() => architecture.layers.flatMap((l) => l.nodes as Node[]), [])
+  const nodes = useMemo(() => architecture.layers.flatMap((l) => l.nodes as Node[]), [architecture])
   const edges = useMemo<Edge[]>(() => nodes.flatMap((n) => (n.links ?? []).map((to) => ({ from: n.id, to }))), [nodes])
 
   // ids connected to the focused node, in both directions
@@ -39,15 +43,21 @@ export default function ArchitectureDiagram() {
         const a = pos(e.to) // upstream, left column
         const b = pos(e.from)
         if (!a || !b) return []
+        const key = `${e.to}-${e.from}`
         if (Math.abs(a.l - b.l) < 4) {
-          // same column: loop on the left side
-          const x = a.l - 22
-          return [{ key: `${e.to}-${e.from}`, from: e.from, to: e.to, d: `M${a.l} ${a.y} C${x} ${a.y} ${x} ${b.y} ${b.l} ${b.y}` }]
+          // same column: loop on the outer side (left in LTR, right in RTL)
+          const rtl = document.documentElement.dir === 'rtl'
+          const x0 = rtl ? a.r : a.l
+          const x1 = rtl ? b.r : b.l
+          const x = rtl ? x0 + 22 : x0 - 22
+          return [{ key, from: e.from, to: e.to, d: `M${x0} ${a.y} C${x} ${a.y} ${x} ${b.y} ${x1} ${b.y}` }]
         }
-        const x1 = a.r
-        const x2 = b.l
+        // connect the facing sides, whichever column comes first on screen
+        const upstreamLeft = a.l < b.l
+        const x1 = upstreamLeft ? a.r : a.l
+        const x2 = upstreamLeft ? b.l : b.r
         const mx = (x1 + x2) / 2
-        return [{ key: `${e.to}-${e.from}`, from: e.from, to: e.to, d: `M${x1} ${a.y} C${mx} ${a.y} ${mx} ${b.y} ${x2} ${b.y}` }]
+        return [{ key, from: e.from, to: e.to, d: `M${x1} ${a.y} C${mx} ${a.y} ${mx} ${b.y} ${x2} ${b.y}` }]
       }),
     )
   }, [edges])
@@ -72,7 +82,7 @@ export default function ArchitectureDiagram() {
                     key={p.key}
                     d={p.d}
                     fill="none"
-                    stroke={on ? '#FAB529' : '#2a3340'}
+                    stroke={on ? '#FAB529' : '#3a4656'}
                     strokeWidth={on ? 1.6 : 1}
                     className="transition-[stroke] duration-300"
                   />
@@ -95,10 +105,10 @@ export default function ArchitectureDiagram() {
                         <button
                           data-node={n.id}
                           onMouseEnter={() => setFocus(n.id)}
-                          onMouseLeave={() => setFocus(null)}
+                          onMouseLeave={() => setFocus(DEFAULT)}
                           onFocus={() => setFocus(n.id)}
-                          onBlur={() => setFocus(null)}
-                          className={`relative w-full rounded-md border px-3 py-[clamp(0.3rem,0.9svh,0.55rem)] text-left text-[0.86rem] transition-all duration-300 ${
+                          onBlur={() => setFocus(DEFAULT)}
+                          className={`relative w-full rounded-md border px-3 py-[clamp(0.3rem,0.9svh,0.55rem)] text-start text-[0.86rem] transition-all duration-300 ${
                             n.id === focus
                               ? 'border-signal bg-signal/10 text-paper'
                               : on
@@ -117,8 +127,10 @@ export default function ArchitectureDiagram() {
           </div>
 
           <div className="mt-[2.5svh] flex min-h-[2.5rem] items-start gap-4 border-t border-line pt-[1.8svh]" aria-live="polite">
-            <span className="label shrink-0 pt-0.5">{active ? active.label : 'Hover a service'}</span>
-            <p className="text-[0.9rem] text-paper/75">{active ? active.desc : 'On the truck → acquisition services → supervision → after the run. Lines show which service feeds which.'}</p>
+            <span className="label shrink-0 pt-0.5">{active ? active.label : ''}</span>
+            <p className="text-[0.9rem] text-paper/80">
+              {active?.desc} <span className="text-mute">{ui.projects.hoverHint}</span>
+            </p>
           </div>
         </div>
   )
