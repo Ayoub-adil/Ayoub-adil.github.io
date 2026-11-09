@@ -15,10 +15,17 @@ html {
   border-color: #d9d6d0;
 }
 
-/* the site hides horizontal overflow; the A4 sheet must stay scrollable on narrow windows */
+/* screen: toolbar on top, viewer below that scrolls on its own in both directions (narrow windows) */
 @media screen {
-  body {
-    overflow-x: auto;
+  .cv-app {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+  }
+  .cv-view {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
   }
 }
 
