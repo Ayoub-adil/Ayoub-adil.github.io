@@ -1,4 +1,4 @@
-import { StrictMode, useLayoutEffect, useRef } from 'react'
+import { StrictMode, useLayoutEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@fontsource-variable/inter-tight'
 import '@fontsource-variable/jetbrains-mono'
@@ -23,6 +23,17 @@ function CV() {
   const { lang, c } = useLang()
   const { academic, education, experience, hero, profile, projects, skills, status, ui } = c
   const inner = useRef<HTMLDivElement>(null)
+  const bar = useRef<HTMLDivElement>(null)
+  const [barH, setBarH] = useState(0)
+
+  // the buttons can wrap onto two rows on narrow windows: keep the spacer at the bar's real height
+  useLayoutEffect(() => {
+    const el = bar.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setBarH(el.offsetHeight))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   // Longer languages (FR, DE) would spill onto a second page: when printing, the sheet is scaled
   // down just enough to fit one A4 page (210 x 297 mm, 12 mm vertical padding in print).
@@ -42,8 +53,10 @@ function CV() {
   }, [lang])
   return (
     <>
-      {/* in the flow, above the sheet: a fixed bar would cover the CV on narrow windows */}
-      <div className="no-print relative z-10 mx-auto flex w-full max-w-[210mm] flex-wrap justify-end gap-2 px-4 pt-4 sm:px-0">
+      {/* fixed to the window so the buttons stay visible (also when scrolling sideways); it has its own
+          background, and the spacer below reserves its height so it never covers the top of the sheet */}
+      <div ref={bar} className="no-print fixed inset-x-0 top-0 z-10 border-b border-[#0a0d12]/10 bg-[#d9d6d0]/90 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-[210mm] flex-wrap justify-end gap-2 px-4 py-3 sm:px-0">
         <a href="/" className="rounded-[4px] border border-[#0a0d12]/20 bg-white px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[#0a0d12]">
           <span className="inline-block rtl:-scale-x-100">←</span> {ui.cv.site}
         </a>
@@ -62,7 +75,9 @@ function CV() {
           {ui.cv.download}
         </a>
         <LangSwitcher tone="light" />
+        </div>
       </div>
+      <div className="no-print" style={{ height: barH }} aria-hidden />
 
       <article className="sheet">
         <div ref={inner}>
