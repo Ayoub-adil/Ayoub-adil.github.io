@@ -1,4 +1,4 @@
-import { StrictMode, useLayoutEffect, useRef } from 'react'
+import { StrictMode, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@fontsource-variable/inter-tight'
 import '@fontsource-variable/jetbrains-mono'
@@ -23,6 +23,17 @@ function CV() {
   const { lang, c } = useLang()
   const { academic, education, experience, hero, profile, projects, skills, status, ui } = c
   const inner = useRef<HTMLDivElement>(null)
+
+  // On every visit: a line-scan sweep reveals the sheet (like a line-scan camera building an image).
+  // Not replayed on a language switch (same page), never with reduced motion, never in print (see cv.css).
+  const [scan] = useState(() => !matchMedia('(prefers-reduced-motion: reduce)').matches)
+  // Back/forward can restore the page from the browser cache without reloading it: replay the scan then too
+  const [visit, setVisit] = useState(0)
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => e.persisted && setVisit((v) => v + 1)
+    addEventListener('pageshow', onShow)
+    return () => removeEventListener('pageshow', onShow)
+  }, [])
 
   // Longer languages (FR, DE) would spill onto a second page: when printing, the sheet is scaled
   // down just enough to fit one A4 page (210 x 297 mm, 12 mm vertical padding in print).
@@ -68,8 +79,8 @@ function CV() {
       </div>
       <main className="cv-view">
 
-      <article className="sheet">
-        <div ref={inner}>
+      <article key={visit} className={scan ? 'sheet sheet-in' : 'sheet'}>
+        <div ref={inner} className={scan ? 'cv-scan' : undefined}>
         <header className="flex items-center gap-5 border-b border-[#0a0d12]/15 pb-4">
           {/* whole photo at the circle's width: the head stays complete, the circle only hides the straight cut at the bottom */}
           <div className="h-[23mm] w-[23mm] shrink-0 overflow-hidden rounded-full">

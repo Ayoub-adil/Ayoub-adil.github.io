@@ -38,6 +38,58 @@ html {
   box-shadow: 0 20px 60px rgb(0 0 0 / 0.18);
 }
 
+/* First display: the blank sheet rises in, then a golden scan line sweeps down and reveals the content */
+@media screen and (prefers-reduced-motion: no-preference) {
+  .sheet-in {
+    animation: cv-sheet-in 0.35s ease-out both;
+  }
+  .cv-scan {
+    position: relative;
+    animation: cv-reveal 0.9s 0.3s cubic-bezier(0.45, 0, 0.25, 1) both;
+  }
+  .cv-scan::after {
+    content: '';
+    position: absolute;
+    inset-inline: -15mm; /* across the whole sheet, padding included */
+    top: 0;
+    height: 2px;
+    transform: translateY(-100%); /* sits just above the reveal edge, so the clip does not hide it */
+    background: #fab529;
+    box-shadow:
+      0 0 10px 2px rgb(250 181 41 / 0.55),
+      0 -18px 28px -6px rgb(250 181 41 / 0.18);
+    pointer-events: none;
+    animation: cv-scanline 0.9s 0.3s cubic-bezier(0.45, 0, 0.25, 1) both;
+  }
+}
+@keyframes cv-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes cv-reveal {
+  from {
+    clip-path: inset(0 -15mm 100% -15mm);
+  }
+  to {
+    clip-path: inset(0 -15mm 0 -15mm);
+  }
+}
+@keyframes cv-scanline {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
 .cv-h {
   font-family: var(--font-mono);
   font-size: 7.5pt;
