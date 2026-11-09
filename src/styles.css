@@ -16,6 +16,10 @@
 
 @layer base {
   html {
+    color-scheme: dark;
+    /* inherited: also styles the dialogs and other scroll areas */
+    scrollbar-color: #3a4452 var(--color-ink);
+    scrollbar-width: thin;
     background: var(--color-ink);
     color: var(--color-paper);
     -webkit-font-smoothing: antialiased;
@@ -24,6 +28,22 @@
   body {
     font-family: var(--font-sans);
     overflow-x: hidden;
+  }
+  /* older WebKit/Blink (ignored where scrollbar-color is supported) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3a4452;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-signal);
   }
   ::selection {
     background: var(--color-signal);

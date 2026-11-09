@@ -3,6 +3,17 @@ body {
   background: #d9d6d0;
   color: #0a0d12;
 }
+html {
+  color-scheme: light;
+  scrollbar-color: #a8a49c #d9d6d0;
+}
+::-webkit-scrollbar-track {
+  background: #d9d6d0;
+}
+::-webkit-scrollbar-thumb {
+  background: #a8a49c;
+  border-color: #d9d6d0;
+}
 
 .sheet {
   width: 210mm;
