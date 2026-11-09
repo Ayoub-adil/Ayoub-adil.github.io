@@ -25,7 +25,7 @@ function CV() {
   const inner = useRef<HTMLDivElement>(null)
 
   // On every visit: a line-scan sweep reveals the sheet (like a line-scan camera building an image).
-  // Not replayed on a language switch (same page), never with reduced motion, never in print (see cv.css).
+  // Also replayed on a language switch. Never with reduced motion, never in print (see cv.css).
   const [scan] = useState(() => !matchMedia('(prefers-reduced-motion: reduce)').matches)
   // Back/forward can restore the page from the browser cache without reloading it: replay the scan then too
   const [visit, setVisit] = useState(0)
@@ -79,7 +79,8 @@ function CV() {
       </div>
       <main className="cv-view">
 
-      <article key={visit} className={scan ? 'sheet sheet-in' : 'sheet'}>
+      {/* a new key remounts the sheet, which replays the scan: on each visit and on each language switch */}
+      <article key={`${visit}-${lang}`} className={scan ? 'sheet sheet-in' : 'sheet'}>
         <div ref={inner} className={scan ? 'cv-scan' : undefined}>
         <header className="flex items-center gap-5 border-b border-[#0a0d12]/15 pb-4">
           {/* whole photo at the circle's width: the head stays complete, the circle only hides the straight cut at the bottom */}
