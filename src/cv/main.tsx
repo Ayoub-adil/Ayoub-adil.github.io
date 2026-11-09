@@ -42,7 +42,8 @@ function CV() {
   }, [lang])
   return (
     <>
-      <div className="no-print fixed end-4 top-4 z-10 flex gap-2">
+      {/* in the flow, above the sheet: a fixed bar would cover the CV on narrow windows */}
+      <div className="no-print relative z-10 mx-auto flex w-full max-w-[210mm] flex-wrap justify-end gap-2 px-4 pt-4 sm:px-0">
         <a href="/" className="rounded-[4px] border border-[#0a0d12]/20 bg-white px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[#0a0d12]">
           <span className="inline-block rtl:-scale-x-100">←</span> {ui.cv.site}
         </a>
