@@ -22,7 +22,7 @@ export type Lang = 'en' | 'fr' | 'de' | 'ar'
 const ui = {
   meta: {
     title: 'Ayoub ADIL · Software Engineer, 3D',
-    description: 'Ayoub ADIL, software engineer: I design, develop and maintain applications, with a background in 3D (point clouds, 3D viewers, reconstruction).',
+    description: 'Ayoub ADIL, software engineer with a background in 3D. I build applications and look after them once they’re in production.',
   },
   skip: 'Skip to content',
   home: 'Ayoub ADIL, home',
@@ -33,13 +33,13 @@ const ui = {
   hero: { seeProjects: 'See my projects', viewCv: 'View my CV', scroll: 'Scroll', scrollAria: 'Scroll to About me' },
   about: { languages: 'Languages', outsideWork: 'Outside work', portraitAlt: 'Portrait of Ayoub ADIL' },
   whatIDo: 'What I do',
-  experience: { eyebrow: 'Experience', title: ['From master’s intern', 'to software engineer.'], lede: 'I joined R&D Vision for my master’s final internship and was then hired.' },
+  experience: { eyebrow: 'Experience', title: ['From master’s intern', 'to software engineer.'], lede: 'I joined R&D Vision for my master’s final internship, and they hired me afterwards.' },
   present: 'Present',
   education: { eyebrow: 'Education', title: ['From mathematics', 'to a master’s in 3D.'], earlier: 'Earlier', recommendationLetter: 'recommendation letter' },
   projects: {
     eyebrow: 'Projects',
     title: ['What I’ve built,', 'and my part in it.'],
-    lede: 'Industrial systems I worked on, with what I built on each, then projects from my master’s. Clients are anonymised; the visuals are synthetic renders.',
+    lede: 'First the industrial systems I’ve worked on and what I built for each, then my master’s projects. I can’t name the clients, and the visuals are synthetic renders.',
     industrial: 'Industrial projects',
     academic: 'Academic & personal',
     academicNote: 'Rendering, virtual reality, full-stack',
